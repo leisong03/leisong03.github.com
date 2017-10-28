@@ -1,6 +1,6 @@
 ### Welcome to GitHub Pages.
 ## STM32开发相关
-### DMA for i2c recevie
+### DMA for i2c recevie [stm32](./try)
 ## 好玩的机械
 ### 三角洲的打印机
 ### SLA打印机
