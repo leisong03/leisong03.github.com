@@ -1,7 +1,7 @@
-title: Leisong03.github.com
+title: 宋磊的blog
 description: Blog filled by my idea
-google_analytics: 
-show_downloads: true
+google_analytics: true
+show_downloads: false
 theme: jekyll-theme-hacker
 
 gems:
