@@ -1,0 +1,8 @@
+title: Leisong03.github.com
+description: Blog filled by my idea
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-hacker
+
+gems:
+  - jekyll-mentions
