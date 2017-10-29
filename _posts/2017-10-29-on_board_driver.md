@@ -12,4 +12,4 @@ author: Song Lei
 
 # 4988 和DRV8825的性能对比
 4988 是这个样子的 
-[!4988](images/4988.png)
+![4988](images/4988.png)
