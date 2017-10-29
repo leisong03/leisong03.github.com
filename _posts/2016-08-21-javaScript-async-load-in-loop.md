@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "JavaScript 循环中异步加载问题"
-date:   2016-08-21 07:00:00 +0800
+date:   2017-08-21 07:00:00 +0800
 categories: three.js
 tags: three.js JavaScript 
 author: JiuYang Chen
