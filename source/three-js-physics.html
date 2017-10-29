@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>three-physics</title>
+		<style>
+			body {
+				margin: 0;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+
+	<body>
+		<script type="text/javascript" src="../js/three/three.min.js"></script>
+		<script type="text/javascript" src="../js/three/ThreeBSP.js"></script>
+		<script type="text/javascript" src="../js/Physijs/physi.js"></script>
+		<script>
+			'use strict';
+			Physijs.scripts.worker = '../js/Physijs/physijs_worker.js';
+			Physijs.scripts.ammo = 'ammo.js';
+
+			var scene, renderer, camera;
+
+			function init() {
+
+				scene = new Physijs.Scene();
+
+				scene.setGravity(new THREE.Vector3(0, -10, 0));
+
+				renderer = new THREE.WebGLRenderer({
+					antialias: true
+				});
+				renderer.setClearColor(0xffffff);
+				renderer.setSize(window.innerWidth, window.innerHeight);
+
+				camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+				camera.position.set(0, 60, 0);
+				camera.lookAt(new THREE.Vector3(0, 0, 10));
+
+				var light = new THREE.AmbientLight(0xffffff);
+				scene.add(light);
+
+				var geometry = new THREE.CubeGeometry(4, 4, 4);
+
+				var material = new Physijs.createMaterial(new THREE.MeshPhongMaterial({
+					color: 0x4d6dad
+				}));
+
+				var mesh = new Physijs.BoxMesh(geometry, material, 1);
+				mesh.position.set(1.5, 10, 15);
+				mesh.rotation.y = Math.PI / 4;
+
+				scene.add(mesh);
+
+				var geometry = new THREE.CubeGeometry(4, 4, 4);
+				var material = new Physijs.createMaterial(new THREE.MeshPhongMaterial({
+					color: 0xe6db74
+				}));
+
+				var mesh2 = new Physijs.BoxMesh(geometry, material, 1);
+				mesh2.position.set(-1.5, 10, 15);
+				mesh2.rotation.y = Math.PI / 4;
+
+				scene.add(mesh2);
+
+				var geometry = new THREE.CubeGeometry(100, 100, 100);
+				var material = new Physijs.createMaterial(new THREE.MeshPhongMaterial({
+					color: 0xeeeeee
+				}));
+
+				var mesh3 = new Physijs.BoxMesh(geometry, material, 0);
+				mesh3.position.set(0, -100, 0);
+
+				scene.add(mesh3);
+
+				document.body.appendChild(renderer.domElement);
+
+				render();
+			}
+
+			function render() {
+
+				renderer.render(scene, camera);
+				requestAnimationFrame(render);
+
+				scene.simulate();
+
+			}
+			init();
+		</script>
+		<script type="text/javascript" src="../js/cjy_info.js"></script>
+	</body>
+
+</html>

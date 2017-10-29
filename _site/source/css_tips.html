@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>css_tips</title>
+		<style>
+			body {
+				font: 14px/1.5 "Helvetica Neue", Helvetica, "Hiragino Sans GB", STHeiti, "WenQuanYi Micro Hei", "Microsoft Yahei", sans-serif;
+			}
+			
+			div.justify {
+				width: 200px;
+				text-align: justify;
+			}
+			
+			div.justify> span {
+				display: inline-block;
+				padding-left: 100%;
+			}
+			
+			div.separator {
+				display: inline-block;
+				width: 0;
+				height: 14px;
+				line-height: 14px;
+				vertical-align: top;
+				font-size: 0;
+				border-left: 1px solid #ccc;
+			}
+			
+			.arrow {
+				width: 0;
+				height: 0;
+				border-width: 3px;
+				border-style: solid dashed dashed;
+				border-color: #bbb transparent transparent;
+				font-size: 0;
+				line-height: 0;
+			}
+			
+			div.container {
+				height: 200px;
+				width: 300px;
+				background-color: #F0805A;
+			}
+			
+			div.content {
+				position: relative;
+				height: 50%;
+				width: 50%;
+				background-color: #FE8463;
+			}
+			
+			div.middle {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+			}
+		</style>
+	</head>
+
+	<body>
+		<span>1.文本两端对齐</span>
+		<div class="justify">文本两端对齐<span></span></div>
+		<span>2.分隔符-Tmall</span>
+		<div>
+			<div class="separator"></div>
+		</div>
+		<span>3.小箭头-Tmall</span>
+		<div><b class="arrow"></b></div>
+		<span>4.百分比水平垂直居中</span>
+		<div class="container">
+			<div class="content">
+				<div class="middle">百分比水平垂直居中</div>
+			</div>
+		</div>
+	</body>
+
+</html>

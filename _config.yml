@@ -1,8 +1,57 @@
-title: 宋磊的blog
-description: Blog filled by my idea
-google_analytics: true
-show_downloads: false
-theme: jekyll-theme-hacker
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely need to edit after that.
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'jekyll serve'. If you change this file, please restart the server process.
 
-gems:
-  - jekyll-mentions
+# Site settings
+title: Chenjy' blog
+brief-intro: 
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "http://Chenjy1225.github.io" # the base hostname & protocol for your site
+
+permalink: /:year/:month/:day/:title/
+
+# other links
+twitter_username:
+facebook_username:
+github_username:  
+email: Chenjy1225@163.com
+weibo_username: 
+zhihu_username: 
+linkedIn_username: 
+dribbble_username: 
+
+description_footer: Chenjy' blog
+
+# comments
+# two ways to comment, only choose one, and use your own short name
+duoshuo_shortname: chenjy1225
+disqus_shortname: 
+
+# statistic analysis
+baidu_tongji_id: 4550978924d3d4a6fe21f516ac37f0b3
+google_analytics_id: #UA-83031513-1
+
+# Build settings
+markdown: kramdown
+
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# port
+# port: 1234
+
+# url
+category_dir: category/
+tag_dir: tag/
+
+# excerpt
+excerpt_separator: "\n\n\n\n"
+
+# paginate
+gems: [jekyll-paginate]
+paginate: 8
+

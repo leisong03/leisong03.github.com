@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>three.js 中的矩阵变换及两种旋转表达方式</title>
+    <meta name="description" content="本篇简单介绍three.js中矩阵变换及两种旋转表达方式。">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/11/13/three-js-rotate/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>three.js 中的矩阵变换及两种旋转表达方式</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-11-13
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#three.js" title="Tag: three.js" rel="tag">three.js</a>&nbsp;
+    
+        <a href="/tag/#javaScript" title="Tag: javaScript" rel="tag">javaScript</a>&nbsp;
+    
+        <a href="/tag/#WebGL" title="Tag: WebGL" rel="tag">WebGL</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#矩阵变换" id="markdown-toc-矩阵变换">矩阵变换</a>    <ul>
+      <li><a href="#矩阵变换的基础" id="markdown-toc-矩阵变换的基础">矩阵变换的基础</a></li>
+      <li><a href="#threejs中的矩阵" id="markdown-toc-threejs中的矩阵"><code class="highlighter-rouge">three.js</code>中的矩阵</a></li>
+    </ul>
+  </li>
+  <li><a href="#三维旋转表达方式" id="markdown-toc-三维旋转表达方式">三维旋转表达方式</a>    <ul>
+      <li><a href="#欧拉角" id="markdown-toc-欧拉角">欧拉角</a></li>
+      <li><a href="#四元数" id="markdown-toc-四元数">四元数</a></li>
+    </ul>
+  </li>
+  <li><a href="#threejs中的旋转方式" id="markdown-toc-threejs中的旋转方式">three.js中的旋转方式</a>    <ul>
+      <li><a href="#object3d-rotation-属性" id="markdown-toc-object3d-rotation-属性"><code class="highlighter-rouge">object3D</code> <code class="highlighter-rouge">rotation</code> 属性</a></li>
+      <li><a href="#geometry-rotatex方法" id="markdown-toc-geometry-rotatex方法"><code class="highlighter-rouge">Geometry</code> <code class="highlighter-rouge">rotateX</code>方法</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>本篇简单介绍<code class="highlighter-rouge">three.js</code>中矩阵变换及两种旋转表达方式。</p>
+
+<h2 id="矩阵变换">矩阵变换</h2>
+
+<p><code class="highlighter-rouge">three.js</code>使用矩阵来保存<code class="highlighter-rouge">Object3D</code>的变换信息。</p>
+
+<h3 id="矩阵变换的基础">矩阵变换的基础</h3>
+
+<ul>
+  <li>平移变换</li>
+</ul>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/c584f169gw1f9qtuy0woqj20en05ymxh.jpg" alt="outPut" /></p>
+
+<ul>
+  <li>比例变换</li>
+</ul>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/c584f169gw1f9qtuy1pq8j20f305sglz.jpg" alt="outPut" /></p>
+
+<ul>
+  <li>旋转变换</li>
+</ul>
+
+<p><code class="highlighter-rouge">(x,y,z,1)</code> 绕<code class="highlighter-rouge">x</code>轴旋转</p>
+
+<p><img src="http://ww4.sinaimg.cn/mw690/c584f169gw1f9qtv01aazj20hk061dgb.jpg" alt="outPut" /></p>
+
+<p><code class="highlighter-rouge">(x,y,z,1)</code> 绕<code class="highlighter-rouge">y</code>轴旋转</p>
+
+<p><img src="http://ww3.sinaimg.cn/mw690/c584f169gw1f9qtv0ceb7j20i105yq3g.jpg" alt="outPut" /></p>
+
+<p><code class="highlighter-rouge">(x,y,z,1)</code> 绕<code class="highlighter-rouge">z</code>轴旋转</p>
+
+<p><img src="http://ww3.sinaimg.cn/mw690/c584f169gw1f9qtv0ta6lj20hu06c74s.jpg" alt="outPut" /></p>
+
+<h3 id="threejs中的矩阵"><code class="highlighter-rouge">three.js</code>中的矩阵</h3>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">cube</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">CubeGeometry</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">());</span>
+        <span class="nx">cube</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
+        <span class="nx">cube</span><span class="p">.</span><span class="nx">scale</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">);</span>
+
+        <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">cube</span><span class="p">);</span>
+
+
+</code></pre>
+</div>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/c584f169gw1f9qtv1gao5j20bd0ew75g.jpg" alt="outPut" /></p>
+
+<p>我们可以看到正如上面的公式 <code class="highlighter-rouge">cube</code>的平移<code class="highlighter-rouge">（1,2,3）</code>所以elements[12]、elements[13]、elements[14]依次为1,2,3</p>
+
+<p><code class="highlighter-rouge">cube</code>的缩放为（7,8,9）所以elements[02]、elements[5]、elements[10]依次为7,8,9</p>
+
+<p>然后我们选择一下<code class="highlighter-rouge">cube</code>的<code class="highlighter-rouge">x</code>轴</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">cube</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">CubeGeometry</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">());</span>
+        <span class="nx">cube</span><span class="p">.</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span><span class="o">/</span><span class="mi">3</span><span class="p">;</span>
+        <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">cube</span><span class="p">);</span>
+
+
+</code></pre>
+</div>
+
+<p><img src="http://ww2.sinaimg.cn/mw690/c584f169gw1f9qtv1yv7xj20b90a4gma.jpg" alt="outPut" /></p>
+
+<h2 id="三维旋转表达方式">三维旋转表达方式</h2>
+
+<p><code class="highlighter-rouge">three.js</code>提供了两种三维旋转表达方式：<code class="highlighter-rouge">欧拉角(euler)</code>和<code class="highlighter-rouge">四元数(quaternion)</code>。它们相比较使用<code class="highlighter-rouge">矩阵的方式</code>进行变换更加的节省存储空间和更方便的进行插值。
+但是<code class="highlighter-rouge">欧拉角(euler)</code>存在万向锁问题，配置可能失去一定的自由度所以都是使用在<code class="highlighter-rouge">四元数(quaternion)</code>。</p>
+
+<h3 id="欧拉角">欧拉角</h3>
+
+<p>欧拉角需要指定x,y,z三个轴的角度和旋转的顺序。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="nx">Euler</span><span class="p">(</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">z</span><span class="p">,</span> <span class="nx">order</span> <span class="p">)</span>
+    
+</code></pre>
+</div>
+
+<p><code class="highlighter-rouge">万向锁</code>问题：当三个万向节其中两个的轴发生重合时，会失去一个自由度的情形。</p>
+
+<blockquote>
+  <p>https://zh.wikipedia.org</p>
+</blockquote>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/c584f169gw1f9qtuvgfm8j20l40l5god.jpg" alt="outPut" /></p>
+
+<p>正常状态：三个独立的旋转轴</p>
+
+<p><img src="http://ww4.sinaimg.cn/mw690/c584f169gw1f9qtuuaxeuj20lo0kkwgt.jpg" alt="outPut" /></p>
+
+<p>万向锁：一旦选择±90°作为pitch角，就会导致第一次旋转和第三次旋转等价，整个旋转表示系统被限制在只能绕竖直轴旋转，丢失了一个表示维度。</p>
+
+<h3 id="四元数">四元数</h3>
+
+<p>四元数的出现就可以解决欧拉角的万向锁问题和万向锁带来的插值不是线性的问题。</p>
+
+<p>具体的四元数在旋转的使用的原理可以参照：</p>
+
+<p><a href="https://zh.wikipedia.org/wiki/%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E7%A9%BA%E9%97%B4%E6%97%8B%E8%BD%AC">维基百科—四元数与空间旋转</a></p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="nx">Quaternion</span><span class="p">(</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">z</span><span class="p">,</span> <span class="nx">w</span> <span class="p">)</span>
+    
+</code></pre>
+</div>
+
+<h2 id="threejs中的旋转方式">three.js中的旋转方式</h2>
+
+<p>从源码中我们可以看出，<code class="highlighter-rouge">three.js</code>都是使用<code class="highlighter-rouge">quaternion</code>（四元数）来控制旋转。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+	<span class="nl">setRotationFromAxisAngle</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span> <span class="nx">axis</span><span class="p">,</span> <span class="nx">angle</span> <span class="p">)</span> <span class="p">{</span>
+
+		<span class="c1">// assumes axis is normalized</span>
+
+		<span class="k">this</span><span class="p">.</span><span class="nx">quaternion</span><span class="p">.</span><span class="nx">setFromAxisAngle</span><span class="p">(</span> <span class="nx">axis</span><span class="p">,</span> <span class="nx">angle</span> <span class="p">);</span>
+
+	<span class="p">},</span>
+
+	<span class="nx">setRotationFromEuler</span><span class="err">:</span> <span class="kd">function</span> <span class="p">(</span> <span class="nx">euler</span> <span class="p">)</span> <span class="p">{</span>
+
+		<span class="k">this</span><span class="p">.</span><span class="nx">quaternion</span><span class="p">.</span><span class="nx">setFromEuler</span><span class="p">(</span> <span class="nx">euler</span><span class="p">,</span> <span class="kc">true</span> <span class="p">);</span>
+
+	<span class="p">},</span>
+
+	<span class="nx">setRotationFromMatrix</span><span class="err">:</span> <span class="kd">function</span> <span class="p">(</span> <span class="nx">m</span> <span class="p">)</span> <span class="p">{</span>
+
+		<span class="c1">// assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)</span>
+
+		<span class="k">this</span><span class="p">.</span><span class="nx">quaternion</span><span class="p">.</span><span class="nx">setFromRotationMatrix</span><span class="p">(</span> <span class="nx">m</span> <span class="p">);</span>
+
+	<span class="p">},</span>
+
+	<span class="nx">setRotationFromQuaternion</span><span class="err">:</span> <span class="kd">function</span> <span class="p">(</span> <span class="nx">q</span> <span class="p">)</span> <span class="p">{</span>
+
+		<span class="c1">// assumes q is normalized</span>
+
+		<span class="k">this</span><span class="p">.</span><span class="nx">quaternion</span><span class="p">.</span><span class="nx">copy</span><span class="p">(</span> <span class="nx">q</span> <span class="p">);</span>
+
+	<span class="p">},</span>
+
+	<span class="nx">rotateOnAxis</span><span class="err">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+
+		<span class="c1">// rotate object on axis in object space</span>
+		<span class="c1">// axis is assumed to be normalized</span>
+
+		<span class="kd">var</span> <span class="nx">q1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Quaternion</span><span class="p">();</span>
+
+		<span class="k">return</span> <span class="kd">function</span> <span class="nx">rotateOnAxis</span><span class="p">(</span> <span class="nx">axis</span><span class="p">,</span> <span class="nx">angle</span> <span class="p">)</span> <span class="p">{</span>
+
+			<span class="nx">q1</span><span class="p">.</span><span class="nx">setFromAxisAngle</span><span class="p">(</span> <span class="nx">axis</span><span class="p">,</span> <span class="nx">angle</span> <span class="p">);</span>
+
+			<span class="k">this</span><span class="p">.</span><span class="nx">quaternion</span><span class="p">.</span><span class="nx">multiply</span><span class="p">(</span> <span class="nx">q1</span> <span class="p">);</span>
+
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+
+		<span class="p">};</span>
+
+	<span class="p">}(),</span>
+
+
+</code></pre>
+</div>
+
+<h3 id="object3d-rotation-属性"><code class="highlighter-rouge">object3D</code> <code class="highlighter-rouge">rotation</code> 属性</h3>
+
+<p>在<code class="highlighter-rouge">three.js</code>你可以使用<code class="highlighter-rouge">rotation</code>来设置<code class="highlighter-rouge">object3D</code>的旋转。</p>
+
+<p>我们使用<code class="highlighter-rouge">rotation</code>设置的为一个<code class="highlighter-rouge">Euler（欧拉角）</code>所以它会先将<code class="highlighter-rouge">Euler（欧拉角）</code>转换为一个<code class="highlighter-rouge">quaternion（四元数）</code>。</p>
+
+<p>源码：</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+	<span class="nx">rotation</span><span class="p">.</span><span class="nx">onChange</span><span class="p">(</span> <span class="nx">onRotationChange</span> <span class="p">);</span>
+
+	<span class="kd">function</span> <span class="nx">onRotationChange</span><span class="p">()</span> <span class="p">{</span>
+
+		<span class="nx">quaternion</span><span class="p">.</span><span class="nx">setFromEuler</span><span class="p">(</span> <span class="nx">rotation</span><span class="p">,</span> <span class="kc">false</span> <span class="p">);</span>
+
+	<span class="p">}</span>
+	
+	<span class="c1">//setFromEuler()</span>
+	
+		<span class="nl">setFromEuler</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span> <span class="nx">euler</span><span class="p">,</span> <span class="nx">update</span> <span class="p">)</span> <span class="p">{</span>
+    
+    		<span class="k">if</span> <span class="p">(</span> <span class="nx">euler</span> <span class="k">instanceof</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Euler</span> <span class="o">===</span> <span class="kc">false</span> <span class="p">)</span> <span class="p">{</span>
+    
+    			<span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span> <span class="s1">'THREE.Quaternion: .setFromEuler() now expects a Euler rotation rather than a Vector3 and order.'</span> <span class="p">);</span>
+    
+    		<span class="p">}</span>
+    
+    		<span class="c1">// http://www.mathworks.com/matlabcentral/fileexchange/</span>
+    		<span class="c1">// 	20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/</span>
+    		<span class="c1">//	content/SpinCalc.m</span>
+    
+    		<span class="kd">var</span> <span class="nx">c1</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">cos</span><span class="p">(</span> <span class="nx">euler</span><span class="p">.</span><span class="nx">_x</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">);</span>
+    		<span class="kd">var</span> <span class="nx">c2</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">cos</span><span class="p">(</span> <span class="nx">euler</span><span class="p">.</span><span class="nx">_y</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">);</span>
+    		<span class="kd">var</span> <span class="nx">c3</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">cos</span><span class="p">(</span> <span class="nx">euler</span><span class="p">.</span><span class="nx">_z</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">);</span>
+    		<span class="kd">var</span> <span class="nx">s1</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span> <span class="nx">euler</span><span class="p">.</span><span class="nx">_x</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">);</span>
+    		<span class="kd">var</span> <span class="nx">s2</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span> <span class="nx">euler</span><span class="p">.</span><span class="nx">_y</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">);</span>
+    		<span class="kd">var</span> <span class="nx">s3</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span> <span class="nx">euler</span><span class="p">.</span><span class="nx">_z</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">);</span>
+    
+    		<span class="kd">var</span> <span class="nx">order</span> <span class="o">=</span> <span class="nx">euler</span><span class="p">.</span><span class="nx">order</span><span class="p">;</span>
+    
+    		<span class="k">if</span> <span class="p">(</span> <span class="nx">order</span> <span class="o">===</span> <span class="s1">'XYZ'</span> <span class="p">)</span> <span class="p">{</span>
+    
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_x</span> <span class="o">=</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">+</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_y</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">-</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_z</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">s3</span> <span class="o">+</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">c3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_w</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">-</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    
+    		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">order</span> <span class="o">===</span> <span class="s1">'YXZ'</span> <span class="p">)</span> <span class="p">{</span>
+    
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_x</span> <span class="o">=</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">+</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_y</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">-</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_z</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">s3</span> <span class="o">-</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">c3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_w</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">+</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    
+    		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">order</span> <span class="o">===</span> <span class="s1">'ZXY'</span> <span class="p">)</span> <span class="p">{</span>
+    
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_x</span> <span class="o">=</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">-</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_y</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">+</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_z</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">s3</span> <span class="o">+</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">c3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_w</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">-</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    
+    		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">order</span> <span class="o">===</span> <span class="s1">'ZYX'</span> <span class="p">)</span> <span class="p">{</span>
+    
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_x</span> <span class="o">=</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">-</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_y</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">+</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_z</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">s3</span> <span class="o">-</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">c3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_w</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">+</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    
+    		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">order</span> <span class="o">===</span> <span class="s1">'YZX'</span> <span class="p">)</span> <span class="p">{</span>
+    
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_x</span> <span class="o">=</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">+</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_y</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">+</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_z</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">s3</span> <span class="o">-</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">c3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_w</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">-</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    
+    		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">order</span> <span class="o">===</span> <span class="s1">'XZY'</span> <span class="p">)</span> <span class="p">{</span>
+    
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_x</span> <span class="o">=</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">-</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_y</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">-</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_z</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">s3</span> <span class="o">+</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">c3</span><span class="p">;</span>
+    			<span class="k">this</span><span class="p">.</span><span class="nx">_w</span> <span class="o">=</span> <span class="nx">c1</span> <span class="o">*</span> <span class="nx">c2</span> <span class="o">*</span> <span class="nx">c3</span> <span class="o">+</span> <span class="nx">s1</span> <span class="o">*</span> <span class="nx">s2</span> <span class="o">*</span> <span class="nx">s3</span><span class="p">;</span>
+    
+    		<span class="p">}</span>
+    
+    		<span class="k">if</span> <span class="p">(</span> <span class="nx">update</span> <span class="o">!==</span> <span class="kc">false</span> <span class="p">)</span> <span class="k">this</span><span class="p">.</span><span class="nx">onChangeCallback</span><span class="p">();</span>
+    
+    		<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    
+    
+    	<span class="p">},</span>
+
+</code></pre>
+</div>
+
+<h3 id="geometry-rotatex方法"><code class="highlighter-rouge">Geometry</code> <code class="highlighter-rouge">rotateX</code>方法</h3>
+
+<p>通过源码我们可以发现该方法使用的是矩阵变换的方式来旋转物体。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+	<span class="nl">rotateX</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+
+		<span class="c1">// rotate geometry around world x-axis</span>
+
+		<span class="kd">var</span> <span class="nx">m1</span><span class="p">;</span>
+
+		<span class="k">return</span> <span class="kd">function</span> <span class="nx">rotateX</span><span class="p">(</span> <span class="nx">angle</span> <span class="p">)</span> <span class="p">{</span>
+
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">m1</span> <span class="o">===</span> <span class="kc">undefined</span> <span class="p">)</span> <span class="nx">m1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Matrix4</span><span class="p">();</span>
+
+			<span class="nx">m1</span><span class="p">.</span><span class="nx">makeRotationX</span><span class="p">(</span> <span class="nx">angle</span> <span class="p">);</span>
+
+			<span class="k">this</span><span class="p">.</span><span class="nx">applyMatrix</span><span class="p">(</span> <span class="nx">m1</span> <span class="p">);</span>
+
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+
+		<span class="p">};</span>
+
+	<span class="p">}(),</span>
+
+	<span class="nx">makeRotationX</span><span class="err">:</span> <span class="kd">function</span> <span class="p">(</span> <span class="nx">theta</span> <span class="p">)</span> <span class="p">{</span>
+
+		<span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">cos</span><span class="p">(</span> <span class="nx">theta</span> <span class="p">),</span> <span class="nx">s</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span> <span class="nx">theta</span> <span class="p">);</span>
+
+		<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span>
+
+			<span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+			<span class="mi">0</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="o">-</span> <span class="nx">s</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+			<span class="mi">0</span><span class="p">,</span> <span class="nx">s</span><span class="p">,</span>  <span class="nx">c</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+			<span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+
+		<span class="p">);</span>
+
+		<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+
+	<span class="p">},</span>
+
+</code></pre>
+</div>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/11/08/Unity-3d-Update/">Unity 3d 几种Update</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/11/20/htc-vive-teleportation-system/">htc vive 抛物线指针的传送系统</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/11/13/three-js-rotate/" data-title="three.js 中的矩阵变换及两种旋转表达方式" data-url="http://localhost:4000/2016/11/13/three-js-rotate/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

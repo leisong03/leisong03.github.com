@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Pointer Lock API</title>
+    <meta name="description" content="Pointer Lock API 提供了基于鼠标移动随着时间的增量。是3D游戏最常见的方式，你可以通过鼠标来控制视角，消除了在一个方向上的移动限制。">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/09/03/pointer-lock-api/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>Pointer Lock API</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-09-03
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#JavaScript" title="Tag: JavaScript" rel="tag">JavaScript</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#基本概念" id="markdown-toc-基本概念">基本概念</a></li>
+  <li><a href="#functionproperties" id="markdown-toc-functionproperties">Function/Properties</a>    <ul>
+      <li><a href="#requestpointerlock" id="markdown-toc-requestpointerlock">requestPointerLock()</a></li>
+      <li><a href="#pointerlockelementexitpointerlock" id="markdown-toc-pointerlockelementexitpointerlock">pointerLockElement/exitPointerLock()</a></li>
+      <li><a href="#pointerlockchange" id="markdown-toc-pointerlockchange">pointerlockchange</a></li>
+      <li><a href="#pointerlockerror" id="markdown-toc-pointerlockerror">pointerlockerror</a></li>
+      <li><a href="#鼠标事件扩展" id="markdown-toc-鼠标事件扩展">鼠标事件扩展</a></li>
+      <li><a href="#锁定状态" id="markdown-toc-锁定状态">锁定状态</a></li>
+      <li><a href="#未锁定状态" id="markdown-toc-未锁定状态">未锁定状态</a></li>
+      <li><a href="#iframe-的限制" id="markdown-toc-iframe-的限制">iframe 的限制</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>Pointer Lock API 提供了基于鼠标移动随着时间的增量。
+是3D游戏最常见的方式，你可以通过鼠标来控制视角，消除了在一个方向上的移动限制。</p>
+
+<h2 id="基本概念">基本概念</h2>
+
+<p>指针锁定和 鼠标捕获有关。鼠标获指的是当鼠标拖动的时候持续发送事件，但是当鼠标按钮被放开时它就会停止。
+指针锁定相较鼠标捕获在以下方面有所不同：</p>
+
+<ul>
+  <li>持久性。指针锁定不会释放鼠标，直到有一个明确的 API 调用或是用户使用一个专门的释放方法。</li>
+  <li>不局限于浏览器或者屏幕边界。</li>
+  <li>持续发送事件，而不管鼠标按钮状态。</li>
+  <li>隐藏光标。</li>
+</ul>
+
+<h2 id="functionproperties">Function/Properties</h2>
+
+<h3 id="requestpointerlock">requestPointerLock()</h3>
+
+<p>Pointer Lock API 通过添加一个新方法扩展了 <code class="highlighter-rouge">dom</code>元素 <code class="highlighter-rouge">requestPointerLock()</code></p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="nx">element</span><span class="p">.</span><span class="nx">requestPointerLock</span> <span class="o">=</span> <span class="nx">element</span><span class="p">.</span><span class="nx">requestPointerLock</span> <span class="o">||</span> <span class="nx">element</span><span class="p">.</span><span class="nx">mozRequestPointerLock</span> <span class="o">||</span> <span class="nx">element</span><span class="p">.</span><span class="nx">webkitRequestPointerLock</span><span class="p">;</span>
+    
+    <span class="nx">element</span><span class="p">.</span><span class="nx">requestPointerLock</span><span class="p">();</span>
+    
+</code></pre>
+</div>
+
+<p>目前<code class="highlighter-rouge">requestPointerLock()</code>的实现和<code class="highlighter-rouge">requestFullScreen</code>以及<code class="highlighter-rouge">Fullscreen API</code>紧紧地绑在一起的。
+保证在指针锁定之前进入了全屏模式。锁定指针的过程是异步。
+使用<code class="highlighter-rouge">pointerlockchange</code>和<code class="highlighter-rouge">pointerlockerror</code>事件表示请求成功或是失败了。</p>
+
+<h3 id="pointerlockelementexitpointerlock">pointerLockElement/exitPointerLock()</h3>
+
+<p>Pointer Lock API 也扩展了 <code class="highlighter-rouge">Document</code>接口，添加了新的属性和方法。</p>
+
+<p>新的属性被用来访问当前绑定的元素，并将元素命名为<code class="highlighter-rouge">pointerLockElement</code></p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">pointerLockElement</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">pointerLockElement</span> <span class="o">||</span> <span class="nb">document</span><span class="p">.</span><span class="nx">mozPointerLockElement</span> <span class="o">||</span> <span class="nb">document</span><span class="p">.</span><span class="nx">webkitPointerLockElement</span><span class="p">;</span>
+    
+    <span class="mi">1</span><span class="p">.</span><span class="nx">pointerLockElement</span><span class="err">可以用来确定是否有被指针锁定的元素</span>
+    
+    <span class="k">if</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">pointerLockElement</span><span class="p">){</span>
+    
+       <span class="p">}</span><span class="k">else</span> <span class="p">{</span>
+    
+    <span class="p">}</span>
+    
+    <span class="mi">2</span><span class="p">.</span><span class="nx">pointerLockElement</span><span class="err">用来获取被指针锁定的元素</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">pointerLockElement</span> <span class="o">===</span> <span class="nx">someElement</span><span class="p">)</span> <span class="p">{</span>
+ 
+       <span class="p">}</span>
+    
+    
+</code></pre>
+</div>
+
+<p>新的方法用来退出指针锁定</p>
+
+<p>和<code class="highlighter-rouge">requestPointerLock()</code>一样也是异步的，使用<code class="highlighter-rouge">pointerlockchange</code> 和 <code class="highlighter-rouge">pointerlockerror</code>事件表示请求成功或是失败了。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">exitPointerLock</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">exitPointerLock</span> <span class="o">||</span> <span class="nb">document</span><span class="p">.</span><span class="nx">mozExitPointerLock</span> <span class="o">||</span> <span class="nb">document</span><span class="p">.</span><span class="nx">webkitExitPointerLock</span><span class="p">;</span>
+    
+    <span class="nb">document</span><span class="p">.</span><span class="nx">exitPointerLock</span><span class="p">();</span>
+    
+</code></pre>
+</div>
+
+<h3 id="pointerlockchange">pointerlockchange</h3>
+
+<p>当指针状态发生变化的时候。如<code class="highlighter-rouge">requestPointerLock()</code>，<code class="highlighter-rouge">exitPointerLock()</code>时会触发<code class="highlighter-rouge">pointerlockchange</code>事件。这是一个简单事件所以不包含任何的额外数据。</p>
+
+<ul>
+  <li><code class="highlighter-rouge">Chrome</code>：<code class="highlighter-rouge">webkitpointerlockchange</code></li>
+  <li><code class="highlighter-rouge">Firefox</code>：<code class="highlighter-rouge">mozpointerlockchange</code></li>
+</ul>
+
+<h3 id="pointerlockerror">pointerlockerror</h3>
+
+<p>当存在因调用错误<code class="highlighter-rouge">requestPointerLock()</code>或者<code class="highlighter-rouge">exitPointerLock()</code>，会触发<code class="highlighter-rouge">pointerlockchange</code>事件。这是一个简单事件所以不包含任何的额外数据。</p>
+
+<ul>
+  <li><code class="highlighter-rouge">Chrome</code>：<code class="highlighter-rouge">webkitpointerlockerror</code></li>
+  <li><code class="highlighter-rouge">Firefox</code>：<code class="highlighter-rouge">mozpointerlockerror</code></li>
+</ul>
+
+<h3 id="鼠标事件扩展">鼠标事件扩展</h3>
+
+<p><code class="highlighter-rouge">Pointer lock API</code> 使用 <code class="highlighter-rouge">movement</code> 属性扩展了标准的<code class="highlighter-rouge">MouseEvent</code>。</p>
+
+<p><code class="highlighter-rouge"> movementX</code>、<code class="highlighter-rouge"> movementY</code>提供了鼠标在<code class="highlighter-rouge">X</code>和<code class="highlighter-rouge">Y</code>轴位置变化</p>
+
+<h3 id="锁定状态">锁定状态</h3>
+
+<p>当指针锁定被启动之后，正常的 <code class="highlighter-rouge">MouseEvent</code> 属性<code class="highlighter-rouge"> clientX</code>, <code class="highlighter-rouge">clientY</code>, <code class="highlighter-rouge">screenX</code>, 和 <code class="highlighter-rouge">screenY</code> ，保持不变，就像鼠标没有在移动一样。 movementX 和 movementY 属性持续提供鼠标的位置变化。如果鼠标在一个方向上持续移动，movementX 和 movementY的值是没有限制的。不存在鼠标光标的概念，而且光标无法移到窗口之外，而且也不会被屏幕边缘所固定。</p>
+
+<h3 id="未锁定状态">未锁定状态</h3>
+
+<p>无论鼠标锁定状态是怎样的，<code class="highlighter-rouge"> movementX</code> 和 <code class="highlighter-rouge">movementY</code> 参数一直有效，并且为了方便起见，甚至在未锁定状态也是有效的。</p>
+
+<p>当鼠标被解除锁定，系统光标可以退出并重新进入浏览器窗口。如果发生这种情况，movementX 和 movementY 可能会被设置成0。</p>
+
+<h3 id="iframe-的限制">iframe 的限制</h3>
+
+<p>指针锁定一次只能锁定一个 iframe。如果你锁定了一个 iframe，你不能试图锁定另外一个 iframe 然后把目标转移到这个 iframe 上；指针锁定将会出错。为了避免这一问题，首先解锁那个锁定的 iframe，然后再锁定另外一个。</p>
+
+<p>在<code class="highlighter-rouge"> iframe</code> 默认的情况下， <code class="highlighter-rouge">sandboxed</code> iframes 会阻止指针锁定。避免这种限制的能力，即以属性/值 <code class="highlighter-rouge">&lt;iframe sandbox="allow-pointer-lock"&gt;</code> 组合的形式 , 有望很快在 Chrome 中出现。</p>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/09/01/use-maven-download-jar/">使用Maven下载依赖包及使用Nexus搭建私服</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/09/04/javaScript-expressions/">JavaScript 正则表达式</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/09/03/pointer-lock-api/" data-title="Pointer Lock API" data-url="http://localhost:4000/2016/09/03/pointer-lock-api/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript-timedChunk</title>
+    <style>
+        body {
+
+            font-family: "Microsoft YaHei";
+        }
+
+        .timeList {
+            width: 300px;
+            margin-left: 20px;
+            float: left;
+        }
+
+        #List {
+            width: 100%;
+            list-style: none;
+        }
+
+        #List li, .btnList li {
+            width: 100%;
+            height: 30px;
+            line-height: 30px;
+            cursor: pointer;
+        }
+
+        #List li:nth-child(odd) {
+            background: #4d6dad;
+        }
+
+        #List li:nth-child(even) {
+            background: #4d90fe;
+        }
+
+        .btnList {
+            list-style: none;
+            float: left;
+            margin-left: 150px;
+        }
+
+        .btnList li {
+            margin-top: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 150px;
+            text-align: center;
+            border: 2px solid #00bcd4;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="timeList">
+    <ul id="List">
+        <li>List</li>
+    </ul>
+
+</div>
+<ul class="btnList">
+    <li>
+        <div class="btn" id="usual" title="常规加载">usual</div>
+        <span id="u_p">ms</span></li>
+    <li>
+        <div class="btn" id="Chunk" title="Chunk加载 谨点！！！久到离谱">Chunk</div>
+        <span id="c_p">ms</span></li>
+    <li>
+        <div class="btn" id="timedChunk" title="timedChunk加载">timedChunk</div>
+        <span id="t_p">ms</span></li>
+</ul>
+</body>
+<script>
+    window.onload = function () {
+
+        var items = [];
+
+        var usual = document.getElementById("usual");
+        var chunk = document.getElementById("Chunk");
+        var timed = document.getElementById("timedChunk");
+        var list = document.getElementById("List");
+
+        for (var i = 0; i < 10000; i++) {
+            items.push("" + i + "");
+        }
+
+
+        usual.addEventListener("click", StartUsual, false);
+        chunk.addEventListener("click", StartChunk, false);
+        timed.addEventListener("click", StartTimedChunk, false);
+
+        // 操作函数
+        function AddItem(data) {
+            var Li = document.createElement('li');
+            Li.innerHTML = data;
+            // 增加额外操作
+            console.log(data);
+            list.appendChild(Li);
+        }
+
+        //常规加载
+
+        function StartUsual() {
+
+            list.innerHTML = "";
+            var start = +new Date(), end;
+
+            for (var i = 0; i < items.length; i++) {
+
+                AddItem(items[i]);
+            }
+            end = +new Date();
+
+            var u_p = document.getElementById("u_p");
+            u_p.innerHTML = "" + end - start + "ms";
+        }
+
+        function StartChunk() {
+            list.innerHTML = "";
+            var start = +new Date(), end;
+
+            Chunk(items, AddItem, null, function () {
+
+                end = +new Date();
+
+                var c_p = document.getElementById("c_p");
+                c_p.innerHTML = "" + end - start + "ms";
+            });
+        }
+
+        function StartTimedChunk() {
+
+            list.innerHTML = "";
+            var start = +new Date(), end;
+
+            TimedChunk(items, AddItem, null, function () {
+
+                end = +new Date();
+
+                var t_p = document.getElementById("t_p");
+                t_p.innerHTML = "" + end - start + "ms";
+            });
+        }
+
+        // 分时加载算法
+
+        function Chunk(array, process, context, callback) {
+            var items = array.concat();   //clone the array
+            setTimeout(function () {
+                var item = items.shift();
+                process.call(context, item);
+
+                if (items.length > 0) {
+                    setTimeout(arguments.callee, 25);
+                } else {
+                    callback(items);
+                }
+            }, 25);
+        }
+
+        // 分时加载算法(改进版)
+
+        //Copyright 2009 Nicholas C. Zakas. All rights reserved.
+        //MIT Licensed
+        function TimedChunk(items, process, context, callback) {
+
+            var todo = items.concat();
+
+            setTimeout(function () {
+
+                var start = +new Date();
+
+                do {
+                    process.call(context, todo.shift());
+                } while (todo.length > 0 && (+new Date() - start < 50));
+
+
+                if (todo.length > 0) {
+                    setTimeout(arguments.callee, 25);
+                } else {
+                    callback(items);
+                }
+            }, 25);
+        }
+
+
+    }
+
+
+</script>
+</html>

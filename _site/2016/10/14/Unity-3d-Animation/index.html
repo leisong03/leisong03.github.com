@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Unity3d 动画系统</title>
+    <meta name="description" content="Unity3d学习笔记 本篇简单介绍Unity3d中的动画系统及其使用。">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/10/14/Unity-3d-Animation/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>Unity3d 动画系统</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-10-14
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#Unity3d" title="Tag: Unity3d" rel="tag">Unity3d</a>&nbsp;
+    
+        <a href="/tag/#C#" title="Tag: C#" rel="tag">C#</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#模型导入" id="markdown-toc-模型导入">模型导入</a>    <ul>
+      <li><a href="#新版动画系统" id="markdown-toc-新版动画系统">新版动画系统</a></li>
+      <li><a href="#旧版动画系统" id="markdown-toc-旧版动画系统">旧版动画系统</a></li>
+    </ul>
+  </li>
+  <li><a href="#动画导入" id="markdown-toc-动画导入">动画导入</a></li>
+  <li><a href="#动画的播放和使用" id="markdown-toc-动画的播放和使用">动画的播放和使用</a>    <ul>
+      <li><a href="#animator" id="markdown-toc-animator">Animator</a></li>
+      <li><a href="#animation" id="markdown-toc-animation">Animation</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p><code class="highlighter-rouge">Unity3d</code>学习笔记 本篇简单介绍<code class="highlighter-rouge">Unity3d</code>中的动画系统及其使用。</p>
+
+<h2 id="模型导入">模型导入</h2>
+
+<blockquote>
+  <p>以带动画的<code class="highlighter-rouge">FBX</code>文件为例，<code class="highlighter-rouge">unity</code>版本为<code class="highlighter-rouge">5.0</code>以上版本。</p>
+</blockquote>
+
+<h3 id="新版动画系统">新版动画系统</h3>
+
+<p>当你导入<code class="highlighter-rouge">FBX</code>文件后，会发现模型具有一个<code class="highlighter-rouge">Animator</code>(状态机)组件。</p>
+
+<p><img src="http://ww4.sinaimg.cn/mw690/c584f169gw1f8taf5py8xj20970b4q3k.jpg" alt="outPut" /></p>
+
+<p>我们一般将它成为（新）动画系统，新动画系统和旧版的动画系统（<code class="highlighter-rouge">unity3d 4.3</code>之前版本）的区别就在于使用了<code class="highlighter-rouge">Animator</code>组件代替了原来的<code class="highlighter-rouge">Animation</code>。</p>
+
+<h3 id="旧版动画系统">旧版动画系统</h3>
+
+<p>同理当你使用的是旧版的动画系统就会发现是<code class="highlighter-rouge">Animation</code>组件。</p>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/c584f169gw1f8taf6qo3vj20960b43zb.jpg" alt="outPut" /></p>
+
+<p>在高版本的unity3d你可以通过设置模型的<code class="highlighter-rouge">Rig</code>选项设置动画的类型。</p>
+
+<p>参数 <code class="highlighter-rouge">Animation type</code></p>
+
+<ul>
+  <li><code class="highlighter-rouge">Legacy</code>： 旧版本的动画</li>
+  <li><code class="highlighter-rouge">Generic</code>： 通用的动画</li>
+  <li><code class="highlighter-rouge">Humanoid</code>： 类人动画</li>
+</ul>
+
+<p><img src="http://ww3.sinaimg.cn/mw690/c584f169gw1f8taf4saovj20970b3q3d.jpg" alt="outPut" /></p>
+
+<h2 id="动画导入">动画导入</h2>
+
+<ul>
+  <li>动画分割 <code class="highlighter-rouge">Animation Clips</code></li>
+</ul>
+
+<p>你可以将动画分割成若干个独立的动画。</p>
+
+<p>参数 <code class="highlighter-rouge">Loop Time</code> :是否循环播放。</p>
+
+<p><img src="http://ww4.sinaimg.cn/mw690/c584f169gw1f8taf31h86j20990ewmy2.jpg" alt="outPut" /></p>
+
+<ul>
+  <li>多个模型文件</li>
+</ul>
+
+<p>你也可以使用多个模型文件导入动画，命名约定——<code class="highlighter-rouge">"模型名称"@"动画名称".fbx</code></p>
+
+<p>如： <code class="highlighter-rouge">test.fbx</code> ,<code class="highlighter-rouge">test@idle.fbx</code> ,<code class="highlighter-rouge">test@move.fbx</code></p>
+
+<h2 id="动画的播放和使用">动画的播放和使用</h2>
+
+<h3 id="animator">Animator</h3>
+
+<p>你需要在项目中新建一个<code class="highlighter-rouge">Animator Controller</code>来控制动画的播放。
+然后双击切换到<code class="highlighter-rouge">Animator</code>视图</p>
+
+<p>你会发现有三个默认状态</p>
+
+<ul>
+  <li>
+    <p><code class="highlighter-rouge">Entry</code>: Animator的入口</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">Any State</code>：任意的状态</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">Exit</code>： 退出状态</p>
+  </li>
+</ul>
+
+<p>我们添加两个状态用来表示两个分别不同的动画，分别名为<code class="highlighter-rouge">idle</code>和<code class="highlighter-rouge">move</code>。</p>
+
+<p><code class="highlighter-rouge">idle</code>和<code class="highlighter-rouge">Entry</code>状态连接表示<code class="highlighter-rouge">Animator</code>进来执行该动画，点击状态在<code class="highlighter-rouge">motion</code>选择要执行的动画。
+一般入口状态为idle 动画，用来表示模型闲置的状态。</p>
+
+<p>再将idle状态和move状态连接，箭头指向move，表示从闲置状态开始运动。
+将move状态和idle状态连接，箭头指向idle，表示从运动状态转为闲置状态。</p>
+
+<p><img src="http://ww2.sinaimg.cn/mw690/c584f169gw1f8taf84trdj20tz0a9tag.jpg" alt="outPut" /></p>
+
+<p>动画的<code class="highlighter-rouge">Animator</code>（状态机）配置好了，我们需要添加一些参数来作为<code class="highlighter-rouge">Animator</code>在各个状态之间切换的条件。</p>
+
+<p>在左上角的<code class="highlighter-rouge">Prameters</code>中添加两个<code class="highlighter-rouge">bool</code>变量，分别表示模型闲置和移动两种状态。</p>
+
+<p><code class="highlighter-rouge">Prameters</code>参数类型：</p>
+
+<ul>
+  <li>
+    <p><code class="highlighter-rouge">Float</code>：float类型的参数，多用于控制状态机内部的浮点型参数。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">Int</code>：int类型的参数，多用于控制状态机内部的整型参数。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">Bool</code>：bool类型参数，多用于状态切换。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">Trigger</code>：本质上也是一个bool类型的参数，但是其值默认为false，且设置为true后系统会自动将其还原为false。</p>
+  </li>
+</ul>
+
+<p>设置 <code class="highlighter-rouge">Idling ：true  Moving : false </code></p>
+
+<p>点击箭头，为状态的转换切换条件</p>
+
+<p>参数 <code class="highlighter-rouge">Has Exit Time</code>：表示在动画播放完才会切换到下一动画。</p>
+
+<p><img src="http://ww2.sinaimg.cn/mw690/c584f169gw1f8tahwfw92j20u10a5gnh.jpg" alt="outPut" /></p>
+
+<p>最后使用代码控制动画：</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="nx">using</span> <span class="nx">UnityEngine</span><span class="p">;</span>
+<span class="nx">using</span> <span class="nx">System</span><span class="p">.</span><span class="nx">Collections</span><span class="p">;</span>
+
+<span class="kr">public</span> <span class="kr">class</span> <span class="nx">test</span> <span class="err">:</span> <span class="nx">MonoBehaviour</span> <span class="p">{</span>
+
+	<span class="kr">private</span> <span class="nx">Animator</span> <span class="nx">_animator</span><span class="p">;</span>
+	
+	<span class="k">void</span> <span class="nx">Start</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="nx">_animator</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">GetComponent</span><span class="o">&lt;</span><span class="nx">Animator</span><span class="o">&gt;</span><span class="p">();</span>
+	<span class="p">}</span>
+	
+	<span class="k">void</span> <span class="nx">Update</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span> <span class="nx">Input</span><span class="p">.</span><span class="nx">GetKeyDown</span><span class="p">(</span><span class="s2">"q"</span><span class="p">)</span> <span class="p">)</span>
+		<span class="p">{</span>
+			<span class="nx">_animator</span><span class="p">.</span><span class="nx">SetBool</span> <span class="p">(</span><span class="s2">"Idling"</span><span class="p">,</span><span class="kc">false</span><span class="p">);</span>
+			<span class="nx">_animator</span><span class="p">.</span><span class="nx">SetBool</span> <span class="p">(</span><span class="s2">"Moving"</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">if</span><span class="p">(</span> <span class="nx">Input</span><span class="p">.</span><span class="nx">GetKeyDown</span><span class="p">(</span><span class="s2">"w"</span><span class="p">)</span> <span class="p">)</span>
+		<span class="p">{</span>
+			<span class="nx">_animator</span><span class="p">.</span><span class="nx">SetBool</span> <span class="p">(</span><span class="s2">"Idling"</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span>
+			<span class="nx">_animator</span><span class="p">.</span><span class="nx">SetBool</span> <span class="p">(</span><span class="s2">"Moving"</span><span class="p">,</span><span class="kc">false</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+
+
+</code></pre>
+</div>
+
+<h3 id="animation">Animation</h3>
+
+<p>你可以通过 <code class="highlighter-rouge">play Automatically</code>选择是否自动播放或是</p>
+
+<p>代码控制：</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="nx">using</span> <span class="nx">UnityEngine</span><span class="p">;</span>
+<span class="nx">using</span> <span class="nx">System</span><span class="p">.</span><span class="nx">Collections</span><span class="p">;</span>
+
+<span class="kr">public</span> <span class="kr">class</span> <span class="nx">test</span> <span class="err">:</span> <span class="nx">MonoBehaviour</span> <span class="p">{</span>
+
+		
+	<span class="nx">Animation</span> <span class="nx">_animation</span><span class="p">;</span>
+		
+		<span class="k">void</span> <span class="nx">Start</span><span class="p">()</span> <span class="p">{</span>
+			
+		<span class="nx">_animation</span> <span class="o">=</span> <span class="nx">GetComponent</span><span class="o">&lt;</span><span class="nx">Animation</span><span class="o">&gt;</span><span class="p">();</span>
+
+
+		<span class="p">}</span>
+
+	<span class="k">void</span> <span class="nx">Update</span><span class="p">(){</span>
+		
+		<span class="k">if</span><span class="p">(</span> <span class="nx">Input</span><span class="p">.</span><span class="nx">GetKeyDown</span><span class="p">(</span><span class="s2">"q"</span><span class="p">)</span> <span class="p">)</span>
+		<span class="p">{</span>
+			<span class="nx">_animation</span><span class="p">.</span><span class="nx">Play</span><span class="p">(</span><span class="s2">"Take 001"</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">if</span><span class="p">(</span> <span class="nx">Input</span><span class="p">.</span><span class="nx">GetKeyDown</span><span class="p">(</span><span class="s2">"w"</span><span class="p">)</span> <span class="p">)</span>
+		<span class="p">{</span>
+			<span class="nx">_animation</span><span class="p">.</span><span class="nx">Play</span><span class="p">(</span><span class="s2">"Take 0010"</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+		
+<span class="p">}</span>
+
+
+
+</code></pre>
+</div>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/10/12/Unity-3d-Final-IK/">Unity3d Final IK 插件的使用</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/10/28/3d-Max-basic/">3dMax 基础概念和基本操作</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/10/14/Unity-3d-Animation/" data-title="Unity3d 动画系统" data-url="http://localhost:4000/2016/10/14/Unity-3d-Animation/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

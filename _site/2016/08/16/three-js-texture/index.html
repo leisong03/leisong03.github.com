@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>three.js-texture</title>
+    <meta name="description" content="Three.js学习笔记 本篇介绍纹理的使用。">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/08/16/three-js-texture/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>three.js-texture</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-08-16
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#three.js" title="Tag: three.js" rel="tag">three.js</a>&nbsp;
+    
+        <a href="/tag/#javaScript" title="Tag: javaScript" rel="tag">javaScript</a>&nbsp;
+    
+        <a href="/tag/#WebGL" title="Tag: WebGL" rel="tag">WebGL</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#纹理" id="markdown-toc-纹理">纹理</a>    <ul>
+      <li><a href="#凹凸贴图" id="markdown-toc-凹凸贴图">凹凸贴图</a></li>
+      <li><a href="#法向贴图" id="markdown-toc-法向贴图">法向贴图</a></li>
+      <li><a href="#光照贴图" id="markdown-toc-光照贴图">光照贴图</a></li>
+      <li><a href="#other" id="markdown-toc-other">other</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>Three.js学习笔记 本篇介绍纹理的使用。</p>
+
+<h2 id="纹理">纹理</h2>
+
+<p>我们可以在材质中加载纹理，在<code class="highlighter-rouge">Material</code>的<code class="highlighter-rouge">map</code>属性中。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>    
+    <span class="c1">// 新建 Texture 加载器</span>
+    <span class="kd">var</span> <span class="nx">loader</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">TextureLoader</span><span class="p">();</span>
+
+	<span class="kd">var</span> <span class="nx">texture</span> <span class="o">=</span> <span class="nx">loader</span><span class="p">.</span><span class="nx">load</span><span class="p">(</span><span class="s2">"img/text.png"</span><span class="p">);</span>
+
+	<span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">({</span>
+					<span class="na">color</span><span class="p">:</span> <span class="mh">0xff0000</span><span class="p">,</span>
+					<span class="na">map</span><span class="p">:</span> <span class="nx">texture</span>
+				<span class="p">});</span>
+
+</code></pre>
+</div>
+
+<p>前面用到的<code class="highlighter-rouge">THREE.ImageUtils.loadTexture</code> 已经被摒弃。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="kd">var</span> <span class="nx">texture</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">ImageUtils</span><span class="p">.</span><span class="nx">loadTexture</span><span class="p">(</span><span class="s2">"img/text.png"</span><span class="p">);</span>
+                
+				<span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">({</span>
+					<span class="na">color</span><span class="p">:</span> <span class="mh">0x4d6dad</span><span class="p">,</span>
+					<span class="na">map</span><span class="p">:</span> <span class="nx">texture</span>
+				<span class="p">});</span>
+				
+</code></pre>
+</div>
+
+<p>纹理的加载时异步的，所以需要注意。支持<code class="highlighter-rouge">PNG</code>、<code class="highlighter-rouge">GIF</code>或<code class="highlighter-rouge">JPEG</code>输入格式。
+最好使用正方形图片，保证长宽都是2的次方大小。</p>
+
+<h3 id="凹凸贴图">凹凸贴图</h3>
+
+<p>凹凸贴图是一张灰度图，上面有像素的相对高度，可以用来增加材质的高度。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+	<span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">({</span>
+					<span class="na">color</span><span class="p">:</span> <span class="mh">0xff0000</span><span class="p">,</span>
+					<span class="na">bumpMap</span><span class="p">:</span> <span class="nx">texture</span>
+				<span class="p">});</span>
+
+</code></pre>
+</div>
+
+<h3 id="法向贴图">法向贴图</h3>
+
+<p>法向贴图保存了像素的法向向量，可以使材质具有更加细致的凹凸和皱纹。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+	<span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">({</span>
+					<span class="na">color</span><span class="p">:</span> <span class="mh">0xff0000</span><span class="p">,</span>
+					<span class="na">normalMap</span><span class="p">:</span> <span class="nx">texture</span>
+				<span class="p">});</span>
+
+</code></pre>
+</div>
+
+<h3 id="光照贴图">光照贴图</h3>
+
+<p>光照贴图是提前渲染好的阴影图片。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+	<span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">({</span>
+					<span class="na">color</span><span class="p">:</span> <span class="mh">0xff0000</span><span class="p">,</span>
+					<span class="na">lightMap</span><span class="p">:</span> <span class="nx">texture</span>
+				<span class="p">});</span>
+
+</code></pre>
+</div>
+
+<h3 id="other">other</h3>
+
+<p>罗列这些是极为麻烦的，所以
+<em>learn more from <code class="highlighter-rouge">http://threejs.org/</code></em></p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/08/16/three-js-particle/">three.js-particle</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/08/21/javaScript-async-load-in-loop/">JavaScript 循环中异步加载问题</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/08/16/three-js-texture/" data-title="three.js-texture" data-url="http://localhost:4000/2016/08/16/three-js-texture/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

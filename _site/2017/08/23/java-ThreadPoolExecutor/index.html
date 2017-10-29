@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> Java ThreadPoolExecutor</title>
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2017/08/23/java-ThreadPoolExecutor/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1> Java ThreadPoolExecutor</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2017-08-23
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#Java" title="Tag: Java" rel="tag">Java</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#threadpoolexecutor" id="markdown-toc-threadpoolexecutor"><code class="highlighter-rouge">ThreadPoolExecutor</code></a>    <ul>
+      <li><a href="#threadpoolexecutor参数" id="markdown-toc-threadpoolexecutor参数"><code class="highlighter-rouge">ThreadPoolExecutor</code>参数</a></li>
+      <li><a href="#线程池配置方案" id="markdown-toc-线程池配置方案">线程池配置方案</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>本篇简单介绍<code class="highlighter-rouge">Java</code>中的<code class="highlighter-rouge">ThreadPoolExecutor</code>。</p>
+
+<h2 id="threadpoolexecutor"><code class="highlighter-rouge">ThreadPoolExecutor</code></h2>
+
+<p><code class="highlighter-rouge">ThreadPoolExecutor</code>作为<code class="highlighter-rouge">java.util.concurrent</code>包对外提供基础实现，以内部线程池的形式对外提供管理任务执行，线程调度，线程池管理等服务。</p>
+
+<blockquote>
+  <p>使用线程池的好处是减少在创建和销毁过程上所花的时间以及系统资源开销，解决资源不足的问题。如果不是用线程池，有可能造成系统创建大量的同类线程而导致消耗完内存或者“切换过度”的问题。<code class="highlighter-rouge">From 阿里编程规范</code></p>
+</blockquote>
+
+<p><code class="highlighter-rouge">ThreadPoolExecutor</code> 构造函数：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="o">*</span> <span class="kd">public</span> <span class="nf">ThreadPoolExecutor</span><span class="o">(</span><span class="kt">int</span> <span class="n">corePoolSize</span><span class="o">,</span>
+                            <span class="kt">int</span> <span class="n">maximumPoolSize</span><span class="o">,</span>
+                            <span class="kt">long</span> <span class="n">keepAliveTime</span><span class="o">,</span>
+                            <span class="n">TimeUnit</span> <span class="n">unit</span><span class="o">,</span>
+                            <span class="n">BlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span> <span class="n">workQueue</span><span class="o">)</span>
+							
+<span class="o">*</span> <span class="kd">public</span> <span class="nf">ThreadPoolExecutor</span><span class="o">(</span><span class="kt">int</span> <span class="n">corePoolSize</span><span class="o">,</span>
+                            <span class="kt">int</span> <span class="n">maximumPoolSize</span><span class="o">,</span>
+                            <span class="kt">long</span> <span class="n">keepAliveTime</span><span class="o">,</span> 
+                            <span class="n">TimeUnit</span> <span class="n">unit</span><span class="o">,</span> 
+                            <span class="n">BlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span> <span class="n">workQueue</span><span class="o">,</span> 
+                            <span class="n">ThreadFactory</span> <span class="n">threadFactory</span><span class="o">)</span>
+
+<span class="o">*</span> <span class="kd">public</span> <span class="nf">ThreadPoolExecutor</span><span class="o">(</span><span class="kt">int</span> <span class="n">corePoolSize</span><span class="o">,</span>
+                            <span class="kt">int</span> <span class="n">maximumPoolSize</span><span class="o">,</span>
+                            <span class="kt">long</span> <span class="n">keepAliveTime</span><span class="o">,</span>
+                            <span class="n">TimeUnit</span> <span class="n">unit</span><span class="o">,</span>
+                            <span class="n">BlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span> <span class="n">workQueue</span><span class="o">,</span>
+                            <span class="n">RejectedExecutionHandler</span> <span class="n">handler</span><span class="o">)</span>
+							
+<span class="o">*</span> <span class="kd">public</span> <span class="nf">ThreadPoolExecutor</span><span class="o">(</span><span class="kt">int</span> <span class="n">corePoolSize</span><span class="o">,</span> 
+                            <span class="kt">int</span> <span class="n">maximumPoolSize</span><span class="o">,</span> 
+                            <span class="kt">long</span> <span class="n">keepAliveTime</span><span class="o">,</span> 
+                            <span class="n">TimeUnit</span> <span class="n">unit</span><span class="o">,</span> 
+                            <span class="n">BlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span> <span class="n">workQueue</span><span class="o">,</span> 
+                            <span class="n">ThreadFactory</span> <span class="n">threadFactory</span><span class="o">,</span> 
+                            <span class="n">RejectedExecutionHandler</span> <span class="n">handler</span><span class="o">)</span>
+
+</code></pre>
+</div>
+
+<h3 id="threadpoolexecutor参数"><code class="highlighter-rouge">ThreadPoolExecutor</code>参数</h3>
+
+<ul>
+  <li>
+    <p><strong>int corePoolSize</strong> ：核心线程池大小</p>
+  </li>
+  <li>
+    <p><strong>int maximumPoolSize</strong> ：最大线程池大小</p>
+  </li>
+  <li>
+    <p><strong>long keepAliveTime</strong> ：线程池中超过corePoolSize数目的空闲线程最大存活时间，可以allowCoreThreadTimeOut(true)使得核心线程有效时间</p>
+  </li>
+  <li>
+    <p><strong>TimeUnit unit</strong> ：keepAliveTime时间单位</p>
+  </li>
+  <li>
+    <p><strong>BlockingQueue workQueue</strong> ：阻塞任务队列</p>
+
+    <p>注：BlockingQueue 都可用于传输和保持提交的任务。可以使用此队列与池大小进行交互：</p>
+
+    <p>1.1 如果运行的线程少于 corePoolSize，则 Executor 始终首选添加新的线程，而不进行排队。</p>
+
+    <p>2.2 如果运行的线程等于或多于 corePoolSize，则 Executor 始终首选将请求加入队列，而不添加新的线程。</p>
+
+    <p>3.3 如果无法将请求加入队列，则创建新的线程，除非创建此线程超出 maximumPoolSize，在这种情况下，任务将被拒绝</p>
+  </li>
+  <li>
+    <p><strong>ThreadFactory threadFactory</strong> ：新建线程工厂</p>
+  </li>
+  <li>
+    <p><strong>RejectedExecutionHandler handler</strong> ：当提交任务数超过maxmumPoolSize+workQueue之和时，任务会交给RejectedExecutionHandler来处理</p>
+  </li>
+</ul>
+
+<h3 id="线程池配置方案">线程池配置方案</h3>
+
+<p>1.1 构造一个固定线程数目的线程池，配置的corePoolSize与maximumPoolSize大小相同，同时使用了一个无界LinkedBlockingQueue存放阻塞任务，因此多余的任务将存在再阻塞队列，不会由RejectedExecutionHandler处理</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="kd">public</span> <span class="kd">static</span> <span class="n">ExecutorService</span> <span class="nf">newFixedThreadPool</span><span class="o">(</span><span class="kt">int</span> <span class="n">nThreads</span><span class="o">)</span> <span class="o">{</span>  
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">ThreadPoolExecutor</span><span class="o">(</span><span class="n">nThreads</span><span class="o">,</span> <span class="n">nThreads</span><span class="o">,</span>  
+                                      <span class="mi">0L</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">,</span>  
+                                      <span class="k">new</span> <span class="n">LinkedBlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;());</span>  
+    <span class="o">}</span>  
+
+</code></pre>
+</div>
+
+<p>2.2 构造一个缓冲功能的线程池，配置corePoolSize=0，maximumPoolSize=Integer.MAX_VALUE，keepAliveTime=60s,以及一个无容量的阻塞队列 SynchronousQueue，因此任务提交之后，将会创建新的线程执行；线程空闲超过60s将会销毁</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="kd">public</span> <span class="kd">static</span> <span class="n">ExecutorService</span> <span class="nf">newCachedThreadPool</span><span class="o">()</span> <span class="o">{</span>  
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">ThreadPoolExecutor</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">Integer</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">,</span>  
+                                      <span class="mi">60L</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">,</span>  
+                                      <span class="k">new</span> <span class="n">SynchronousQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;());</span>  
+    <span class="o">}</span>  
+
+</code></pre>
+</div>
+
+<p>3.3 构造一个只支持一个线程的线程池，配置corePoolSize=maximumPoolSize=1，无界阻塞队列LinkedBlockingQueue；保证任务由一个线程串行执行</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="kd">public</span> <span class="kd">static</span> <span class="n">ExecutorService</span> <span class="nf">newSingleThreadExecutor</span><span class="o">()</span> <span class="o">{</span>  
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">FinalizableDelegatedExecutorService</span>  
+            <span class="o">(</span><span class="k">new</span> <span class="n">ThreadPoolExecutor</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span>  
+                                    <span class="mi">0L</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">,</span>  
+                                    <span class="k">new</span> <span class="n">LinkedBlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;()));</span>  
+    <span class="o">}</span>  
+
+</code></pre>
+</div>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/07/500-Data-Structures-and-Algorithms-practice/">500 Data Structures and Algorithms practice problems and their solutions
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/09/java-Executors/">java 并发库之 Executors
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/08/java-Netty-TCP/">java Netty tcp通讯
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/07/java-Semaphore/">java 并发库之 Semaphore
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/04/28/svg-to-png/">java svg转png
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/04/25/shudu-algorithm/">高效的数独算法-位运算
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2017/08/15/Android-wechat-share/"> Android wechat 分享</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2017/08/23/java-ThreadPoolExecutor/" data-title=" Java ThreadPoolExecutor" data-url="http://localhost:4000/2017/08/23/java-ThreadPoolExecutor/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

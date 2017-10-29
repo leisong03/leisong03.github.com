@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>大数组分时加载算法 timedChunk</title>
+    <meta name="description" content="本篇介绍高性能JavaScript一书作者NicholasC.Zakas提出的大数组的分时加载算法timedChunk。">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/09/28/javaScript-timedChunk/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>大数组分时加载算法 timedChunk</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-09-28
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#JavaScript" title="Tag: JavaScript" rel="tag">JavaScript</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#分时加载" id="markdown-toc-分时加载">分时加载</a>    <ul>
+      <li><a href="#chunk" id="markdown-toc-chunk">chunk()</a></li>
+      <li><a href="#timedchunk" id="markdown-toc-timedchunk">timedChunk()</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>本篇介绍<code class="highlighter-rouge">高性能JavaScript</code>一书作者<code class="highlighter-rouge">NicholasC.Zakas</code>提出的大数组的分时加载算法<code class="highlighter-rouge">timedChunk</code>。</p>
+
+<h2 id="分时加载">分时加载</h2>
+
+<p>分时加载的意义在于分批加载数据确保在数据加载完成后及时的更新UI界面确保用户体验的流畅性。</p>
+
+<h3 id="chunk">chunk()</h3>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="kd">function</span> <span class="nx">chunk</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="nx">process</span><span class="p">,</span> <span class="nx">context</span><span class="p">){</span>
+    
+    <span class="c1">//克隆数组</span>
+    <span class="kd">var</span> <span class="nx">items</span> <span class="o">=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">concat</span><span class="p">();</span>   
+    
+    <span class="c1">//延时100ms执行</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+        
+        <span class="kd">var</span> <span class="nx">item</span> <span class="o">=</span> <span class="nx">items</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span>
+        
+        <span class="c1">//执行`process`方法</span>
+        <span class="nx">process</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">item</span><span class="p">);</span>
+  
+        <span class="c1">//如果`items`数组不为空，延迟100ms(提供100ms来更新UI界面)然后回调上方的`setTimeout`函数</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">items</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+            <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">},</span> <span class="mi">100</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+
+
+</code></pre>
+</div>
+
+<p>如果该方法的数组大小为100，执行延时为100ms则总耗时长约为10000ms也就是10s。(忽略<code class="highlighter-rouge">process</code>执行的时长)
+100ms的延时意味着，你花了大部分时间来进行页面UI的更新而且执行<code class="highlighter-rouge">JavaScript</code>的时间甚至可能只是几ms或是不到<code class="highlighter-rouge">1ms</code>，而且事实上我们并不需要那么长时间。</p>
+
+<p>经过研究发现延时可以降低至25ms,25ms是避免浏览器<code class="highlighter-rouge">setTimeout</code>出现问题(IE<code class="highlighter-rouge">setTimeout</code>最小延时15ms左右,也就是说你延时设为0也会在15ms左右的时候执行)。
+但是如果你提供了25ms的延时，你要处理上面的数据仅仅大小为100的数组也需要耗时2500ms 2.5s也是很长的一段时间。</p>
+
+<h3 id="timedchunk">timedChunk()</h3>
+
+<p>所以<code class="highlighter-rouge">NicholasC.Zakas</code>改进了 <code class="highlighter-rouge">chunk()</code></p>
+
+<p><code class="highlighter-rouge">Jakob Nielsen</code>指出<code class="highlighter-rouge">JavaScript</code>代码执行时间如果超过100ms持续执行则不能实时的更新页面UI。</p>
+
+<p><code class="highlighter-rouge">NicholasC.Zakas</code>在<code class="highlighter-rouge">Jakob Nielsen</code>的基础上认为<code class="highlighter-rouge">JavaScript</code>代码执行时间不应该连续的超过50ms(可以保证流畅的更新UI界面)。</p>
+
+<p>改进算法</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="c1">//Copyright 2009 Nicholas C. Zakas. All rights reserved.</span>
+<span class="c1">//MIT Licensed</span>
+<span class="kd">function</span> <span class="nx">timedChunk</span><span class="p">(</span><span class="nx">items</span><span class="p">,</span> <span class="nx">process</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+    
+    <span class="c1">//克隆数组</span>
+    <span class="kd">var</span> <span class="nx">todo</span> <span class="o">=</span> <span class="nx">items</span><span class="p">.</span><span class="nx">concat</span><span class="p">();</span> 
+
+    <span class="c1">//延时25ms执行</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+
+        <span class="kd">var</span> <span class="nx">start</span> <span class="o">=</span> <span class="o">+</span><span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+        
+        <span class="c1">//执行50ms的`process`方法(前提数组足够大)</span>
+        <span class="k">do</span> <span class="p">{</span>
+             <span class="nx">process</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">todo</span><span class="p">.</span><span class="nx">shift</span><span class="p">());</span>
+        <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="nx">todo</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="o">+</span><span class="k">new</span> <span class="nb">Date</span><span class="p">()</span> <span class="o">-</span> <span class="nx">start</span> <span class="o">&lt;</span> <span class="mi">50</span><span class="p">));</span>
+        
+        
+        <span class="c1">//延迟25ms(提供25ms来更新UI界面)然后回调上方的`setTimeout`方法</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">todo</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+            <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">,</span> <span class="mi">25</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">callback</span><span class="p">(</span><span class="nx">items</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">},</span> <span class="mi">25</span><span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre>
+</div>
+
+<p>所以保证了<code class="highlighter-rouge">JavaScript</code>的执行时间的是50ms。
+每执行50ms<code class="highlighter-rouge">JavaScript</code>就为UI界面的更新提供了25ms的时间渲染。</p>
+
+<p>参照：</p>
+
+<p><em>https://threejs.org/examples/?q=sand#raytracing_sandbox</em></p>
+
+<p>空口白牙</p>
+
+<p><a href="https://chenjy1225.github.io/source/JavaScript-timedChunk.html">demo</a></p>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/09/27/optimize-three-js/">three.js 性能优化的几种方法</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/10/12/Unity-3d-Final-IK/">Unity3d Final IK 插件的使用</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/09/28/javaScript-timedChunk/" data-title="大数组分时加载算法 timedChunk" data-url="http://localhost:4000/2016/09/28/javaScript-timedChunk/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>three.js 性能优化的几种方法</title>
+    <meta name="description" content="本篇介绍three.js性能优化的若干方法。(个人拙见)">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/09/27/optimize-three-js/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>three.js 性能优化的几种方法</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-09-27
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#three.js" title="Tag: three.js" rel="tag">three.js</a>&nbsp;
+    
+        <a href="/tag/#JavaScript" title="Tag: JavaScript" rel="tag">JavaScript</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#threejs性能优化" id="markdown-toc-threejs性能优化"><code class="highlighter-rouge">three.js</code>性能优化</a>    <ul>
+      <li><a href="#尽量重用material和geometry" id="markdown-toc-尽量重用material和geometry">尽量重用<code class="highlighter-rouge">Material</code>和<code class="highlighter-rouge">Geometry</code></a></li>
+      <li><a href="#谨慎的在render中操作" id="markdown-toc-谨慎的在render中操作">谨慎的在<code class="highlighter-rouge">render()</code>中操作</a></li>
+      <li><a href="#选择合适的对象" id="markdown-toc-选择合适的对象">选择合适的对象</a></li>
+      <li><a href="#使用web-workers" id="markdown-toc-使用web-workers">使用<code class="highlighter-rouge">Web Workers</code></a></li>
+    </ul>
+  </li>
+  <li><a href="#分时加载" id="markdown-toc-分时加载">分时加载</a></li>
+  <li><a href="#使用自定义着色器" id="markdown-toc-使用自定义着色器">使用自定义着色器</a></li>
+</ul>
+
+<p>本篇介绍<code class="highlighter-rouge">three.js</code>性能优化的若干方法。(个人拙见)</p>
+
+<h2 id="threejs性能优化"><code class="highlighter-rouge">three.js</code>性能优化</h2>
+
+<h3 id="尽量重用material和geometry">尽量重用<code class="highlighter-rouge">Material</code>和<code class="highlighter-rouge">Geometry</code></h3>
+
+<p>这里以Material和Geometry为例（使用比较频繁）</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">();</span>
+        <span class="kd">var</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">BoxGeometry</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+
+        <span class="kd">var</span> <span class="nx">mesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span><span class="nx">geometry</span><span class="p">,</span> <span class="nx">material</span><span class="p">);</span>
+        <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">mesh</span><span class="p">);</span>
+    <span class="p">}</span>
+
+
+</code></pre>
+</div>
+
+<p>改为</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">BoxGeometry</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">mesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span><span class="nx">geometry</span><span class="p">,</span> <span class="nx">material</span><span class="p">);</span>
+        <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">mesh</span><span class="p">);</span>
+    <span class="p">}</span>
+
+
+
+</code></pre>
+</div>
+
+<h3 id="谨慎的在render中操作">谨慎的在<code class="highlighter-rouge">render()</code>中操作</h3>
+
+<p>一般FPS为60也就意味着一秒会执行60次如果render()中有有实例化或是赋值操作很容易会崩溃。</p>
+
+<p>如下：</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="kd">function</span> <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    
+    <span class="nx">material</span><span class="p">.</span><span class="nx">map</span> <span class="o">=</span> <span class="nx">canvasMap</span><span class="p">;</span>
+    <span class="nx">material</span><span class="p">.</span><span class="nx">map</span><span class="p">.</span><span class="nx">needsUpdate</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    
+<span class="p">}</span>
+
+
+</code></pre>
+</div>
+
+<h3 id="选择合适的对象">选择合适的对象</h3>
+
+<ul>
+  <li><code class="highlighter-rouge">THREE.ParticleSystem</code>(粒子系统)代替<code class="highlighter-rouge">THREE.Particle</code>(粒子)</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span><span class="p">;</span> <span class="nx">y</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">y</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">particle</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Particle</span><span class="p">(</span><span class="nx">material</span><span class="p">);</span>
+            <span class="nx">particle</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">x</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span> <span class="nx">y</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+            <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">particle</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+
+</code></pre>
+</div>
+
+<p>代替</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Geometry</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">ParticleBasicMaterial</span><span class="p">();</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span><span class="p">;</span> <span class="nx">y</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">y</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">particle</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Vector3</span><span class="p">(</span><span class="nx">x</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span> <span class="nx">y</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+            <span class="nx">geometry</span><span class="p">.</span><span class="nx">vertices</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">particle</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">var</span> <span class="nx">system</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">ParticleSystem</span><span class="p">(</span><span class="nx">geometry</span><span class="p">,</span><span class="nx">material</span><span class="p">);</span>
+
+    <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">system</span><span class="p">);</span>
+    
+</code></pre>
+</div>
+
+<ul>
+  <li>要操作一组对象时使用 <code class="highlighter-rouge">THREE.Object3D</code></li>
+</ul>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>    
+    <span class="kd">var</span> <span class="nx">contain</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Object3D</span><span class="p">();</span> 
+
+    <span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">BoxGeometry</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">mesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span><span class="nx">geometry</span><span class="p">,</span> <span class="nx">material</span><span class="p">);</span>
+        <span class="nx">contain</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">mesh</span><span class="p">);</span>
+    <span class="p">}</span>
+    
+    <span class="nx">contain</span><span class="p">.</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span><span class="o">/</span><span class="mi">3</span><span class="p">;</span>
+
+
+</code></pre>
+</div>
+
+<ul>
+  <li>网格合并 <code class="highlighter-rouge">THREE.GeometryUtils.merge</code></li>
+</ul>
+
+<p>R60</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>        <span class="kd">var</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">BoxGeometry</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+        <span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">({</span><span class="na">color</span><span class="p">:</span> <span class="mh">0xff0000</span><span class="p">});</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="nx">THREE</span><span class="p">.</span><span class="nx">GeometryUtils</span><span class="p">.</span><span class="nx">merge</span><span class="p">(</span><span class="nx">geometry</span><span class="p">,</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">BoxGeometry</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">));</span>
+        <span class="p">}</span>
+
+        <span class="kd">var</span> <span class="nx">mesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span><span class="nx">geometry</span><span class="p">,</span> <span class="nx">material</span><span class="p">);</span>
+
+        <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">mesh</span><span class="p">);</span>
+
+
+</code></pre>
+</div>
+
+<p>或是一下方式（geometry有位置信息）</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>        <span class="kd">var</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">BoxGeometry</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+        <span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">({</span><span class="na">color</span><span class="p">:</span> <span class="mh">0xff0000</span><span class="p">});</span>
+        
+        <span class="kd">var</span> <span class="nx">mesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span><span class="nx">geometry</span><span class="p">,</span><span class="nx">material</span><span class="p">);</span>
+        <span class="nx">mesh</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">);</span>
+        
+        <span class="kd">var</span> <span class="nx">mGeo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">BoxGeometry</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+        
+        <span class="nx">THREE</span><span class="p">.</span><span class="nx">GeometryUtils</span><span class="p">.</span><span class="nx">merge</span><span class="p">(</span><span class="nx">mGeo</span><span class="p">,</span> <span class="nx">mesh</span><span class="p">);</span>
+   
+
+        <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span><span class="nx">mGeo</span><span class="p">,</span> <span class="nx">material</span><span class="p">));</span>
+
+
+</code></pre>
+</div>
+
+<p>R80 <code class="highlighter-rouge">THREE.GeometryUtils.merge()</code> change to <code class="highlighter-rouge">geometry.merge()</code></p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>            <span class="kd">var</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">BoxGeometry</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+            
+            <span class="kd">var</span> <span class="nx">mGeo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">BoxGeometry</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+    
+            <span class="kd">var</span> <span class="nx">matrix</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Matrix4</span><span class="p">();</span>
+    
+            <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">i</span><span class="o">&lt;</span><span class="mi">100</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">){</span>
+    
+                <span class="nx">matrix</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Vector3</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="mi">10</span><span class="p">));</span>
+                <span class="nx">geometry</span><span class="p">.</span><span class="nx">merge</span><span class="p">(</span><span class="nx">mGeo</span><span class="p">,</span> <span class="nx">matrix</span><span class="p">);</span>
+            <span class="p">}</span>
+   
+    
+            <span class="kd">var</span> <span class="nx">mesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span><span class="nx">geometry</span><span class="p">,</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">({</span><span class="na">color</span><span class="p">:</span> <span class="mh">0xff0000</span><span class="p">}));</span>
+            <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">mesh</span><span class="p">);</span>
+
+
+</code></pre>
+</div>
+
+<h3 id="使用web-workers">使用<code class="highlighter-rouge">Web Workers</code></h3>
+
+<p><code class="highlighter-rouge">web worker</code> 是运行在后台的 JavaScript，它独立于其他脚本，不会影响页面的性能
+我们会发现<code class="highlighter-rouge">Physijs</code>物理库就是使用这种方式来保证页面的性能。</p>
+
+<p>使用之前你可能需要是否支持<code class="highlighter-rouge">web worker</code></p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="k">if</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="nx">Worker</span><span class="p">)</span><span class="o">!==</span><span class="s2">"undefined"</span><span class="p">){}</span><span class="k">else</span> <span class="p">{</span> <span class="p">}</span>
+
+
+</code></pre>
+</div>
+
+<p>我们将<code class="highlighter-rouge">web worker</code>运行脚本放在一个js文件中。</p>
+
+<p>three_workers.js：</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>    
+    <span class="c1">// 添加监听事件，从主线程接收数据</span>
+    <span class="nx">self</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'message'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+        
+        <span class="c1">// 向主线程发送数据</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">({</span>
+            <span class="na">some_data</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+            <span class="na">more_data</span><span class="p">:</span> <span class="s1">''</span>
+          <span class="p">})</span>
+        <span class="p">})</span>
+
+</code></pre>
+</div>
+
+<p>主线程.js：</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>    
+    <span class="c1">//新建一个 `Web Workers`</span>
+    
+    <span class="kd">var</span> <span class="nx">worker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s1">'three_workers.js'</span><span class="p">);</span> 
+    
+    <span class="c1">// 添加监听事件，获取`Web Workers`传回数据 </span>
+    <span class="nx">worker</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'message'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span> 
+    
+      <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+      
+    <span class="p">});</span>
+    
+    <span class="c1">// 向`Web Workers`发送数据</span>
+    <span class="nx">worker</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">({</span>  
+      <span class="na">some_data</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+      <span class="na">more_data</span><span class="p">:</span> <span class="s1">''</span>
+    <span class="p">});</span>
+    
+    
+   
+
+</code></pre>
+</div>
+
+<p>可以参照：</p>
+
+<p><em>https://threejs.org/examples/?q=sand#raytracing_sandbox</em></p>
+
+<p>function timedChunk(items, process, context, callback){
+    var todo = items.concat();   //create a clone of the original</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>setTimeout(function(){
+
+    var start = +new Date();
+
+    do {
+         process.call(context, todo.shift());
+    } while (todo.length &gt; 0 &amp;&amp; (+new Date() - start &lt; 50));
+
+    if (todo.length &gt; 0){
+        setTimeout(arguments.callee, 25);
+    } else {
+        callback(items);
+    }
+}, 25); }
+</code></pre>
+</div>
+
+<h2 id="分时加载">分时加载</h2>
+
+<p>可以参照：</p>
+
+<p><em>https://www.nczonline.net/blog/2009/08/11/timed-array-processing-in-javascript/</em></p>
+
+<p>分时加载算法(大数组)</p>
+
+<p>调查显示100ms内的响应能让用户感觉非常流畅。50ms是 <code class="highlighter-rouge">Nicholas</code> 针对 <code class="highlighter-rouge">JavaScript</code> 得出的最佳经验值。</p>
+
+<p>setTimeout 延时25ms，25ms 保证主流浏览器都顺畅。</p>
+
+<p>可以使用类似的方法来优化three.js程序。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="c1">//Copyright 2009 Nicholas C. Zakas. All rights reserved.</span>
+<span class="c1">//MIT Licensed</span>
+
+<span class="kd">function</span> <span class="nx">timedChunk</span><span class="p">(</span><span class="nx">items</span><span class="p">,</span> <span class="nx">process</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+    
+    
+    <span class="kd">var</span> <span class="nx">todo</span> <span class="o">=</span> <span class="nx">items</span><span class="p">.</span><span class="nx">concat</span><span class="p">();</span>   
+    
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+        
+        <span class="kd">var</span> <span class="nx">start</span> <span class="o">=</span> <span class="o">+</span><span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+        
+        
+        <span class="k">do</span> <span class="p">{</span>
+             <span class="nx">process</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">todo</span><span class="p">.</span><span class="nx">shift</span><span class="p">());</span>
+        <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="nx">todo</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="o">+</span><span class="k">new</span> <span class="nb">Date</span><span class="p">()</span> <span class="o">-</span> <span class="nx">start</span> <span class="o">&lt;</span> <span class="mi">50</span><span class="p">));</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">todo</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+            <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">,</span> <span class="mi">25</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">callback</span><span class="p">(</span><span class="nx">items</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">},</span> <span class="mi">25</span><span class="p">);</span>
+<span class="p">};</span>
+
+
+</code></pre>
+</div>
+
+<p>程序分析见</p>
+
+<h2 id="使用自定义着色器">使用自定义着色器</h2>
+
+<p>以后会有一篇专门讲着色器</p>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/09/27/three-js-needsUpdate-sources-code/">three.js needsUpdate 方法</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/09/28/javaScript-timedChunk/">大数组分时加载算法 timedChunk</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/09/27/optimize-three-js/" data-title="three.js 性能优化的几种方法" data-url="http://localhost:4000/2016/09/27/optimize-three-js/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

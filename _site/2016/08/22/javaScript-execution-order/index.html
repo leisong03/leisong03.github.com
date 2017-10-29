@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>客户端 JavaScript 程序</title>
+    <meta name="description" content="JavaScript犀牛书学习笔记">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/08/22/javaScript-execution-order/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>客户端 JavaScript 程序</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-08-22
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#JavaScript" title="Tag: JavaScript" rel="tag">JavaScript</a>&nbsp;
+    
+        <a href="/tag/#线程" title="Tag: 线程" rel="tag">线程</a>&nbsp;
+    
+        <a href="/tag/#编译" title="Tag: 编译" rel="tag">编译</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#客户端javascript" id="markdown-toc-客户端javascript">客户端JavaScript</a>    <ul>
+      <li><a href="#客户端的javascript程序包括" id="markdown-toc-客户端的javascript程序包括">客户端的JavaScript程序包括</a></li>
+      <li><a href="#执行的顺序" id="markdown-toc-执行的顺序">执行的顺序</a></li>
+      <li><a href="#事件驱动" id="markdown-toc-事件驱动">事件驱动</a></li>
+      <li><a href="#线程机制" id="markdown-toc-线程机制">线程机制</a></li>
+      <li><a href="#解析机制" id="markdown-toc-解析机制">解析机制</a>        <ul>
+          <li><a href="#编译阶段" id="markdown-toc-编译阶段">编译阶段</a></li>
+          <li><a href="#执行阶段" id="markdown-toc-执行阶段">执行阶段</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>JavaScript犀牛书学习笔记</p>
+
+<h2 id="客户端javascript">客户端JavaScript</h2>
+
+<h3 id="客户端的javascript程序包括">客户端的JavaScript程序包括</h3>
+
+<ul>
+  <li>内联脚本</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>  <span class="p">...</span>   <span class="o">&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>
+</code></pre>
+</div>
+
+<ul>
+  <li>HTML 事件处理程序</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="o">&lt;</span><span class="nx">button</span>  <span class="nx">value</span><span class="o">=</span><span class="s2">"btn"</span> <span class="nx">onclick</span><span class="o">=</span><span class="s1">'Message()'</span><span class="o">&gt;&lt;</span><span class="sr">/button</span><span class="err">&gt;
+</span>    
+    <span class="kd">function</span> <span class="nx">Message</span><span class="p">(){</span>
+		<span class="p">}</span>
+
+</code></pre>
+</div>
+
+<ul>
+  <li>URL引用的外部JavaScript</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">"text/javascript"</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"js/Three/three.js"</span><span class="o">&gt;&lt;</span><span class="sr">/script&gt;</span><span class="err"> 
+</span>
+</code></pre>
+</div>
+
+<p>他们拥有相同的document对象，可以共享全局变量和函数的集合。</p>
+
+<p>tips：如果包含&lt;iframe&gt;元素，则该元素有单独的全局变量和函数。</p>
+
+<h3 id="执行的顺序">执行的顺序</h3>
+
+<p>一般分为两步</p>
+
+<ul>
+  <li>
+    <p>step1 载入文档内容，顺序加载出现的所有JavaScript程序。</p>
+  </li>
+  <li>
+    <p>step2 在所有文档加载后执行，是异步的并且是事件驱动的</p>
+  </li>
+</ul>
+
+<p>在此阶段它会监听所有的事件（如：鼠标单击或是键盘按键等）</p>
+
+<p>在此阶段执行的第一个事件为<code class="highlighter-rouge">onload()</code>表示文档已经完全加载了，通常我们会把自定义的事件放在<code class="highlighter-rouge">onload()</code>中确保所有元素已经加载完成</p>
+
+<p>在<code class="highlighter-rouge">js</code>中</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+       
+       <span class="c1">//todo</span>
+       
+    <span class="p">}</span> 
+
+</code></pre>
+</div>
+
+<p>在<code class="highlighter-rouge">jquery</code>中</p>
+
+<p>jquery中使用方法<code class="highlighter-rouge">ready</code>代替<code class="highlighter-rouge">onload</code>方法</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+    
+       <span class="c1">//todo</span>
+       
+    <span class="p">}</span>
+
+</code></pre>
+</div>
+
+<p>此后一直处于事件驱动阶段，知道被用户或是网络任务中断。
+但是同一时间只能执行一个事件或是脚本。</p>
+
+<h3 id="事件驱动">事件驱动</h3>
+
+<p>事件<code class="highlighter-rouge">冒泡</code>指的是当元素上注册的事件没有被处理，事件就会冒泡到嵌套该元素的容器元素。</p>
+
+<p>我们可以使用方法<code class="highlighter-rouge">preventDefault</code>来阻止事件的冒泡。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+		<span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">){</span>
+		  <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+		<span class="p">}</span>
+
+</code></pre>
+</div>
+
+<h3 id="线程机制">线程机制</h3>
+
+<p>JavaScript是单线程的，没有任何的线程机制。不会发生两个事件在同一时间发生，后续的认为需要排队，排在队列后面。它确保了程序的简单性，提高效率。
+但是很多时候CPU是空闲的，因为它要等待IO设备返回结果（这个过程是很慢的）。
+所以这时候完全可以不管IO设备挂起等待的任务，执行在队列后面的任务。当IO设备返回结果了继续执行挂起的任务。</p>
+
+<p>所以将任务分为同步任务和异步任务。
+所以整个过程可以分为三步。</p>
+<ul>
+  <li>step1 主线程执行所有同步任务，形成一个<code class="highlighter-rouge">栈</code></li>
+  <li>step2 主线程之外还有一个<code class="highlighter-rouge">任务队列</code>，只要异步任务有结果就会在队列中放置一个<code class="highlighter-rouge">事件</code></li>
+  <li>step3 主线程的<code class="highlighter-rouge">栈</code>执行完以后就读取<code class="highlighter-rouge">任务队列</code>看有什么对应的事件</li>
+</ul>
+
+<p>主线程不断的循环这三个步骤。</p>
+
+<p>主线程从<code class="highlighter-rouge">任务队列</code>中读取事件，这个过程是循环不断的，所以整个的这种运行机制又称为<code class="highlighter-rouge">Event Loop（事件循环）</code>。</p>
+
+<h3 id="解析机制">解析机制</h3>
+
+<p>JavaScript的解析过程也分成两个阶段。</p>
+
+<p>一个阶段是编译阶段，另一个是执行阶段。</p>
+
+<h4 id="编译阶段">编译阶段</h4>
+
+<p>编译阶段也是常说的预处理阶段，JavaScript解释器将JavaScript代码转成字节码。</p>
+
+<ul>
+  <li>
+    <p>var , function声明的变量提升
+首先会定义所有 关键词<code class="highlighter-rouge">var</code>声明的变量并将其赋值为<code class="highlighter-rouge">undefined</code>，<code class="highlighter-rouge">function</code>定义的函数也会被声明。</p>
+  </li>
+  <li>
+    <p>函数表达式
+函数表达式不同于关键词<code class="highlighter-rouge">var</code><code class="highlighter-rouge">function</code>声明的变量和函数。
+函数表达式用<code class="highlighter-rouge">var</code>声明，解析器会将它变量提升赋值为<code class="highlighter-rouge">undefined</code>然后执行<code class="highlighter-rouge">undefined = function(){}</code>会报错。</p>
+  </li>
+</ul>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+   <span class="c1">//b()会报错，a()不会</span>
+   
+    <span class="nx">a</span><span class="p">();</span>
+    <span class="kd">function</span> <span class="nx">a</span><span class="p">(){};</span>
+    
+    <span class="nx">b</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){};</span>
+  
+
+</code></pre>
+</div>
+
+<ul>
+  <li>
+    <p>函数覆盖
+在预解析阶段同名函数后面的函数会将前面的覆盖。</p>
+  </li>
+  <li>
+    <p>变量或函数解析到其运行时的范围中</p>
+  </li>
+  <li>
+    <p>预解析过程分段进行
+按照<code class="highlighter-rouge">&lt;script&gt;</code>标签来分块</p>
+  </li>
+</ul>
+
+<h4 id="执行阶段">执行阶段</h4>
+
+<p>执行阶段将字节码生成机械码然后顺序执行。</p>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/08/21/javaScript-async-load-in-loop/">JavaScript 循环中异步加载问题</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/08/26/three-js-physics-engine/">three.js-physics engine</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/08/22/javaScript-execution-order/" data-title="客户端 JavaScript 程序" data-url="http://localhost:4000/2016/08/22/javaScript-execution-order/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>fastjson 配置和使用</title>
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/09/07/fastjson-jar/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>fastjson 配置和使用</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-09-07
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#Java" title="Tag: Java" rel="tag">Java</a>&nbsp;
+    
+        <a href="/tag/#fastjson" title="Tag: fastjson" rel="tag">fastjson</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#fastjson" id="markdown-toc-fastjson">fastjson</a>    <ul>
+      <li><a href="#fastjson-下载" id="markdown-toc-fastjson-下载">fastjson 下载</a></li>
+      <li><a href="#fastjson-使用" id="markdown-toc-fastjson-使用">fastjson 使用</a></li>
+      <li><a href="#迭代器" id="markdown-toc-迭代器">迭代器</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="fastjson">fastjson</h2>
+
+<p><code class="highlighter-rouge">fastjson</code>是一个很好的java实现的JSON解析和生成器，from <code class="highlighter-rouge">alibaba</code>。</p>
+
+<h3 id="fastjson-下载">fastjson 下载</h3>
+
+<ul>
+  <li>使用<code class="highlighter-rouge">Maven</code>下载：
+(Maven使用可以参照以往的博客)</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><pre class="highlight"><code>
+		<span class="c">&lt;!-- https://mvnrepository.com/artifact/com.alibaba/fastjson --&gt;</span>
+		<span class="nt">&lt;dependency&gt;</span>
+		    <span class="nt">&lt;groupId&gt;</span>com.alibaba<span class="nt">&lt;/groupId&gt;</span>
+		    <span class="nt">&lt;artifactId&gt;</span>fastjson<span class="nt">&lt;/artifactId&gt;</span>
+		    <span class="nt">&lt;version&gt;</span>1.2.17<span class="nt">&lt;/version&gt;</span>
+		<span class="nt">&lt;/dependency&gt;</span>
+
+</code></pre>
+</div>
+
+<ul>
+  <li><code class="highlighter-rouge">github</code></li>
+</ul>
+
+<p><a href="https://github.com/alibaba/fastjson">alibaba/fastjson</a></p>
+
+<h3 id="fastjson-使用">fastjson 使用</h3>
+
+<p><code class="highlighter-rouge">Fastjson</code>的最主要的使用入口是<code class="highlighter-rouge">com.alibaba.fastjson.JSON</code></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>
+1. 1 public static final Object parse(String text); // 把`JSON`文本解析为`JSONObject`或者`JSONArray`
+2. 2 public static final JSONObject parseObject(String text)； // 把`JSON`文本解析成`JSONObject`
+3. 3 public static final &lt;T&gt; T parseObject(String text, Class&lt;T&gt; clazz); // 把`JSON`文本解析为`JavaBean`
+4. 4 public static final JSONArray parseArray(String text); // 把`JSON`文本解析成`JSONArray`
+5. 5 public static final &lt;T&gt; List&lt;T&gt; parseArray(String text, Class&lt;T&gt; clazz); //把`JSON`文本解析成`JavaBean集合`
+6. 6 public static final String toJSONString(Object object); // 将`JavaBean`序列化为`JSON`文本
+7. 7 public static final String toJSONString(Object object, boolean prettyFormat); // 将`JavaBean`序列化为带格式的`JSON`文本
+8. 8 public static final Object toJSON(Object javaObject); 将`JavaBean`转换为`JSONObject`或者`JSONArray`。
+
+</code></pre>
+</div>
+
+<p>JSONObject：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>     
+     <span class="c1">//将传入的`JSON`文本解析成了`JSONObject`</span>
+     <span class="n">JSONObject</span> <span class="n">rs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">();</span>
+				<span class="n">rs</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"robot1"</span><span class="o">,</span><span class="s">"ws1"</span><span class="o">);</span>
+				<span class="n">rs</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"robot2"</span><span class="o">,</span> <span class="s">"ws2"</span><span class="o">);</span>
+				<span class="n">rs</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"robot3"</span><span class="o">,</span> <span class="s">"ws3"</span><span class="o">);</span>
+        
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">rs</span><span class="o">);</span>
+    
+    <span class="nl">output:</span> <span class="o">{</span><span class="s">"robot1"</span><span class="o">:</span><span class="s">"ws1"</span><span class="o">,</span><span class="s">"robot2"</span><span class="o">:</span><span class="s">"ws2"</span><span class="o">,</span><span class="s">"robot3"</span><span class="o">:</span><span class="s">"ws3"</span><span class="o">}</span>
+</code></pre>
+</div>
+
+<p>JSONArray：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>     
+     <span class="c1">//将传入的`JSON`文本解析成了`JSONArray`</span>
+     <span class="n">String</span> <span class="n">str</span> <span class="o">=</span><span class="s">"[{'hardwareCount':2,'hardwareType':1},{'hardwareCount':1,'hardwareType':2},{'hardwareCount':1,'hardwareType':3},{'hardwareCount':1,'hardwareType':4}]"</span><span class="o">;</span>
+	 <span class="n">JSONArray</span> <span class="n">array</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
+	 
+	 <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+		<span class="k">while</span> <span class="o">(</span><span class="n">it</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
+		<span class="n">JSONObject</span> <span class="n">object</span> <span class="o">=</span> <span class="o">(</span><span class="n">JSONObject</span><span class="o">)</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">object</span><span class="o">);</span>
+		<span class="o">}</span>
+		
+	<span class="n">output</span><span class="err">：</span>	<span class="o">{</span><span class="s">"hardwareCount"</span><span class="o">:</span><span class="mi">2</span><span class="o">,</span><span class="s">"hardwareType"</span><span class="o">:</span><span class="mi">1</span><span class="o">}</span>
+				<span class="o">{</span><span class="s">"hardwareCount"</span><span class="o">:</span><span class="mi">1</span><span class="o">,</span><span class="s">"hardwareType"</span><span class="o">:</span><span class="mi">2</span><span class="o">}</span>
+				<span class="o">{</span><span class="s">"hardwareCount"</span><span class="o">:</span><span class="mi">1</span><span class="o">,</span><span class="s">"hardwareType"</span><span class="o">:</span><span class="mi">3</span><span class="o">}</span>
+				<span class="o">{</span><span class="s">"hardwareCount"</span><span class="o">:</span><span class="mi">1</span><span class="o">,</span><span class="s">"hardwareType"</span><span class="o">:</span><span class="mi">4</span><span class="o">}</span>
+	 
+</code></pre>
+</div>
+
+<h3 id="迭代器">迭代器</h3>
+
+<p>迭代器（Iterator）是一种设计模式，它是一个对象，它可以遍历并选择序列中的对象。</p>
+
+<p><code class="highlighter-rouge">Iterator</code>:是Java迭代器最简单的实现。</p>
+
+<p><code class="highlighter-rouge">function:</code></p>
+
+<p>1.1 next() :获取下一个迭代器元素</p>
+
+<p>2.2 hasNext() :检查序列是否还有元素</p>
+
+<p>3.3 remove() :将迭代器当前元素删除</p>
+
+<p><code class="highlighter-rouge">ListIterator</code>:针对List的迭代器</p>
+
+<p>添加了<code class="highlighter-rouge">previous()</code>等方法，可以双向移动。</p>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/23/java-ThreadPoolExecutor/"> Java ThreadPoolExecutor
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/07/500-Data-Structures-and-Algorithms-practice/">500 Data Structures and Algorithms practice problems and their solutions
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/09/java-Executors/">java 并发库之 Executors
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/08/java-Netty-TCP/">java Netty tcp通讯
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/07/java-Semaphore/">java 并发库之 Semaphore
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/04/28/svg-to-png/">java svg转png
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/09/07/Jsoup-jar/">Jsoup 配置和使用</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/09/07/log4j-jar/">log4j 配置和使用</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/09/07/fastjson-jar/" data-title="fastjson 配置和使用" data-url="http://localhost:4000/2016/09/07/fastjson-jar/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

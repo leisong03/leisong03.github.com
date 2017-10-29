@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>three.js-bone</title>
+    <meta name="description" content="Three.js学习笔记 本篇介绍bone的创建和绑定。完成简单的骨骼动画。">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/08/12/three-js-bone/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>three.js-bone</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-08-12
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#three.js" title="Tag: three.js" rel="tag">three.js</a>&nbsp;
+    
+        <a href="/tag/#javaScript" title="Tag: javaScript" rel="tag">javaScript</a>&nbsp;
+    
+        <a href="/tag/#WebGL" title="Tag: WebGL" rel="tag">WebGL</a>&nbsp;
+    
+        <a href="/tag/#Bone" title="Tag: Bone" rel="tag">Bone</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#初始化数据创建骨骼" id="markdown-toc-初始化数据创建骨骼">初始化数据、创建骨骼</a></li>
+  <li><a href="#创建骨架和蒙皮" id="markdown-toc-创建骨架和蒙皮">创建骨架和蒙皮</a>    <ul>
+      <li><a href="#skinnedmesh" id="markdown-toc-skinnedmesh">SkinnedMesh</a>        <ul>
+          <li><a href="#constructor" id="markdown-toc-constructor">Constructor</a></li>
+          <li><a href="#main-properties" id="markdown-toc-main-properties">Main Properties</a></li>
+        </ul>
+      </li>
+      <li><a href="#skeleton" id="markdown-toc-skeleton">Skeleton</a></li>
+    </ul>
+  </li>
+  <li><a href="#创建身体" id="markdown-toc-创建身体">创建身体</a></li>
+  <li><a href="#活动身体" id="markdown-toc-活动身体">活动身体</a></li>
+</ul>
+
+<p>Three.js学习笔记 本篇介绍<code class="highlighter-rouge">bone</code>的创建和绑定。完成简单的骨骼动画。</p>
+
+<h2 id="初始化数据创建骨骼">初始化数据、创建骨骼</h2>
+
+<p>这里我们使用<code class="highlighter-rouge">Cylinder</code>来创建一段几何图形模拟具有骨骼的物体。
+你可以比作人的身体而我们创建的<code class="highlighter-rouge">bones</code>骨骼以及<code class="highlighter-rouge">skeleton</code>骨架就相当于人的脊椎。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>    
+    <span class="c1">//每段高度，这里指骨骼长度</span>
+    <span class="kd">var</span> <span class="nx">segmentHeight</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+    
+    <span class="c1">//分段数量，这里指骨骼数量</span>
+	<span class="kd">var</span> <span class="nx">segmentCount</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+	
+	<span class="c1">//骨架总高度 `6`</span>
+	<span class="kd">var</span> <span class="nx">height</span> <span class="o">=</span> <span class="nx">segmentHeight</span> <span class="o">*</span> <span class="nx">segmentCount</span><span class="p">;</span>
+	
+	<span class="c1">//骨架一半的高度 `3`</span>
+	<span class="kd">var</span> <span class="nx">halfHeight</span> <span class="o">=</span> <span class="nx">height</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">;</span>
+	<span class="kd">var</span> <span class="nx">sizing</span> <span class="o">=</span> <span class="p">{</span>
+					<span class="na">segmentHeight</span><span class="p">:</span> <span class="nx">segmentHeight</span><span class="p">,</span>
+					<span class="na">segmentCount</span><span class="p">:</span> <span class="nx">segmentCount</span><span class="p">,</span>
+					<span class="na">height</span><span class="p">:</span> <span class="nx">height</span><span class="p">,</span>
+					<span class="na">halfHeight</span><span class="p">:</span> <span class="nx">halfHeight</span>
+				<span class="p">};</span>
+
+    
+    <span class="kd">function</span> <span class="nx">createGeometry</span><span class="p">(</span><span class="nx">sizing</span><span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">CylinderGeometry</span><span class="p">(</span>
+					<span class="mf">0.5</span><span class="p">,</span> <span class="c1">//圆柱头部半径</span>
+					<span class="mf">0.5</span><span class="p">,</span> <span class="c1">//圆柱底部半径</span>
+					<span class="nx">sizing</span><span class="p">.</span><span class="nx">height</span><span class="p">,</span>   <span class="c1">// 骨架高度`6` </span>
+					<span class="mi">32</span><span class="p">,</span>
+					<span class="nx">sizing</span><span class="p">.</span><span class="nx">segmentCount</span> <span class="o">*</span> <span class="mi">6</span><span class="p">,</span> <span class="c1">// 骨骼数`6`</span>
+					<span class="kc">true</span> 
+				<span class="p">);</span>
+				
+				<span class="c1">//遍历几何图形上的所有顶点</span>
+				<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">geometry</span><span class="p">.</span><span class="nx">vertices</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+				
+					<span class="kd">var</span> <span class="nx">vertex</span> <span class="o">=</span> <span class="nx">geometry</span><span class="p">.</span><span class="nx">vertices</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+					
+					
+				<span class="cm">/*  计算顶点索引值 `skinIndex` （受那个骨骼影响）
+				 *  先将原来 `vertice `顶点的 `y `坐标加上骨架的一半高度，
+				 *  相当于将原来在骨架顶部的 `y `轴坐标原点上移到骨骼 `y `轴的中心处
+				 *   |                                          |
+				 *   |                                          |
+				 *   |                +  sizing.halfHeight =    |. `y`坐标原点   
+				 *   |                                          |
+				 *   |                                          |
+				 *   |. `y`坐标原点                                                                               |
+				 *
+				 *  然后除以骨骼数，然后向下取整便可取到索引值
+				 *
+				 * */</span>					
+					
+					
+					<span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="p">(</span><span class="nx">vertex</span><span class="p">.</span><span class="nx">y</span> <span class="o">+</span> <span class="nx">sizing</span><span class="p">.</span><span class="nx">halfHeight</span><span class="p">);</span>
+					<span class="kd">var</span> <span class="nx">skinIndex</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">y</span> <span class="o">/</span> <span class="nx">sizing</span><span class="p">.</span><span class="nx">segmentHeight</span><span class="p">);</span>
+					
+					
+				<span class="cm">/*  计算权重`skinWeight`受骨骼影响的比重
+				 *   
+				 *  y % sizing.segmentHeight （这里的y是偏移过的也就是加了`sizing.halfHeight`）
+				 * 
+				 *  这里取余可以求出相对一根骨骼底部的偏移量（因为索引值上面已经求出来了）
+				 *  再除以骨架的高度，便可以求出相对于权重
+				 * 
+				 * */</span>					
+				 
+					<span class="kd">var</span> <span class="nx">skinWeight</span> <span class="o">=</span> <span class="p">(</span><span class="nx">y</span> <span class="o">%</span> <span class="nx">sizing</span><span class="p">.</span><span class="nx">segmentHeight</span><span class="p">)</span> <span class="o">/</span> <span class="nx">sizing</span><span class="p">.</span><span class="nx">segmentHeight</span><span class="p">;</span>
+					
+					<span class="c1">//放入相应的`geometry`属性中</span>
+					<span class="nx">geometry</span><span class="p">.</span><span class="nx">skinIndices</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Vector4</span><span class="p">(</span><span class="nx">skinIndex</span><span class="p">,</span> <span class="nx">skinIndex</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+					<span class="nx">geometry</span><span class="p">.</span><span class="nx">skinWeights</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Vector4</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="nx">skinWeight</span><span class="p">,</span> <span class="nx">skinWeight</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+				<span class="p">}</span>
+				<span class="k">return</span> <span class="nx">geometry</span><span class="p">;</span>
+			<span class="p">};</span>
+	
+</code></pre>
+</div>
+
+<h2 id="创建骨架和蒙皮">创建骨架和蒙皮</h2>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">function</span> <span class="nx">createMesh</span><span class="p">(</span><span class="nx">geometry</span><span class="p">,</span> <span class="nx">bones</span><span class="p">)</span> <span class="p">{</span>
+                
+                <span class="c1">//创建骨骼材质</span>
+				<span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshPhongMaterial</span><span class="p">({</span>
+					<span class="na">skinning</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+					<span class="na">color</span><span class="p">:</span><span class="mh">0xff0000</span>
+				<span class="p">});</span>
+				
+				<span class="c1">//创建蒙皮对象</span>
+				<span class="kd">var</span> <span class="nx">mesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">SkinnedMesh</span><span class="p">(</span><span class="nx">geometry</span><span class="p">,</span> <span class="nx">material</span><span class="p">);</span>
+				
+				<span class="c1">//通过已有的骨骼创建骨架</span>
+				<span class="kd">var</span> <span class="nx">skeleton</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Skeleton</span><span class="p">(</span><span class="nx">bones</span><span class="p">);</span>
+				
+				<span class="c1">//从蒙皮，将蒙皮对象和骨架绑定</span>
+				<span class="nx">mesh</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">bones</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+				<span class="nx">mesh</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">skeleton</span><span class="p">);</span>
+				
+				<span class="k">return</span> <span class="nx">mesh</span><span class="p">;</span>
+			<span class="p">};</span>
+
+</code></pre>
+</div>
+
+<h3 id="skinnedmesh">SkinnedMesh</h3>
+
+<p>蒙皮对象。</p>
+
+<h4 id="constructor">Constructor</h4>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">mesh</span> <span class="o">=</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">SkinnedMesh</span><span class="p">(</span> <span class="nx">geometry</span><span class="p">,</span> <span class="nx">material</span> <span class="p">);</span>
+
+</code></pre>
+</div>
+
+<h4 id="main-properties">Main Properties</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">geometry</code> :一种几个图形，需要设置<code class="highlighter-rouge">Geometry.skinIndices</code>（索引值）和 <code class="highlighter-rouge">Geometry.skinWeights</code>（权重）</li>
+  <li><code class="highlighter-rouge">material</code> :材质，需要设置<code class="highlighter-rouge">skinning: true</code></li>
+</ul>
+
+<h3 id="skeleton">Skeleton</h3>
+
+<h2 id="创建身体">创建身体</h2>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="nx">createGeometry</span><span class="p">(</span><span class="nx">sizing</span><span class="p">);</span>
+	<span class="kd">var</span> <span class="nx">bones</span> <span class="o">=</span> <span class="nx">createBones</span><span class="p">(</span><span class="nx">sizing</span><span class="p">);</span>
+				
+	<span class="nx">mesh</span> <span class="o">=</span> <span class="nx">createMesh</span><span class="p">(</span><span class="nx">geometry</span><span class="p">,</span> <span class="nx">bones</span><span class="p">);</span>
+	
+	<span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">mesh</span><span class="p">);</span>
+
+</code></pre>
+</div>
+
+<h2 id="活动身体">活动身体</h2>
+
+<p>现在只需要在<code class="highlighter-rouge">render()</code>里面操作骨骼就可以产生简单的骨骼动画了。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>    <span class="kd">function</span> <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    
+			<span class="nx">requestAnimationFrame</span><span class="p">(</span><span class="nx">render</span><span class="p">);</span>
+			<span class="nx">renderer</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span><span class="p">);</span>
+			
+			<span class="c1">//操作第二个骨骼进行旋转</span>
+			<span class="nx">mesh</span><span class="p">.</span><span class="nx">skeleton</span><span class="p">.</span><span class="nx">bones</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">/</span> <span class="mi">180</span> <span class="o">*</span> <span class="mi">30</span><span class="p">;</span>
+			<span class="nx">mesh</span><span class="p">.</span><span class="nx">skeleton</span><span class="p">.</span><span class="nx">bones</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">z</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">/</span> <span class="mi">180</span> <span class="o">*</span> <span class="mi">30</span><span class="p">;</span>
+			<span class="p">}</span>
+
+</code></pre>
+</div>
+
+<hr />
+<p><img src="http://ww4.sinaimg.cn/mw690/c584f169gw1f6qznfai53j20hf0ev0t0.jpg" alt="outPut" /></p>
+
+<p><em><a href="https://github.com/Chenjy1225/Chenjy1225.github.io/blob/master/source/three-obj-shadow.html">source code</a></em></p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/08/11/three-js-model/">three.js-model</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/08/15/three-js-binary-operator/">three.js-binary operator</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/08/12/three-js-bone/" data-title="three.js-bone" data-url="http://localhost:4000/2016/08/12/three-js-bone/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

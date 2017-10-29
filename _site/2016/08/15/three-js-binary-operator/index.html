@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>three.js-binary operator</title>
+    <meta name="description" content="Three.js学习笔记 本篇使用three.js的扩展库THREEBSP来操作标准的几何体来创造出新的几何体。learn more from https://github.com/skalnik/ThreeBSP">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/08/15/three-js-binary-operator/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>three.js-binary operator</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-08-15
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#three.js" title="Tag: three.js" rel="tag">three.js</a>&nbsp;
+    
+        <a href="/tag/#javaScript" title="Tag: javaScript" rel="tag">javaScript</a>&nbsp;
+    
+        <a href="/tag/#WebGL" title="Tag: WebGL" rel="tag">WebGL</a>&nbsp;
+    
+        <a href="/tag/#THREEBSP" title="Tag: THREEBSP" rel="tag">THREEBSP</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#threebsp" id="markdown-toc-threebsp">ThreeBSP</a>    <ul>
+      <li><a href="#how-to-use" id="markdown-toc-how-to-use">how to use</a></li>
+      <li><a href="#other-way" id="markdown-toc-other-way">other way</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>Three.js学习笔记 本篇使用three.js的扩展库THREEBSP来操作标准的几何体来创造出新的几何体。
+<em>learn more from <code class="highlighter-rouge">https://github.com/skalnik/ThreeBSP</code></em></p>
+
+<h2 id="threebsp">ThreeBSP</h2>
+
+<p>由于three.js提供的标准几何体有限，自定义几何体的构造比较麻烦。所以我们也许可以使用three.js的扩展库ThreeBSP来构造几何体。
+Three.js提供了三种函数：<code class="highlighter-rouge">intersect（相交）</code> 、<code class="highlighter-rouge">union（联合）</code> 和 <code class="highlighter-rouge">substract（相减）</code></p>
+
+<ul>
+  <li>
+    <p>相交函数可以将几个几何体联合起来形成新的几何体。</p>
+  </li>
+  <li>
+    <p>联合函数可以基于两个几何体的交集创建出新的几何体，即两个几何体的重叠部分。</p>
+  </li>
+  <li>
+    <p>相减函数和联合函数正好相反可以在第一个几何体的基础上减去两个几何体的重叠部分。</p>
+  </li>
+</ul>
+
+<h3 id="how-to-use">how to use</h3>
+
+<p>ThreeBSP库是使用coffee-script写的,所以需要添加coffee-script文件在运行时编译。或是使用编译好的JavaScript文件。</p>
+
+<ul>
+  <li>添加coffee-script</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code> 
+    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">"text/javascript"</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"js/Three/coffee-script.js"</span><span class="o">&gt;&lt;</span><span class="sr">/script&gt; </span><span class="err"> 
+</span>    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">"text/javascript"</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"js/Three/ThreeBSP.coffee"</span><span class="o">&gt;&lt;</span><span class="sr">/script&gt; </span><span class="err"> 
+</span>    
+</code></pre>
+</div>
+
+<ul>
+  <li>使用编译好的JavaScript文件</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+	<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">"text/javascript"</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"js/Three/ThreeBSP.js"</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>		
+</code></pre>
+</div>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="c1">//实例化两个需要进行操作的物体 （cube1,cube2为两个cube）</span>
+    <span class="kd">var</span> <span class="nx">BSP1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ThreeBSP</span><span class="p">(</span><span class="nx">cube1</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">BSP2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ThreeBSP</span><span class="p">(</span><span class="nx">cube2</span><span class="p">);</span>
+    
+    <span class="c1">//将两个物体相交操作，操作完的`resultBSP`为一个`ThreeBSP`对象</span>
+    <span class="kd">var</span> <span class="nx">resultBSP</span> <span class="o">=</span> <span class="nx">BSP1</span><span class="p">.</span><span class="nx">subtract</span><span class="p">(</span><span class="nx">BSP2</span><span class="p">);</span>
+    
+    <span class="c1">//可以使用`ThreeBSP`的`toMesh()`方法将`ThreeBSP`转为一个`Mesh`对象</span>
+    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">resultBSP</span><span class="p">.</span><span class="nx">toMesh</span><span class="p">();</span>
+    
+    <span class="c1">//使用`geometry`的computeFaceNormals()和computeVertexNormals()来确保生成的`Mesh`对象的所有面和顶点的法向量可以正确计算</span>
+    <span class="nx">result</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">computeFaceNormals</span><span class="p">();</span>
+    
+    <span class="nx">result</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">computeVertexNormals</span><span class="p">();</span>
+    <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+            
+</code></pre>
+</div>
+
+<h3 id="other-way">other way</h3>
+
+<p>three.js也是提供了将几何体组合和合并的方法类似于<code class="highlighter-rouge">union（联合）</code>函数。</p>
+
+<ul>
+  <li>对象组合</li>
+</ul>
+
+<p>你可以通过新建一个<code class="highlighter-rouge">THREE.Object3D</code>对象，然后通过<code class="highlighter-rouge">push()</code>方法将想要组合的对象放入这个container 中。
+然后你可以通过控制这个<code class="highlighter-rouge">THREE.Object3D</code>对象，然后来控制组合了的所有对象（避免了单独操作的尴尬）。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+	<span class="kd">var</span> <span class="nx">container</span> <span class="o">=</span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Object3D</span><span class="p">();</span>
+	
+	<span class="nx">container</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">cube</span><span class="p">);</span>
+	
+	<span class="nx">container</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">sphere</span><span class="p">);</span>
+		
+</code></pre>
+</div>
+
+<hr />
+<p><img src="http://ww1.sinaimg.cn/mw690/c584f169gw1f76003kr41j20hp0bamxb.jpg" alt="outPut" /></p>
+
+<ul>
+  <li><em><a href="https://github.com/Chenjy1225/Chenjy1225.github.io/blob/master/source/three-obj.html">source code obj</a></em></li>
+</ul>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/08/12/three-js-bone/">three.js-bone</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/08/16/three-js-particle/">three.js-particle</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/08/15/three-js-binary-operator/" data-title="three.js-binary operator" data-url="http://localhost:4000/2016/08/15/three-js-binary-operator/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

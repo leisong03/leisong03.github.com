@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>three.js-core</title>
+    <meta name="description" content="Three.js学习笔记 本篇简单列举一下three.js的核心对象。">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/08/09/three-js-core/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>three.js-core</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-08-09
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#three.js" title="Tag: three.js" rel="tag">three.js</a>&nbsp;
+    
+        <a href="/tag/#javaScript" title="Tag: javaScript" rel="tag">javaScript</a>&nbsp;
+    
+        <a href="/tag/#WebGL" title="Tag: WebGL" rel="tag">WebGL</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#scenes" id="markdown-toc-scenes">scenes</a>    <ul>
+      <li><a href="#scene" id="markdown-toc-scene">scene</a>        <ul>
+          <li><a href="#constructor" id="markdown-toc-constructor">Constructor</a></li>
+          <li><a href="#main-properties" id="markdown-toc-main-properties">Main Properties</a></li>
+        </ul>
+      </li>
+      <li><a href="#fog" id="markdown-toc-fog">fog</a>        <ul>
+          <li><a href="#constructor-1" id="markdown-toc-constructor-1">Constructor</a></li>
+          <li><a href="#main-properties-1" id="markdown-toc-main-properties-1">Main Properties</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#cameras" id="markdown-toc-cameras">cameras</a>    <ul>
+      <li><a href="#orthographiccamera" id="markdown-toc-orthographiccamera">OrthographicCamera</a>        <ul>
+          <li><a href="#constructor-2" id="markdown-toc-constructor-2">Constructor</a></li>
+          <li><a href="#main-properties-2" id="markdown-toc-main-properties-2">Main Properties</a></li>
+        </ul>
+      </li>
+      <li><a href="#perspectivecamera" id="markdown-toc-perspectivecamera">PerspectiveCamera</a>        <ul>
+          <li><a href="#constructor-3" id="markdown-toc-constructor-3">Constructor</a></li>
+          <li><a href="#main-properties-3" id="markdown-toc-main-properties-3">Main Properties</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#renderers" id="markdown-toc-renderers">renderers</a>    <ul>
+      <li><a href="#webglrenderer" id="markdown-toc-webglrenderer">WebGLRenderer</a>        <ul>
+          <li><a href="#constructor-4" id="markdown-toc-constructor-4">Constructor</a></li>
+          <li><a href="#main-properties-4" id="markdown-toc-main-properties-4">Main Properties</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#lights" id="markdown-toc-lights">lights</a>    <ul>
+      <li><a href="#ambientlight" id="markdown-toc-ambientlight">AmbientLight</a>        <ul>
+          <li><a href="#constructor-5" id="markdown-toc-constructor-5">Constructor</a></li>
+          <li><a href="#main-properties-5" id="markdown-toc-main-properties-5">Main Properties</a></li>
+        </ul>
+      </li>
+      <li><a href="#pointlight" id="markdown-toc-pointlight">PointLight</a>        <ul>
+          <li><a href="#constructor-6" id="markdown-toc-constructor-6">Constructor</a></li>
+          <li><a href="#main-properties-6" id="markdown-toc-main-properties-6">Main Properties</a></li>
+        </ul>
+      </li>
+      <li><a href="#spotlight" id="markdown-toc-spotlight">SpotLight</a>        <ul>
+          <li><a href="#constructor-7" id="markdown-toc-constructor-7">Constructor</a></li>
+          <li><a href="#main-properties-7" id="markdown-toc-main-properties-7">Main Properties</a></li>
+        </ul>
+      </li>
+      <li><a href="#directinallight" id="markdown-toc-directinallight">DirectinalLight</a>        <ul>
+          <li><a href="#constructor-8" id="markdown-toc-constructor-8">Constructor</a></li>
+          <li><a href="#main-properties-8" id="markdown-toc-main-properties-8">Main Properties</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#materials" id="markdown-toc-materials">Materials</a>    <ul>
+      <li><a href="#types-of-material" id="markdown-toc-types-of-material">Types of Material</a></li>
+      <li><a href="#common-main-properties" id="markdown-toc-common-main-properties">Common Main Properties</a></li>
+    </ul>
+  </li>
+  <li><a href="#2dgeometries" id="markdown-toc-2dgeometries">2DGeometries</a>    <ul>
+      <li><a href="#planegeometry" id="markdown-toc-planegeometry">PlaneGeometry</a>        <ul>
+          <li><a href="#main-properties-9" id="markdown-toc-main-properties-9">Main Properties</a></li>
+        </ul>
+      </li>
+      <li><a href="#circlegeometry" id="markdown-toc-circlegeometry">CircleGeometry</a>        <ul>
+          <li><a href="#main-properties-10" id="markdown-toc-main-properties-10">Main Properties</a></li>
+        </ul>
+      </li>
+      <li><a href="#shapegeometry" id="markdown-toc-shapegeometry">ShapeGeometry</a></li>
+    </ul>
+  </li>
+  <li><a href="#3dgeometries" id="markdown-toc-3dgeometries">3DGeometries</a>    <ul>
+      <li><a href="#cubegeometry" id="markdown-toc-cubegeometry">CubeGeometry</a>        <ul>
+          <li><a href="#main-properties-11" id="markdown-toc-main-properties-11">Main Properties</a></li>
+        </ul>
+      </li>
+      <li><a href="#spheregeometry" id="markdown-toc-spheregeometry">SphereGeometry</a>        <ul>
+          <li><a href="#main-properties-12" id="markdown-toc-main-properties-12">Main Properties</a></li>
+        </ul>
+      </li>
+      <li><a href="#cylindergeometry" id="markdown-toc-cylindergeometry">CylinderGeometry</a>        <ul>
+          <li><a href="#main-properties-13" id="markdown-toc-main-properties-13">Main Properties</a></li>
+        </ul>
+      </li>
+      <li><a href="#othergeometry" id="markdown-toc-othergeometry">otherGeometry</a></li>
+    </ul>
+  </li>
+  <li><a href="#有感而言" id="markdown-toc-有感而言">有感而言</a></li>
+</ul>
+
+<p>Three.js学习笔记 本篇简单列举一下three.js的核心对象。</p>
+
+<h2 id="scenes">scenes</h2>
+
+<h3 id="scene">scene</h3>
+
+<p>三维场景。</p>
+
+<h4 id="constructor">Constructor</h4>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">scene</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Scene</span><span class="p">();</span>
+
+</code></pre>
+</div>
+
+<h4 id="main-properties">Main Properties</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">fog</code> ：定义雾影响场景渲染 <code class="highlighter-rouge">default：null</code></li>
+</ul>
+
+<h3 id="fog">fog</h3>
+
+<p>受雾影响的三维场景。</p>
+
+<h4 id="constructor-1">Constructor</h4>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">fog</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Fog</span><span class="p">(</span><span class="nx">hex</span><span class="p">,</span> <span class="nx">near</span><span class="p">,</span> <span class="nx">far</span><span class="p">);</span>
+
+</code></pre>
+</div>
+
+<h4 id="main-properties-1">Main Properties</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">hex</code> ：定义雾的颜色</li>
+  <li><code class="highlighter-rouge">near</code> ：定义雾效果产生的起始点<code class="highlighter-rouge">default：1</code></li>
+  <li><code class="highlighter-rouge">far</code> ：定义雾效果的结束点<code class="highlighter-rouge">default：1000</code></li>
+</ul>
+
+<h2 id="cameras">cameras</h2>
+
+<h3 id="orthographiccamera">OrthographicCamera</h3>
+
+<p>正交投影相机</p>
+
+<h4 id="constructor-2">Constructor</h4>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">camera</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">OrthographicCamera</span><span class="p">(</span> <span class="nx">left</span><span class="p">,</span> <span class="nx">right</span><span class="p">,</span> <span class="nx">top</span><span class="p">,</span> <span class="nx">bottom</span><span class="p">,</span> <span class="nx">near</span><span class="p">,</span> <span class="nx">far</span> <span class="p">);</span>
+
+</code></pre>
+</div>
+
+<h4 id="main-properties-2">Main Properties</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">left</code> ：相机可视范围的左平面</li>
+  <li><code class="highlighter-rouge">right</code> ：相机可视范围的右平面</li>
+  <li><code class="highlighter-rouge">top</code> ：相机可视范围的上平面</li>
+  <li><code class="highlighter-rouge">bottom</code> ：相机可视范围的下平面</li>
+  <li><code class="highlighter-rouge">near</code> ：相机可视范围最近的位置</li>
+  <li><code class="highlighter-rouge">far</code> ：相机可视范围最远的位置</li>
+</ul>
+
+<h3 id="perspectivecamera">PerspectiveCamera</h3>
+
+<p>透视投影相机</p>
+
+<h4 id="constructor-3">Constructor</h4>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">camera</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">PerspectiveCamera</span><span class="p">(</span> <span class="nx">fov</span><span class="p">,</span> <span class="nx">aspect</span><span class="p">,</span> <span class="nx">near</span><span class="p">,</span> <span class="nx">far</span> <span class="p">);</span>
+
+</code></pre>
+</div>
+
+<h4 id="main-properties-3">Main Properties</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">fov</code> ：相机的视角</li>
+  <li><code class="highlighter-rouge">aspect</code> ：相机可视范围的长宽比</li>
+  <li><code class="highlighter-rouge">near</code> ：相机可视范围最近的位置</li>
+  <li><code class="highlighter-rouge">far</code> ：相机可视范围最远的位置</li>
+</ul>
+
+<h2 id="renderers">renderers</h2>
+
+<h3 id="webglrenderer">WebGLRenderer</h3>
+
+<p>WebGL渲染器</p>
+
+<h4 id="constructor-4">Constructor</h4>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">webGlRenderer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">WebGLRenderer</span><span class="p">({</span>
+        <span class="na">antialias</span><span class="p">:</span><span class="kc">false</span><span class="p">,</span>
+        <span class="na">shadowMapEnabled</span><span class="p">:</span><span class="nx">flase</span> 
+        <span class="p">});</span>
+
+</code></pre>
+</div>
+
+<h4 id="main-properties-4">Main Properties</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">antialias</code> ：抗锯齿，进行边缘的优化<code class="highlighter-rouge">default：false</code></li>
+  <li><code class="highlighter-rouge">shadowMapEnabled</code> ：如果想让光源可以生成阴影，需要开启<code class="highlighter-rouge">default：false</code></li>
+</ul>
+
+<h2 id="lights">lights</h2>
+
+<h3 id="ambientlight">AmbientLight</h3>
+
+<p>影响整个场景的光源，但是没有特定的光线来源。所以不会产生阴影。</p>
+
+<h4 id="constructor-5">Constructor</h4>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">light</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">AmbientLight</span><span class="p">(</span> <span class="nx">color</span><span class="p">,</span> <span class="nx">intensity</span> <span class="p">);</span>
+    
+    <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">light</span> <span class="p">);</span>
+
+</code></pre>
+</div>
+
+<h4 id="main-properties-5">Main Properties</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">color</code> ：光源颜色</li>
+  <li><code class="highlighter-rouge">intensity</code> ：光源的光照强度  <code class="highlighter-rouge">default：1</code></li>
+</ul>
+
+<h3 id="pointlight">PointLight</h3>
+
+<p>点光源，照向所有方向的光源</p>
+
+<h4 id="constructor-6">Constructor</h4>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">light</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">PointLight</span><span class="p">(</span> <span class="nx">color</span><span class="p">,</span> <span class="nx">intensity</span><span class="p">,</span> <span class="nx">distance</span><span class="p">,</span> <span class="nx">decay</span> <span class="p">);</span>
+    
+    <span class="nx">light</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">z</span> <span class="p">);</span>
+    
+    <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">light</span> <span class="p">);</span>
+
+</code></pre>
+</div>
+
+<h4 id="main-properties-6">Main Properties</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">color</code> ：光源颜色</li>
+  <li><code class="highlighter-rouge">intensity</code> ：光源的光照强度  <code class="highlighter-rouge">default：1</code></li>
+  <li><code class="highlighter-rouge">distance</code> ：光源能投射到的最远距离<code class="highlighter-rouge">default：0.0</code></li>
+  <li><code class="highlighter-rouge">decay</code> ：光沿着距离变暗的程度<code class="highlighter-rouge">default：1</code></li>
+  <li><code class="highlighter-rouge">shadow</code> ：存储光的阴影所有相关信息</li>
+</ul>
+
+<h3 id="spotlight">SpotLight</h3>
+
+<p>聚光灯光源，锥形灯光</p>
+
+<h4 id="constructor-7">Constructor</h4>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">light</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">SpotLight</span><span class="p">(</span> <span class="nx">color</span><span class="p">,</span> <span class="nx">intensity</span><span class="p">,</span> <span class="nx">distance</span><span class="p">,</span> <span class="nx">angle</span><span class="p">,</span> <span class="nx">penumbra</span><span class="p">,</span> <span class="nx">decay</span> <span class="p">)</span>
+    
+    <span class="nx">light</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">z</span> <span class="p">);</span>
+    <span class="c1">//光源产生阴影</span>
+    <span class="nx">spotLight</span><span class="p">.</span><span class="nx">castShadow</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    
+    <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">light</span> <span class="p">);</span>
+
+</code></pre>
+</div>
+
+<h4 id="main-properties-7">Main Properties</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">color</code> ：光源颜色</li>
+  <li><code class="highlighter-rouge">intensity</code> ：光源的光照强度  <code class="highlighter-rouge">default：1</code></li>
+  <li><code class="highlighter-rouge">distance</code> ：光源能投射到的最远距离<code class="highlighter-rouge">default：0.0</code></li>
+  <li><code class="highlighter-rouge">angle</code> ：锥形光源的角度  <code class="highlighter-rouge">max：Math.PI/2</code></li>
+  <li><code class="highlighter-rouge">penumbra</code> ：聚光灯的从照射点的衰减速度属性 <code class="highlighter-rouge">default：0</code></li>
+  <li><code class="highlighter-rouge">decay</code> ：光沿着距离变暗的程度<code class="highlighter-rouge">default：1</code></li>
+  <li><code class="highlighter-rouge">target</code> ：光投射的目标<code class="highlighter-rouge">default：position(0,0,0)</code></li>
+  <li><code class="highlighter-rouge">shadow</code> ：存储光的阴影所有相关信息</li>
+  <li><code class="highlighter-rouge">castShadow</code> ：如果设为true则生成动态投影<code class="highlighter-rouge">default：false</code></li>
+</ul>
+
+<h3 id="directinallight">DirectinalLight</h3>
+
+<p>模型类似于太阳的距离很远的光源</p>
+
+<h4 id="constructor-8">Constructor</h4>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">directionalLight</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">DirectionalLight</span><span class="p">(</span> <span class="nx">hex</span><span class="p">,</span> <span class="nx">intensity</span> <span class="p">);</span>
+    
+    <span class="nx">directionalLight</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">z</span> <span class="p">);</span>
+    
+    <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">directionalLight</span> <span class="p">);</span>
+
+</code></pre>
+</div>
+
+<h4 id="main-properties-8">Main Properties</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">color</code> ：光源颜色</li>
+  <li><code class="highlighter-rouge">intensity</code> ：光源的光照强度  <code class="highlighter-rouge">default：1</code></li>
+  <li><code class="highlighter-rouge">target</code> ：光投射的目标<code class="highlighter-rouge">default：position(0,0,0)</code></li>
+  <li><code class="highlighter-rouge">shadow</code> ：存储光的阴影所有相关信息</li>
+  <li><code class="highlighter-rouge">castShadow</code> ：如果设为true则生成动态投影<code class="highlighter-rouge">default：false</code></li>
+</ul>
+
+<h2 id="materials">Materials</h2>
+
+<p>材质，决定了几何体外表的样子</p>
+
+<h3 id="types-of-material">Types of Material</h3>
+
+<ul>
+  <li><code class="highlighter-rouge">MeshBasicMaterial</code> ：基础材质，简单地颜色。</li>
+  <li><code class="highlighter-rouge">MeshDepthMaterial</code> ：根据网格到相机的距离计算颜色。</li>
+  <li><code class="highlighter-rouge">MeshNormalMaterial</code> ：根据物体表面的法向向量计算颜色。</li>
+  <li><code class="highlighter-rouge">MeshFaceMaterial</code> ：一个可以为各个表面指定不同颜色的容器。</li>
+  <li><code class="highlighter-rouge">MeshLambertMaterial</code> ：考虑光照效果，创建颜色暗淡不光亮的物体。</li>
+  <li><code class="highlighter-rouge">MeshPhongMaterial</code> ：考虑光照效果，创建光亮的物体。</li>
+  <li><code class="highlighter-rouge">ShaderMaterial</code> ：自定义着色器程序。</li>
+  <li><code class="highlighter-rouge">LineBasicMaterial</code> ：这种材质可用于<code class="highlighter-rouge">THREE.Line</code>。</li>
+  <li><code class="highlighter-rouge">LineDashedMaterial</code> ：创建虚线效果。</li>
+</ul>
+
+<h3 id="common-main-properties">Common Main Properties</h3>
+
+<ul>
+  <li><code class="highlighter-rouge">ID</code> ：用来标示材质。在创建时赋值。</li>
+  <li><code class="highlighter-rouge">name</code> ：通过这个属性赋予材质名称。</li>
+  <li><code class="highlighter-rouge">opacity</code> ：设置材质的透明度。</li>
+  <li><code class="highlighter-rouge">transparent</code> ：是否透明。如果为<code class="highlighter-rouge">true</code>则用<code class="highlighter-rouge">opacity</code>值渲染物体。</li>
+  <li><code class="highlighter-rouge">overdraw</code> ：过度描绘（如果渲染出的物体有缝隙，则可以设为<code class="highlighter-rouge">true</code>）。</li>
+  <li><code class="highlighter-rouge">visible</code> ：设置材质是否可见。</li>
+  <li><code class="highlighter-rouge">side</code> ：决定哪一面应用材质<code class="highlighter-rouge">default：THREE.FrontSide（前面）</code><code class="highlighter-rouge">THREE.BackSide（后面）</code><code class="highlighter-rouge">THREE.DoubleSide（双侧）</code>。</li>
+  <li><code class="highlighter-rouge">needsUpdate</code> ：告诉Three.js库材质是否改变了。如果为<code class="highlighter-rouge">true</code>则使用新的材质刷新缓存。</li>
+</ul>
+
+<h2 id="2dgeometries">2DGeometries</h2>
+
+<p>二维网格</p>
+
+<h3 id="planegeometry">PlaneGeometry</h3>
+
+<p>二维矩形</p>
+
+<h4 id="main-properties-9">Main Properties</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">width</code> ：宽度   <code class="highlighter-rouge">needed</code> ：true</li>
+  <li><code class="highlighter-rouge">height</code> ：高度   <code class="highlighter-rouge">needed</code> ：true</li>
+  <li><code class="highlighter-rouge">widthSegments</code> ：宽度段数   <code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">heightSegments</code> ：高度段数   <code class="highlighter-rouge">needed</code> ：false</li>
+</ul>
+
+<h3 id="circlegeometry">CircleGeometry</h3>
+
+<p>二维圆</p>
+
+<h4 id="main-properties-10">Main Properties</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">radius</code> ：半径   <code class="highlighter-rouge">needed</code> ：true</li>
+  <li><code class="highlighter-rouge">segments</code> ：分段   <code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">thetaStart</code> ：起始角   <code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">thetalength</code> ：角度   <code class="highlighter-rouge">needed</code> ：false</li>
+</ul>
+
+<h3 id="shapegeometry">ShapeGeometry</h3>
+
+<p>自定义二维图形
+包含了众多的绘图函数。</p>
+
+<p><em>learn more from <code class="highlighter-rouge">http://threejs.org/</code></em></p>
+
+<h2 id="3dgeometries">3DGeometries</h2>
+
+<p>三维网格</p>
+
+<h3 id="cubegeometry">CubeGeometry</h3>
+
+<p>三维矩形</p>
+
+<h4 id="main-properties-11">Main Properties</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">width</code> ：宽度   <code class="highlighter-rouge">needed</code> ：true</li>
+  <li><code class="highlighter-rouge">height</code> ：高度   <code class="highlighter-rouge">needed</code> ：true</li>
+  <li><code class="highlighter-rouge">depth</code> ：深度   <code class="highlighter-rouge">needed</code> ：true</li>
+  <li><code class="highlighter-rouge">widthSegments</code> ：宽度段数   <code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">heightSegments</code> ：高度段数   <code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">depthSegments</code> ：深度段数   <code class="highlighter-rouge">needed</code> ：false</li>
+</ul>
+
+<h3 id="spheregeometry">SphereGeometry</h3>
+
+<p>三维球体</p>
+
+<h4 id="main-properties-12">Main Properties</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">radius</code> ：半径<code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">widthSegments</code> ：宽度段数  <code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">heightSegments</code> ：高度段数 <code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">phiStart</code> ：指定x轴从什么地方开始绘制<code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">philength</code> ：指定从phiStart开始绘制多少 <code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">thetaStart</code> ：指定y轴从什么地方开始绘制   <code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">thetaLength</code> ：指定从thetaStart开始绘制多少  <code class="highlighter-rouge">needed</code> ：false</li>
+</ul>
+
+<h3 id="cylindergeometry">CylinderGeometry</h3>
+
+<p>三维圆柱体</p>
+
+<h4 id="main-properties-13">Main Properties</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">radiusTop</code> ：圆柱体顶部尺寸<code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">radiusbutton</code> ：圆柱体底部尺寸  <code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">height</code> ：圆柱的高度 <code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">segmentsX</code> ：设置沿x轴分多少段<code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">segmentsY</code> ：设置沿y轴分多少段 <code class="highlighter-rouge">needed</code> ：false</li>
+  <li><code class="highlighter-rouge">openEnded</code> ：指定网格顶部和底部是否封闭  <code class="highlighter-rouge">needed</code> ：false</li>
+</ul>
+
+<h3 id="othergeometry">otherGeometry</h3>
+
+<p>还有很多高级的几何图形。</p>
+
+<p><em>learn more from <code class="highlighter-rouge">http://threejs.org/</code></em></p>
+
+<h2 id="有感而言">有感而言</h2>
+
+<p>好吧我承认罗列了那么多并没有卵用，但是原谅我有点强迫症，总觉得没有这个不完整。
+虽然没有列全我还是感到很不爽。
+蟹蟹</p>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/08/09/three-js-basic-expand/">three.js-Basic-Expand</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/08/09/three-js-shadow/">three.js-shadow</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/08/09/three-js-core/" data-title="three.js-core" data-url="http://localhost:4000/2016/08/09/three-js-core/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

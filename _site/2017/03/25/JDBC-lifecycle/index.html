@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>JDBC 基础知识</title>
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2017/03/25/JDBC-lifecycle/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>JDBC 基础知识</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2017-03-25
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#JDBC" title="Tag: JDBC" rel="tag">JDBC</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#jdbc基本步骤" id="markdown-toc-jdbc基本步骤"><code class="highlighter-rouge">JDBC</code>基本步骤：</a></li>
+  <li><a href="#jdbc-常用-api" id="markdown-toc-jdbc-常用-api"><code class="highlighter-rouge">JDBC</code> 常用 <code class="highlighter-rouge">API</code></a>    <ul>
+      <li><a href="#connection" id="markdown-toc-connection"><code class="highlighter-rouge">Connection</code></a></li>
+      <li><a href="#statement" id="markdown-toc-statement"><code class="highlighter-rouge">Statement</code></a></li>
+      <li><a href="#resultset" id="markdown-toc-resultset"><code class="highlighter-rouge">ResultSet</code></a></li>
+    </ul>
+  </li>
+  <li><a href="#数据库连接池" id="markdown-toc-数据库连接池">数据库连接池</a></li>
+</ul>
+
+<p>本篇简单介绍<code class="highlighter-rouge">JDBC</code></p>
+
+<h2 id="jdbc基本步骤"><code class="highlighter-rouge">JDBC</code>基本步骤：</h2>
+
+<p>1.1 加载<code class="highlighter-rouge">JDBC</code>驱动</p>
+
+<p>2.2 定义连接的<code class="highlighter-rouge">URL</code></p>
+
+<p>3.3 建立数据库连接</p>
+
+<p>4.4 创建<code class="highlighter-rouge">Statement</code>对象</p>
+
+<p>5.5 执行数据库操作</p>
+
+<p>6.6 处理结束</p>
+
+<p>7.7 关闭连接</p>
+
+<ul>
+  <li>
+    <p>在同一时间下，每个<code class="highlighter-rouge">Statement</code>对象只能打开一个<code class="highlighter-rouge">ResultSet</code>对象。所以，假如有两个同样结果的结果集在交叉访问，那么这两个结果集必定为两个不同的<code class="highlighter-rouge">Statement</code>对象所创建。如果在打开一个新的结果集的时候存在一个已经打开的结果集，则这个已经存在的结果集会被隐式的关闭。</p>
+  </li>
+  <li>
+    <p>默认情况下<code class="highlighter-rouge">ResultSet</code>(结果集)是不可更新的，且只能向前移动。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">ResultSet</code>的生命周期和<code class="highlighter-rouge">JDBC</code>操作相关,如果<code class="highlighter-rouge">Statement</code>和<code class="highlighter-rouge">Connection</code>要得到释放,<code class="highlighter-rouge">ResultSet</code>首先得释放。</p>
+  </li>
+</ul>
+
+<h2 id="jdbc-常用-api"><code class="highlighter-rouge">JDBC</code> 常用 <code class="highlighter-rouge">API</code></h2>
+
+<h3 id="connection"><code class="highlighter-rouge">Connection</code></h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>1.createStatement()：创建数据库连接
+
+2.prepareStatement(String sql):创建预处理语句
+
+3.prepareCall(String sql):创建可调用语句
+
+4.getAutoCommit():获取自动提交的模式
+
+5.setAutoCommit():设置自动提交的模式
+
+6.commit():提交所执行的SQL语句
+
+7.rollback():回滚所执行的SQL语句
+
+8.getMetaData():获取一个DatabaseMetaData对象，该对象包含了有关数据库的基本信息
+
+9.close():关闭数据库连接
+
+10.isClose()：判断数据库连接是否超时或被显示关闭
+</code></pre>
+</div>
+
+<h3 id="statement"><code class="highlighter-rouge">Statement</code></h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>1.execute(String sql):执行SQL语句，如果返回值是结果集则为true,否则为false
+
+2.executeQuery(String sql):执行SQL语句，返回值为ResultSet
+
+3.executeUpdate(String sql):执行SQL语句，返回值为所影响的行数
+
+4.addBatch(String sql):向当前Statement对象的命令列表中添加新的批处理SQL语句
+
+5.clearBatch():清空当前Statement对象的命令列表
+
+6.executeBatch()：执行当前Statement对象的批处理语句，返回值为每个语句所影响的函数数组
+
+7.getConnection():返回创建了该Statement对象的Connection对象
+
+8.getQueryTimeout():获取等待处理结果的时间
+
+9.setQueryTimeout():设置等待处理结果的时间
+</code></pre>
+</div>
+
+<h3 id="resultset"><code class="highlighter-rouge">ResultSet</code></h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>1.first()/beforeFirst():将游标移动到ResultSet中第一条记录(的前面)
+
+2.last()/afterLast():将游标移动到ResultSet中最后一条记录(的后面)
+
+3.absolute(int column):将游标移动到相对于第一行的指定行，负数则为相对于最后一条记录
+
+4.relative(int rows):将游标移动到相对于当前行的第几行,正为向下，负为向上
+
+5.next():将游标下移一行
+
+6.previous():将游标上移一行
+
+7.insertRow():向当前ResultSet和数据库中被插入行处插入一条记录
+
+8.deleteRow():将当前ResultSet中的当前行和数据库中对应的记录删除
+
+9.updateRow():用当前ResultSet中已更新的记录更新数据库中对应的记录
+
+10.cancelUpdate():取消当前对ResultSet和数据库中所做的操作
+
+11.findColumn(String columnName):返回当前ResultSet中与指定列名对应的索引
+
+12.getRow():返回ResultSet中的当前行号
+
+13.refreshRow():更新当前ResultSet中的所有记录
+
+14.getMetaData():返回描述ResultSet的ResultSetMetaData对象
+
+15.isAfterLast(): 是否到了结尾
+
+16.isBeforeFirst(): 是否到了开头
+
+17.isFirst():是否第一条记录   
+
+18.isLast(): 是否最后一条记录
+
+19.wasNull():检查列值是否为NULL值，如果列的类型为基本类型，且数据库中的值为0，那么这项检查就很重要。由于数据库NULL也返回0，所以0值和数据库的NULL不能区分。如果列的类型为对象，可以简单地将返回值与null比较
+
+20.close():关闭当前ResultSet
+</code></pre>
+</div>
+
+<h2 id="数据库连接池">数据库连接池</h2>
+
+<p>数据库连接池的基本思想就是为数据库连接建立一个“缓冲池”。预先在缓冲池中放入一定数量的连接，当需要建立数据库连接时，只需从“缓冲池”中取出一个，使用完毕之后再放回去。</p>
+
+<p>我们可以通过设定连接池最大连接数来防止系统无尽的与数据库连接。更为重要的是我们可以通过连接池的管理机制监视数据库的连接的数量、使用情况，为系统开发、测试及性能调整提供依据。</p>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2017/03/25/Android-connection-to-mysql/">Android 链接mysql数据库</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2017/03/26/mysql-1045/">mysql 错误1045</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2017/03/25/JDBC-lifecycle/" data-title="JDBC 基础知识" data-url="http://localhost:4000/2017/03/25/JDBC-lifecycle/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

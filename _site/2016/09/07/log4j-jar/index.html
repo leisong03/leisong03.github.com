@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>log4j 配置和使用</title>
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/09/07/log4j-jar/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>log4j 配置和使用</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-09-07
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#Java" title="Tag: Java" rel="tag">Java</a>&nbsp;
+    
+        <a href="/tag/#log4j" title="Tag: log4j" rel="tag">log4j</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#log4j" id="markdown-toc-log4j">log4j</a>    <ul>
+      <li><a href="#log4j-1" id="markdown-toc-log4j-1">log4j</a></li>
+      <li><a href="#log4j配置" id="markdown-toc-log4j配置">log4j配置</a>        <ul>
+          <li><a href="#log4j格式" id="markdown-toc-log4j格式">log4j格式</a></li>
+          <li><a href="#log4jproperty" id="markdown-toc-log4jproperty">log4j.property</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="log4j">log4j</h2>
+
+<p><code class="highlighter-rouge">Log4j</code>是一个基于Java的日志记录工具，是几种Java日志框架之一。最新版本为<code class="highlighter-rouge">2.0</code>。</p>
+
+<h3 id="log4j-1">log4j</h3>
+
+<p>使用<code class="highlighter-rouge">Maven</code>下载：
+(Maven使用可以参照以往的博客)</p>
+
+<div class="language-xml highlighter-rouge"><pre class="highlight"><code>
+		<span class="c">&lt;!-- https://mvnrepository.com/artifact/log4j/log4j --&gt;</span>
+		<span class="nt">&lt;dependency&gt;</span>
+		    <span class="nt">&lt;groupId&gt;</span>log4j<span class="nt">&lt;/groupId&gt;</span>
+		    <span class="nt">&lt;artifactId&gt;</span>log4j<span class="nt">&lt;/artifactId&gt;</span>
+		    <span class="nt">&lt;version&gt;</span>1.2.17<span class="nt">&lt;/version&gt;</span>
+		<span class="nt">&lt;/dependency&gt;</span>
+
+</code></pre>
+</div>
+
+<h3 id="log4j配置">log4j配置</h3>
+
+<p>鄙人的使用时基于<code class="highlighter-rouge">JFinal</code>的。
+新建property文件，<code class="highlighter-rouge">log4j.property</code>放在<code class="highlighter-rouge">scr</code>中。</p>
+
+<h4 id="log4j格式">log4j格式</h4>
+
+<ul>
+  <li>日志级别</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    
+    //日志级别
+    log4j.rootLogger = appender1,appender2...
+</code></pre>
+</div>
+
+<p>log4j的输出级别一共有五级(其中级别最高的是<code class="highlighter-rouge">FATAL</code>  <code class="highlighter-rouge">FATAL</code>&gt;<code class="highlighter-rouge">ERROR</code>&gt;<code class="highlighter-rouge">WARN</code>&gt;<code class="highlighter-rouge">INFO</code>&gt;<code class="highlighter-rouge">DEBUG</code>)</p>
+
+<p>Tips:<code class="highlighter-rouge">rootLogger</code> 会对整个项目生效，如果想指定的包使用<code class="highlighter-rouge">log4j.logger.packageName</code></p>
+
+<ul>
+  <li>日志输出路径</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    //日志输出路径(这里为控制台)
+    log4j.appender.appender1=org.apache.log4j.ConsoleAppender;
+</code></pre>
+</div>
+
+<ol>
+  <li>1 ConsoleAppender（控制台）</li>
+  <li>2 FileAppender（文件）</li>
+  <li>3 DailyRollingFileAppender（每天产生一个日志文件）</li>
+  <li>4 RollingFileAppender（文件大小到达指定尺寸时产生一个新的文件）</li>
+  <li>5 WriteAppender（将日志信息以流格式发送到任意指定的地方）</li>
+  <li>6 JDBCAppender（将日志信息保存到数据库中）</li>
+</ol>
+
+<ul>
+  <li>日志编码</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    //日志输出路径(这里为`UTF-8`)
+    log4j.appender.appender1.encoding=UTF-8;
+ 
+</code></pre>
+</div>
+
+<ul>
+  <li>日志路径</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    //日志路径(这里为`WebRoot`同级的`log`文件夹的`error.log`)
+    log4j.appender.appender1.File=log/error.log;
+</code></pre>
+</div>
+
+<ul>
+  <li>日志布局格式</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    //日志布局格式(这里为`PatternLayout`)
+    log4j.appender.appender1.layout=org.apache.log4j.PatternLayout;
+</code></pre>
+</div>
+
+<ul>
+  <li>日志输出格式</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    //日志输出格式(这里为`一种日期格式`)
+    log4j.appender.appender1.layout.ConversionPattern=%-d{yyyy-MM-dd HH\:mm\:ss} [%c]-[%p] %m%n
+ 
+</code></pre>
+</div>
+
+<ol>
+  <li>1 %c 输出日志信息所属的类的全名</li>
+  <li>2 %d 输出日志时间点的日期或时间，默认格式为ISO8601，也可以在其后指定格式，比如：%d{yyy-M-dd HH:mm:ss }</li>
+  <li>3 %f 输出日志信息所属的类的类名</li>
+  <li>4 %l 输出日志事件的发生位置，即输出日志信息的语句处于它所在的类的第几行</li>
+  <li>5 %m 输出代码中指定的信息，如log(message)中的message</li>
+  <li>6 %n 输出一个回车换行符，Windows平台为“rn”，Unix平台为“n”</li>
+  <li>7 %p 输出优先级，即DEBUG，INFO，WARN，ERROR，FATAL。如果是调用debug()输出的，则为DEBUG，依此类推</li>
+  <li>8 %r 输出自应用启动到输出该日志信息所耗费的毫秒数</li>
+  <li>9 %t 输出产生该日志事件的线程名</li>
+</ol>
+
+<ul>
+  <li>要追加的属性</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code> 
+    log4j.appender.ServerDailyRollingFile.Append=true 
+ 
+</code></pre>
+</div>
+
+<h4 id="log4jproperty">log4j.property</h4>
+
+<p>配置<code class="highlighter-rouge">log4j.property</code></p>
+
+<div class="language-xml highlighter-rouge"><pre class="highlight"><code> 
+		 log4j.rootLogger=E,I,console
+		
+		log4j.appender.E=org.apache.log4j.DailyRollingFileAppender
+		log4j.appender.E.encoding=UTF-8
+		log4j.appender.E.Append=true
+		log4j.appender.E.Threshold=error
+		log4j.appender.E.File=log/error.log
+		log4j.appender.E.layout=org.apache.log4j.PatternLayout
+		log4j.appender.E.layout.ConversionPattern=%-d{yyyy-MM-dd HH\:mm\:ss} [%c]-[%p] %m%n
+		
+		log4j.appender.I=org.apache.log4j.DailyRollingFileAppender
+		log4j.appender.I.encoding=UTF-8
+		log4j.appender.I.Append=true
+		log4j.appender.I.Threshold=info
+		log4j.appender.I.File=log/info.log
+		log4j.appender.I.layout=org.apache.log4j.PatternLayout
+		log4j.appender.I.layout.ConversionPattern=%-d{yyyy-MM-dd HH\:mm\:ss} [%c]-[%p] %m%n
+		
+		
+		log4j.appender.console=org.apache.log4j.ConsoleAppender
+		log4j.appender.console.Target=System.out
+		log4j.appender.console.layout=org.apache.log4j.PatternLayout
+		log4j.appender.console.layout.ConversionPattern=%n%-d{yyyy-MM-dd HH:mm:ss}%n[%p]-[Thread: %t]-[%C.%M()]: %m%n
+
+
+</code></pre>
+</div>
+
+<p>Java：比如在JFinal启动之后输出一条<code class="highlighter-rouge">info</code>信息。</p>
+
+<div class="language-xml highlighter-rouge"><pre class="highlight"><code> 
+	 @Override
+		public void afterJFinalStart() {
+		
+			Logger log=Logger.getLogger(Config.class);
+			
+			log.info("success");
+			
+		}
+
+</code></pre>
+</div>
+
+<hr />
+
+<p><img src="http://ww2.sinaimg.cn/mw690/c584f169gw1f7m4cjo6oyj20hh03ddgq.jpg" alt="outPut" /></p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/23/java-ThreadPoolExecutor/"> Java ThreadPoolExecutor
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/07/500-Data-Structures-and-Algorithms-practice/">500 Data Structures and Algorithms practice problems and their solutions
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/09/java-Executors/">java 并发库之 Executors
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/08/java-Netty-TCP/">java Netty tcp通讯
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/07/java-Semaphore/">java 并发库之 Semaphore
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/04/28/svg-to-png/">java svg转png
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/09/07/fastjson-jar/">fastjson 配置和使用</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/09/20/javaScript-constructor-prototype/">javaScript constructor和prototype</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/09/07/log4j-jar/" data-title="log4j 配置和使用" data-url="http://localhost:4000/2016/09/07/log4j-jar/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

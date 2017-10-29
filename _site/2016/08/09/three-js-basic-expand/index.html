@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>three.js-Basic-Expand</title>
+    <meta name="description" content="Three.js学习笔记 本篇为基础扩展部分(学习使用插件扩展你的三维场景)">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/08/09/three-js-basic-expand/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>three.js-Basic-Expand</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-08-09
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#three.js" title="Tag: three.js" rel="tag">three.js</a>&nbsp;
+    
+        <a href="/tag/#javaScript" title="Tag: javaScript" rel="tag">javaScript</a>&nbsp;
+    
+        <a href="/tag/#WebGL" title="Tag: WebGL" rel="tag">WebGL</a>&nbsp;
+    
+        <a href="/tag/#Detector.js" title="Tag: Detector.js" rel="tag">Detector.js</a>&nbsp;
+    
+        <a href="/tag/#stats.js" title="Tag: stats.js" rel="tag">stats.js</a>&nbsp;
+    
+        <a href="/tag/#dat.gui.js" title="Tag: dat.gui.js" rel="tag">dat.gui.js</a>&nbsp;
+    
+        <a href="/tag/#tween.js" title="Tag: tween.js" rel="tag">tween.js</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#webgl支持" id="markdown-toc-webgl支持">WebGL支持</a></li>
+  <li><a href="#检测浏览器窗体" id="markdown-toc-检测浏览器窗体">检测浏览器窗体</a></li>
+  <li><a href="#性能检测" id="markdown-toc-性能检测">性能检测</a></li>
+  <li><a href="#控制面板" id="markdown-toc-控制面板">控制面板</a></li>
+  <li><a href="#补间动画" id="markdown-toc-补间动画">补间动画</a></li>
+  <li><a href="#view-source" id="markdown-toc-view-source">View source</a></li>
+</ul>
+
+<p>Three.js学习笔记 本篇为基础扩展部分(学习使用插件扩展你的三维场景)</p>
+
+<h2 id="webgl支持">WebGL支持</h2>
+<p>目前绝大部分主流浏览器是支持WebGL的，但是IE的大部分版本并不支持WebGL。
+所以如果你想使用旧版本的IE浏览器，可以通过下载<code class="highlighter-rouge">chrome</code>的<code class="highlighter-rouge">Google Chrome Frame</code>插件
+也可以使用<code class="highlighter-rouge">iewebgl</code></p>
+
+<p>同时对于浏览器的WebGL支持的检测也是必不可少的。
+three.js提供了<code class="highlighter-rouge">Detector.js</code>用来检测浏览器对于WebGL的支持。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"js/Detector.js"</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>    <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="nx">Detector</span><span class="p">.</span><span class="nx">webgl</span> <span class="p">)</span> <span class="nx">Detector</span><span class="p">.</span><span class="nx">addGetWebGLMessage</span><span class="p">();</span>
+
+</code></pre>
+</div>
+
+<h2 id="检测浏览器窗体">检测浏览器窗体</h2>
+<p>从上篇的Demo可以看到我们设置渲染的大小为<code class="highlighter-rouge">window.innerWidth</code><code class="highlighter-rouge">window.innerHeight</code>也就是浏览器窗体的大小。
+当我们的浏览器窗体发生变化的时候，就会发生很尴尬的情况。
+<img src="http://ww1.sinaimg.cn/mw690/c584f169gw1f6odzvym4kj20l70e3glk.jpg" alt="resize" /></p>
+
+<p>所以当窗体发生变化的时候，我们需要更新相机的信息。并且设置新的<code class="highlighter-rouge">window.innerWidth</code><code class="highlighter-rouge">window.innerHeight</code></p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span> <span class="s1">'resize'</span><span class="p">,</span> <span class="nx">onWindowResize</span><span class="p">,</span> <span class="kc">false</span> <span class="p">);</span>
+    
+    <span class="kd">function</span> <span class="nx">onWindowResize</span><span class="p">()</span> <span class="p">{</span>
+
+				<span class="nx">camera</span><span class="p">.</span><span class="nx">aspect</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span> <span class="o">/</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span><span class="p">;</span>
+				<span class="nx">camera</span><span class="p">.</span><span class="nx">updateProjectionMatrix</span><span class="p">();</span>
+
+				<span class="nx">renderer</span><span class="p">.</span><span class="nx">setSize</span><span class="p">(</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span><span class="p">,</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span> <span class="p">);</span>
+			<span class="p">}</span>
+
+
+</code></pre>
+</div>
+
+<h2 id="性能检测">性能检测</h2>
+<p>在3D世界里经常通过帧数<code class="highlighter-rouge">FPS</code>（Frames Per Second）来评估一个程序的性能。
+帧数越高，画面越流畅。大部分的游戏帧数都会超过30。
+three.js提供了<code class="highlighter-rouge">stats.js</code>用来检测程序的性能。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"js/stats.min.js"</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>
+    <span class="c1">//新建一个信息框</span>
+    <span class="kd">var</span> <span class="nx">stats</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Stats</span><span class="p">();</span>
+    
+    <span class="c1">// 0: fps, 1: ms, 2: mb, 3+: custom</span>
+    <span class="nx">stats</span><span class="p">.</span><span class="nx">showPanel</span><span class="p">(</span> <span class="mi">1</span> <span class="p">);</span> 
+    
+    <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">stats</span><span class="p">.</span><span class="nx">domElement</span><span class="p">);</span>
+    
+    <span class="c1">//渲染函数</span>
+    <span class="kd">function</span> <span class="nx">render</span><span class="p">(){</span>
+         <span class="c1">//实时渲染</span>
+         <span class="nx">stats</span><span class="p">.</span><span class="nx">update</span><span class="p">();</span>
+        <span class="p">}</span>
+
+</code></pre>
+</div>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="c1">//手动开关监控器</span>
+    <span class="nx">stats</span><span class="p">.</span><span class="nx">begin</span><span class="p">();</span>
+    <span class="nx">stats</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+
+</code></pre>
+</div>
+
+<p>Panel效果图：
+<img src="http://ww4.sinaimg.cn/mw690/c584f169gw1f6nxpaolghj20i202m0t1.jpg" alt="panel" /></p>
+
+<h2 id="控制面板">控制面板</h2>
+<p><code class="highlighter-rouge">dat.gui.js</code>
+使用<code class="highlighter-rouge">dat.gui.js</code>可以在页面生成一个控制面板方便你直接控制三维场景中的对象。
+以前一篇的Demo为例，通过面板控制<code class="highlighter-rouge">Cube</code>的<code class="highlighter-rouge">width</code>，<code class="highlighter-rouge">height</code>和<code class="highlighter-rouge">depth</code></p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"js/dat.gui.min.js"</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>
+     <span class="kd">var</span> <span class="nx">controls</span> <span class="o">=</span> <span class="k">new</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="c1">//初始化width，height和depth属性</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">depth</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+            
+            <span class="c1">//重绘函数</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">redraw</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            
+                <span class="c1">//移出旧的cube</span>
+                <span class="nx">scene</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">cube</span><span class="p">);</span>
+                
+                <span class="c1">//重绘三维图形</span>
+                <span class="kd">var</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">CubeGeometry</span><span class="p">(</span><span class="nx">controls</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span> <span class="nx">controls</span><span class="p">.</span><span class="nx">height</span><span class="p">,</span> <span class="nx">controls</span><span class="p">.</span><span class="nx">depth</span><span class="p">);</span>
+
+				<span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">({</span>
+					<span class="na">color</span><span class="p">:</span> <span class="mh">0x4d6dad</span>
+				<span class="p">});</span>
+
+				<span class="kd">var</span> <span class="nx">mesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span><span class="nx">geometry</span><span class="p">,</span> <span class="nx">material</span><span class="p">);</span>
+				<span class="c1">//添加新的cube</span>
+                <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">cube</span><span class="p">);</span>
+            <span class="p">};</span>
+       <span class="p">}</span>
+     
+     <span class="c1">//实例化一个gui对象  </span>
+     <span class="kd">var</span> <span class="nx">gui</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">dat</span><span class="p">.</span><span class="nx">GUI</span><span class="p">();</span>
+         
+         <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">controls</span><span class="p">,</span> <span class="s1">'width'</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">).</span><span class="nx">onChange</span><span class="p">(</span><span class="nx">controls</span><span class="p">.</span><span class="nx">redraw</span><span class="p">);</span>
+         <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">controls</span><span class="p">,</span> <span class="s1">'height'</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">).</span><span class="nx">onChange</span><span class="p">(</span><span class="nx">controls</span><span class="p">.</span><span class="nx">redraw</span><span class="p">);</span>
+         <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">controls</span><span class="p">,</span> <span class="s1">'depth'</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">).</span><span class="nx">onChange</span><span class="p">(</span><span class="nx">controls</span><span class="p">.</span><span class="nx">redraw</span><span class="p">);</span>
+
+
+</code></pre>
+</div>
+
+<p>gui效果图：
+<img src="http://ww2.sinaimg.cn/mw690/c584f169gw1f6nz6f0jvgj206u02wdfr.jpg" alt="gui" /></p>
+
+<h2 id="补间动画">补间动画</h2>
+<p><code class="highlighter-rouge">tween.js</code>
+<code class="highlighter-rouge">tween.js</code>是一个小型的JavaScript库。你可以用来定义某个属性在两个值之间的过渡。
+它会自动计算出起始值到结束值之间的所有中间值。从来在三维场景中实现动画效果。</p>
+
+<p>以前一篇的Demo为例，通过<code class="highlighter-rouge">tween.js</code>控制<code class="highlighter-rouge">Cube</code>的<code class="highlighter-rouge">position</code></p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"js/tween.min.js"</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>   
+   <span class="c1">//定义要控制的对象</span>
+    <span class="kd">var</span> <span class="nx">option</span> <span class="o">=</span> <span class="p">{</span>  
+       <span class="na">px</span><span class="p">:</span> <span class="nx">cube</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">x</span>
+   <span class="p">};</span>  
+   
+    <span class="cm">/*  
+     *  .to 定义起始值和结束值 ，1000划分的中间值个数
+     *  .delay 定义开始延时
+     *  .start 开启补间动画
+     */</span> 
+     
+    
+    <span class="kd">var</span> <span class="nx">tween</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TWEEN</span><span class="p">.</span><span class="nx">Tween</span><span class="p">(</span><span class="nx">option</span><span class="p">)</span>  
+        <span class="p">.</span><span class="nx">to</span><span class="p">({</span>  
+                <span class="na">px</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">]</span>
+        <span class="p">},</span> <span class="mi">1000</span><span class="p">)</span>  
+        <span class="p">.</span><span class="nx">onUpdate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>  
+            <span class="nx">cube</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">px</span><span class="p">;</span>
+        <span class="p">})</span>  
+        <span class="p">.</span><span class="nx">delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>  
+        <span class="p">.</span><span class="nx">start</span><span class="p">();</span>  
+    
+    <span class="c1">//渲染函数</span>
+    <span class="kd">function</span> <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>  
+        
+        <span class="c1">//实时更新</span>
+        <span class="nx">TWEEN</span><span class="p">.</span><span class="nx">update</span><span class="p">();</span>  
+        
+        <span class="nx">requestAnimationFrame</span><span class="p">(</span><span class="nx">render</span><span class="p">);</span>  
+        <span class="nx">renderer</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span><span class="p">);</span>  
+                  
+<span class="p">}</span>  
+    <span class="c1">// 你也可以调用tween.chain(tween)函数使动画循环播放或是几个动画连续播放。</span>
+</code></pre>
+</div>
+
+<hr />
+
+<p><img src="http://ww4.sinaimg.cn/mw690/c584f169gw1f6oe9u9w39j20bc0bxaab.jpg" alt="outPut" /></p>
+
+<h2 id="view-source">View source</h2>
+
+<p><em><a href="https://github.com/Chenjy1225/Chenjy1225.github.io/blob/master/source/three-basic-Expand.html">source code</a></em></p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/08/08/three-js-basic/">three.js-Basic</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/08/09/three-js-core/">three.js-core</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/08/09/three-js-basic-expand/" data-title="three.js-Basic-Expand" data-url="http://localhost:4000/2016/08/09/three-js-basic-expand/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

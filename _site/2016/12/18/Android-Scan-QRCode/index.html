@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Google-zxing 扫描二维码（2）</title>
+    <meta name="description" content="上一篇我们用Google-chart扫描了二维码，紧接着我们就用Google-zxing在我们的Android小手机上扫描读取二维码中的信息。">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/12/18/Android-Scan-QRCode/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>Google-zxing 扫描二维码（2）</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-12-18
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#Java" title="Tag: Java" rel="tag">Java</a>&nbsp;
+    
+        <a href="/tag/#Android" title="Tag: Android" rel="tag">Android</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#google-zxing" id="markdown-toc-google-zxing"><code class="highlighter-rouge">Google-zxing</code></a>    <ul>
+      <li><a href="#google-zxing简介" id="markdown-toc-google-zxing简介"><code class="highlighter-rouge">Google-zxing</code>简介</a></li>
+      <li><a href="#google-zxing存在的小bug修复" id="markdown-toc-google-zxing存在的小bug修复"><code class="highlighter-rouge">Google-zxing</code>存在的小<code class="highlighter-rouge">Bug</code>修复</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>上一篇我们用<code class="highlighter-rouge">Google-chart</code>扫描了二维码，紧接着我们就用<code class="highlighter-rouge">Google-zxing</code>在我们的<code class="highlighter-rouge">Android</code>小手机上扫描读取二维码中的信息。</p>
+
+<h2 id="google-zxing"><code class="highlighter-rouge">Google-zxing</code></h2>
+
+<h3 id="google-zxing简介"><code class="highlighter-rouge">Google-zxing</code>简介</h3>
+
+<p><code class="highlighter-rouge">Google-zxing</code>是<code class="highlighter-rouge">Google</code>的一个开源项目可以用来生成或是读取二维码。</p>
+
+<p>这里我们用来用来扫一扫读取我们生成的二维码。</p>
+
+<p><code class="highlighter-rouge">秉持的不要重复制造轮子的原则</code>。</p>
+
+<p>原博客地址：<a href="http://blog.csdn.net/xiaanming/article/details/10163203">原博客地址</a></p>
+
+<p>源码地址：<a href="http://download.csdn.net/detail/xiaanming/5990219">http://download.csdn.net/detail/xiaanming/5990219</a></p>
+
+<h3 id="google-zxing存在的小bug修复"><code class="highlighter-rouge">Google-zxing</code>存在的小<code class="highlighter-rouge">Bug</code>修复</h3>
+
+<p>1.1 <code class="highlighter-rouge">Google-zxing</code>原生的取景框太小</p>
+
+<p><code class="highlighter-rouge">mining.app.zxing.camera</code> 包里面的<code class="highlighter-rouge">CameraManager.java</code>,<code class="highlighter-rouge">getFramingRect</code>方法获取宽高的部分替换为</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+ <span class="n">DisplayMetrics</span> <span class="n">dm</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getResources</span><span class="o">().</span><span class="na">getDisplayMetrics</span><span class="o">();</span>
+      <span class="kt">int</span> <span class="n">width</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)(</span><span class="n">dm</span><span class="o">.</span><span class="na">widthPixels</span> <span class="o">*</span> <span class="mf">0.6</span><span class="o">);</span>
+      <span class="kt">int</span> <span class="n">height</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)(</span><span class="n">width</span> <span class="o">*</span> <span class="mf">0.9</span><span class="o">);</span>
+
+      <span class="kt">int</span> <span class="n">leftOffset</span> <span class="o">=</span> <span class="o">(</span><span class="n">screenResolution</span><span class="o">.</span><span class="na">x</span> <span class="o">-</span> <span class="n">width</span><span class="o">)</span> <span class="o">/</span> <span class="mi">2</span><span class="o">;</span>
+      <span class="kt">int</span> <span class="n">topOffset</span> <span class="o">=</span> <span class="o">(</span><span class="n">screenResolution</span><span class="o">.</span><span class="na">y</span> <span class="o">-</span> <span class="n">height</span><span class="o">)</span> <span class="o">/</span> <span class="mi">2</span><span class="o">;</span>
+
+</code></pre>
+</div>
+
+<p>2.2 扫描的时候二维码变形拉伸（zxing默认针对横屏扫描）</p>
+
+<p><code class="highlighter-rouge">mining.app.zxing.camera</code> 包里面的<code class="highlighter-rouge">CameraConfigurationManager.java</code>,<code class="highlighter-rouge">findBestPreviewSizeValue</code>方法的<code class="highlighter-rouge">newDiff</code>取值</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="c1">// 修改newDiff 取值</span>
+<span class="kt">int</span> <span class="n">newDiff</span><span class="o">=</span><span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">newY</span> <span class="o">-</span> <span class="n">screenResolution</span><span class="o">.</span><span class="na">x</span><span class="o">)</span> <span class="o">+</span> <span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">newX</span> <span class="o">-</span> <span class="n">screenResolution</span><span class="o">.</span><span class="na">y</span><span class="o">);</span>
+
+
+
+</code></pre>
+</div>
+
+<p>3.3 距离太近扫不出二维码</p>
+
+<p><code class="highlighter-rouge">mining.app.zxing.camera</code></p>
+
+<p>包里面的<code class="highlighter-rouge">CameraConfigurationManager.java</code>,<code class="highlighter-rouge">setDesiredCameraParameters</code>方法替换为</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="n">Camera</span><span class="o">.</span><span class="na">Parameters</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">camera</span><span class="o">.</span><span class="na">getParameters</span><span class="o">();</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Camera</span><span class="o">.</span><span class="na">Size</span><span class="o">&gt;</span> <span class="n">supportedPreviewSizes</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="na">getSupportedPreviewSizes</span><span class="o">();</span>
+<span class="kt">int</span> <span class="n">position</span> <span class="o">=</span><span class="mi">0</span><span class="o">;</span>
+<span class="k">if</span><span class="o">(</span><span class="n">supportedPreviewSizes</span><span class="o">.</span><span class="na">size</span><span class="o">()&gt;</span><span class="mi">2</span><span class="o">){</span>
+  <span class="n">position</span><span class="o">=</span><span class="n">supportedPreviewSizes</span><span class="o">.</span><span class="na">size</span><span class="o">()/</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span><span class="c1">//supportedPreviewSizes.get();</span>
+<span class="o">}</span><span class="k">else</span> <span class="o">{</span>
+  <span class="n">position</span><span class="o">=</span><span class="n">supportedPreviewSizes</span><span class="o">.</span><span class="na">size</span><span class="o">()/</span><span class="mi">2</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="kt">int</span> <span class="n">width</span> <span class="o">=</span> <span class="n">supportedPreviewSizes</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">position</span><span class="o">).</span><span class="na">width</span><span class="o">;</span>
+<span class="kt">int</span> <span class="n">height</span> <span class="o">=</span> <span class="n">supportedPreviewSizes</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">position</span><span class="o">).</span><span class="na">height</span><span class="o">;</span>
+<span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">"Setting preview size: "</span> <span class="o">+</span> <span class="n">cameraResolution</span><span class="o">);</span>
+<span class="n">camera</span><span class="o">.</span><span class="na">setDisplayOrientation</span><span class="o">(</span><span class="mi">90</span><span class="o">);</span>
+<span class="n">cameraResolution</span><span class="o">.</span><span class="na">x</span><span class="o">=</span><span class="n">width</span><span class="o">;</span>
+<span class="n">cameraResolution</span><span class="o">.</span><span class="na">y</span><span class="o">=</span><span class="n">height</span><span class="o">;</span>
+<span class="n">parameters</span><span class="o">.</span><span class="na">setPreviewSize</span><span class="o">(</span><span class="n">width</span><span class="o">,</span><span class="n">height</span><span class="o">);</span>
+<span class="n">setFlash</span><span class="o">(</span><span class="n">parameters</span><span class="o">);</span>
+<span class="n">setZoom</span><span class="o">(</span><span class="n">parameters</span><span class="o">);</span>
+<span class="n">camera</span><span class="o">.</span><span class="na">setParameters</span><span class="o">(</span><span class="n">parameters</span><span class="o">);</span>
+
+
+</code></pre>
+</div>
+
+<p><a href="https://github.com/Chenjy1225/ChenjyDemo/tree/gh-pages/google.zxing">修改后的Zxing源码</a></p>
+
+<p><em>爱谷歌真是太好了!</em></p>
+
+<p>然后我们项目<code class="highlighter-rouge">run</code>起来，扫描前面创建的二维码</p>
+
+<p><img src="http://ww3.sinaimg.cn/mw690/c584f169gw1fbgw0j63ogj20920fg0sm.jpg" alt="outPut" /></p>
+
+<p><img src="http://ww3.sinaimg.cn/mw690/c584f169gw1fbgwdyj7g5j20920fcdga.jpg" alt="outPut" /></p>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/23/java-ThreadPoolExecutor/"> Java ThreadPoolExecutor
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/15/Android-wechat-share/"> Android wechat 分享
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/10/Android-TimeoutExceptions/"> Android TimeoutExceptions及 wakelock
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/08/Android-Activity-life-time/"> Android Activity 生命周期
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/07/500-Data-Structures-and-Algorithms-practice/">500 Data Structures and Algorithms practice problems and their solutions
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/09/java-Executors/">java 并发库之 Executors
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/12/18/JFinal-project-exportExcel/">Jfinal 导出Excel（1）</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/12/30/Google-chart-QRCode/">Google-chart 生成二维码（1）</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/12/18/Android-Scan-QRCode/" data-title="Google-zxing 扫描二维码（2）" data-url="http://localhost:4000/2016/12/18/Android-Scan-QRCode/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

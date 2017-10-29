@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>JavaScript 加密方法(Hash算法)</title>
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/09/05/javaScript-password-encryption/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>JavaScript 加密方法(Hash算法)</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-09-05
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#JavaScript" title="Tag: JavaScript" rel="tag">JavaScript</a>&nbsp;
+    
+        <a href="/tag/#algorithm" title="Tag: algorithm" rel="tag">algorithm</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#原生的加密方式" id="markdown-toc-原生的加密方式">原生的加密方式</a>    <ul>
+      <li><a href="#escape和unescape" id="markdown-toc-escape和unescape">escape和unescape</a></li>
+      <li><a href="#hash算法" id="markdown-toc-hash算法">Hash算法</a></li>
+      <li><a href="#md5算法" id="markdown-toc-md5算法">MD5算法</a>        <ul>
+          <li><a href="#算法原理" id="markdown-toc-算法原理">算法原理</a></li>
+          <li><a href="#算法使用" id="markdown-toc-算法使用">算法使用</a></li>
+        </ul>
+      </li>
+      <li><a href="#sha家族" id="markdown-toc-sha家族">SHA家族</a>        <ul>
+          <li><a href="#算法原理-1" id="markdown-toc-算法原理-1">算法原理</a></li>
+          <li><a href="#算法使用-1" id="markdown-toc-算法使用-1">算法使用</a></li>
+        </ul>
+      </li>
+      <li><a href="#blizzard--one-way-hash" id="markdown-toc-blizzard--one-way-hash">Blizzard  <code class="highlighter-rouge">one way hash</code></a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="原生的加密方式">原生的加密方式</h2>
+
+<h3 id="escape和unescape">escape和unescape</h3>
+
+<p>如果是简单的加密我们可以使用JavaScript原生的方法<code class="highlighter-rouge">escape</code>和<code class="highlighter-rouge">unescape</code>。</p>
+
+<p><code class="highlighter-rouge">escape</code>方法不会对 ASCII 字母和数字进行编码，也不会对下面这些 ASCII 标点符号进行编码：<code class="highlighter-rouge"> * @ - _ + . / </code>。其他所有的字符都会被转义序列替换。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"output:"</span> <span class="o">+</span> <span class="nx">escape</span><span class="p">(</span><span class="s2">"chenjy 1225! "</span><span class="p">));</span>
+    
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"output:"</span> <span class="o">+</span> <span class="nx">unescape</span><span class="p">(</span><span class="nx">escape</span><span class="p">(</span><span class="s2">"chenjy 1225! "</span><span class="p">)));</span>
+	
+	<span class="nl">output</span><span class="p">:</span><span class="nx">chenjy</span><span class="o">%</span><span class="mi">201225</span><span class="o">%</span><span class="mi">21</span><span class="o">%</span><span class="mi">20</span>
+	
+	<span class="nl">output</span><span class="p">:</span><span class="nx">chenjy</span> <span class="mi">1225</span><span class="o">!</span> 
+	
+</code></pre>
+</div>
+
+<h3 id="hash算法">Hash算法</h3>
+
+<p>Hash算法特点：</p>
+
+<ul>
+  <li>很容易可以算出给的数值的散列数值</li>
+  <li>难以通过已知的散列数值推算原始信息</li>
+  <li>在不更改散列数值的基础上，无法更改消息内容</li>
+  <li>对于两条不同消息无法给出相同的散列数值</li>
+</ul>
+
+<p>由于Hash算法的有以上特性所以常用在很多的重要应用例如数字签名，消息认证码。</p>
+
+<h3 id="md5算法">MD5算法</h3>
+
+<p>MD5是提供了一种<code class="highlighter-rouge">128bit</code><code class="highlighter-rouge">Hash值</code>的密码散列函数，</p>
+
+<h4 id="算法原理">算法原理</h4>
+
+<p>填充输入信息，使其字节长度对512求余数为448。信息的长度扩展为<code class="highlighter-rouge"> N*512+448 bit N为整数</code>。
+添加4个32位的链接变量</p>
+
+<ul>
+  <li>A=0x01234567</li>
+  <li>B=0x89abcdef</li>
+  <li>C=0xfedcba98</li>
+  <li>D=0x76543210</li>
+</ul>
+
+<p>使其长度为<code class="highlighter-rouge">(N+1)*512 bit</code>，然后将每个<code class="highlighter-rouge">512bit</code>的组分为<code class="highlighter-rouge">16</code>个<code class="highlighter-rouge">32bit</code>子分组，最后经过一系列的算法生成<code class="highlighter-rouge">4</code>个<code class="highlighter-rouge">32bit</code>共<code class="highlighter-rouge">128bit</code>的散列值。</p>
+
+<h4 id="算法使用">算法使用</h4>
+
+<p>MD5js <a href="http://pajhome.org.uk/crypt/md5/md5.html">MD5.js source code</a></p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">hex_md5</span><span class="p">(</span><span class="s2">"chenjy 1225!"</span><span class="p">));</span>
+    <span class="c1">//basic-64编码</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">b64_md5</span><span class="p">(</span><span class="s2">"chenjy 1225!"</span><span class="p">));</span>
+    
+	<span class="nl">output</span><span class="p">:</span><span class="mi">6</span><span class="nx">e065c650d8258f73bac5a3cd8f88f47</span>
+	
+	<span class="nl">output</span><span class="p">:</span><span class="nx">bgZcZQ2CWPc7rFo82PiPRw</span>
+
+</code></pre>
+</div>
+
+<h3 id="sha家族">SHA家族</h3>
+
+<p>SHA家族是一个密码散列函数家族，分别是<code class="highlighter-rouge">SHA-1</code>、<code class="highlighter-rouge">SHA-224</code>、<code class="highlighter-rouge">SHA-256</code>、<code class="highlighter-rouge">SHA-384</code>和<code class="highlighter-rouge">SHA-512</code>。
+根据产生信息摘要的长度命名。</p>
+
+<ul>
+  <li>SHA-1：160bit</li>
+  <li>SHA-224：224bit</li>
+  <li>SHA-256：256bit</li>
+  <li>SHA-384：384bit</li>
+  <li>SHA-512：512bit</li>
+</ul>
+
+<h4 id="算法原理-1">算法原理</h4>
+
+<p>原理和<code class="highlighter-rouge">MD5</code>类似，以SHA-1为例：</p>
+
+<p><code class="highlighter-rouge">SHA-1</code>能根据<code class="highlighter-rouge">2-64bit</code>的信息输入计算出<code class="highlighter-rouge">160bit</code>的散列值的单向散列函数。</p>
+
+<p>填充数据的时候也是<code class="highlighter-rouge">512bit</code>为一组。在原始数据后先添加一个<code class="highlighter-rouge">1</code>然后添加<code class="highlighter-rouge">0</code>一直填满<code class="highlighter-rouge">448bit</code>。
+然后再添加原始数据长度<code class="highlighter-rouge">64bit</code>,共为<code class="highlighter-rouge">512bit</code>。</p>
+
+<p>同样分为为<code class="highlighter-rouge">16</code>个<code class="highlighter-rouge">32bit</code>子分组，最后经过一系列的算法生成<code class="highlighter-rouge">5</code>个<code class="highlighter-rouge">32bit</code>共<code class="highlighter-rouge">160bit</code>的散列值。</p>
+
+<h4 id="算法使用-1">算法使用</h4>
+
+<p>SHA-1.js <a href="http://pajhome.org.uk/crypt/md5/sha1.html">SHA-1.js source code</a></p>
+
+<p>SHA-256.js <a href="http://pajhome.org.uk/crypt/md5/sha256.html">SHA-256.js source code</a></p>
+
+<p>SHA-512.js <a href="http://pajhome.org.uk/crypt/md5/sha512.html">SHA-512.js source code</a></p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">hex_sha1</span><span class="p">(</span><span class="s2">"chenjy 1225!"</span><span class="p">));</span>
+    
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">hex_sha256</span><span class="p">(</span><span class="s2">"chenjy 1225!"</span><span class="p">));</span>
+    
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">hex_sha512</span><span class="p">(</span><span class="s2">"chenjy 1225!"</span><span class="p">));</span>
+    
+	<span class="nl">output</span><span class="p">:</span><span class="nx">a8a3b8b4263f7c12bbb400b6841aca472f53df0a</span>
+	
+	<span class="nl">output</span><span class="p">:</span><span class="mi">1</span><span class="nx">b4d37e8177634f191a7742c6d7e3d8aaf556aae583da0944e353001344fe3b0</span>
+
+    <span class="nl">output</span><span class="p">:</span><span class="mi">52622</span><span class="nx">c1d8351011cb8ec1c4c891387d9a221c34e9e7289692070ef6656e98c4025328682cb86bd8577f6ed2b51c61559adb76685356632543db3e9020cc162f2</span>
+</code></pre>
+</div>
+
+<h3 id="blizzard--one-way-hash">Blizzard  <code class="highlighter-rouge">one way hash</code></h3>
+
+<hr />
+<p><img src="http://ww3.sinaimg.cn/mw690/c584f169gw1f7jtnnkrp8j20dw0863zn.jpg" alt="outPut" />
+ ***</p>
+
+<p>据说是我大暴雪很经典的Hash算法。</p>
+
+<p>Blizzard  one way hash <a href="http://www.oschina.net/code/snippet_99767_1217">Blizzard</a></p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/09/05/javaScript-querySelector/">JavaScript 原生DOM选择器querySelector</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/09/07/Jsoup-jar/">Jsoup 配置和使用</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/09/05/javaScript-password-encryption/" data-title="JavaScript 加密方法(Hash算法)" data-url="http://localhost:4000/2016/09/05/javaScript-password-encryption/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Unity3d Final IK 插件的使用</title>
+    <meta name="description" content="本篇简单介绍Unity3d 插件 Final IK的使用">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/10/12/Unity-3d-Final-IK/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>Unity3d Final IK 插件的使用</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-10-12
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#Unity3d" title="Tag: Unity3d" rel="tag">Unity3d</a>&nbsp;
+    
+        <a href="/tag/#C#" title="Tag: C#" rel="tag">C#</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#final-ik简介" id="markdown-toc-final-ik简介"><code class="highlighter-rouge">Final IK</code>简介</a>    <ul>
+      <li><a href="#final-ikik类型" id="markdown-toc-final-ikik类型"><code class="highlighter-rouge">Final IK</code>IK类型</a></li>
+      <li><a href="#final-ik的使用" id="markdown-toc-final-ik的使用"><code class="highlighter-rouge">Final IK</code>的使用</a>        <ul>
+          <li><a href="#手动添加ccd-ik" id="markdown-toc-手动添加ccd-ik">手动添加<code class="highlighter-rouge">CCD IK</code></a></li>
+          <li><a href="#运行时添加ccd-ik" id="markdown-toc-运行时添加ccd-ik">运行时添加<code class="highlighter-rouge">CCD IK</code></a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>本篇简单介绍<code class="highlighter-rouge">Unity3d</code> 插件 <code class="highlighter-rouge">Final IK</code>的使用</p>
+
+<h2 id="final-ik简介"><code class="highlighter-rouge">Final IK</code>简介</h2>
+
+<p><code class="highlighter-rouge">Final IK</code>是一个反向动力控制插件。(<code class="highlighter-rouge">unity</code>版本为<code class="highlighter-rouge">5.1</code>及以上版本)</p>
+
+<p>反向动力控制：通俗的将就是通过子骨骼,推导出其所在骨骼链上n级父骨骼位置，从而确定整条骨骼链的方法。所以你只需要控制子骨骼进行运动操作。</p>
+
+<h3 id="final-ikik类型"><code class="highlighter-rouge">Final IK</code>IK类型</h3>
+
+<p><code class="highlighter-rouge">Final IK</code>为我们提供了很多IK类型供选择,主要的IK类型。</p>
+
+<ul>
+  <li>
+    <p><a href="http://www.root-motion.com/finalikdox/html/page1.html">Aim IK</a>:是CCD算法的改进版本。可以设置一个目标,使关节末端始终瞄准该目标,可以用于<code class="highlighter-rouge">武器的瞄准</code>。它可以消除单一的向前瞄准，甚至可以瞄准角色的背后</p>
+  </li>
+  <li>
+    <p><a href="http://www.root-motion.com/finalikdox/html/page2.html">Biped IK</a>:它可以自动检测两足动物的骨骼,而且包括一个头部IK控制。可以使人物的姿势更加的自然。</p>
+  </li>
+  <li>
+    <p><a href="http://www.root-motion.com/finalikdox/html/page3.html">CCD IK</a>:将每个关节和末端对齐,使得最后一个骨骼迭代更接近末端。可以用来制作尾巴、机械臂(工业机器人)。</p>
+  </li>
+  <li>
+    <p><a href="http://www.root-motion.com/finalikdox/html/page4.html">FABR IK</a>:类似于CCD IK,但是相较来说每个关节不需要和末端对齐。所以更加的自由。可以用来制作绳索。</p>
+  </li>
+  <li>
+    <p><a href="http://www.root-motion.com/finalikdox/html/page7.html">Limb IK</a>:主要是用于3段手和腿或是其他肢体类型。</p>
+  </li>
+  <li>
+    <p><a href="http://www.root-motion.com/finalikdox/html/page8.html">Look At IK</a>:主要用于旋转一系列骨骼面向目标物体。</p>
+  </li>
+</ul>
+
+<h3 id="final-ik的使用"><code class="highlighter-rouge">Final IK</code>的使用</h3>
+
+<h4 id="手动添加ccd-ik">手动添加<code class="highlighter-rouge">CCD IK</code></h4>
+
+<p>以CCD IK为例</p>
+
+<ul>
+  <li>首先我们在<code class="highlighter-rouge">3Dmax</code>创建一个简单的机械臂。</li>
+</ul>
+
+<p><img src="http://ww2.sinaimg.cn/mw690/c584f169gw1f9jtu3zxhej20tf0b1js9.jpg" alt="outPut" /></p>
+
+<ul>
+  <li>我们给Axis1添加一个<code class="highlighter-rouge">CCDIK</code> 你可以在插件的 <code class="highlighter-rouge">RootMotion --&gt; FinalIK --&gt; IK Components</code> 位置找到。然后依次添加三个<code class="highlighter-rouge">Bones</code>。</li>
+</ul>
+
+<p><img src="http://ww4.sinaimg.cn/mw690/c584f169gw1f9jtu6p07sj2089088wev.jpg" alt="outPut" /></p>
+
+<p>ps： 你也可以通过添加不同的限制属性来限制每个轴的运动。</p>
+
+<p><img src="http://ww4.sinaimg.cn/mw690/c584f169gw1f9jtu9el3gj206e08wq32.jpg" alt="outPut" /></p>
+
+<p>如图我们给Axis2添加了一个角度限制，限制它只能在荧光区域进行旋转。</p>
+
+<p><img src="http://ww3.sinaimg.cn/mw690/c584f169gw1f9jtuah3l9j20un0a975n.jpg" alt="outPut" /></p>
+
+<ul>
+  <li>最后我们创建一个脚本来控制IK。</li>
+</ul>
+
+<div class="language-c# highlighter-rouge"><pre class="highlight"><code>
+<span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">RootMotion.FinalIK</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">CCD</span> <span class="p">:</span> <span class="n">MonoBehaviour</span> <span class="p">{</span>
+
+	<span class="n">CCDIK</span> <span class="n">ccdIK</span><span class="p">;</span>
+
+    <span class="c1">// 获取ccdIK 
+</span>	<span class="k">void</span> <span class="nf">Start</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="n">ccdIK</span> <span class="p">=</span> <span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">CCDIK</span><span class="p">&gt;</span> <span class="p">();</span>
+	<span class="p">}</span>
+	
+	<span class="c1">// 设置ccdIK解算器的x 坐标为 -10
+</span>	<span class="k">void</span> <span class="nf">LateUpdate</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="n">ccdIK</span><span class="p">.</span><span class="n">solver</span><span class="p">.</span><span class="n">IKPosition</span><span class="p">.</span><span class="n">x</span> <span class="p">=</span> <span class="p">-</span><span class="m">10</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+
+</code></pre>
+</div>
+
+<p>绑定并运行，我们发现棍子可耻的弯了。</p>
+
+<p><img src="http://ww2.sinaimg.cn/mw690/c584f169gw1f9jtu86bvej20m50a40t0.jpg" alt="outPut" /></p>
+
+<p>上面的那个就是<code class="highlighter-rouge">IK解算器</code>。</p>
+
+<h4 id="运行时添加ccd-ik">运行时添加<code class="highlighter-rouge">CCD IK</code></h4>
+
+<ul>
+  <li>我们创建一个脚本</li>
+</ul>
+
+<p>然后绑定到我们的棍子上，然后运行它又弯了。</p>
+
+<div class="language-c# highlighter-rouge"><pre class="highlight"><code>
+<span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">RootMotion.FinalIK</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">CCD2</span> <span class="p">:</span> <span class="n">MonoBehaviour</span> <span class="p">{</span>
+
+	<span class="n">Transform</span> <span class="n">obj1</span><span class="p">;</span>
+	<span class="n">Transform</span> <span class="n">obj2</span><span class="p">;</span>
+	<span class="n">CCDIK</span> <span class="n">ccdIK</span><span class="p">;</span>
+
+	<span class="k">void</span> <span class="nf">Start</span> <span class="p">()</span> <span class="p">{</span>
+	
+	    <span class="c1">//给绑定的物体添加一个`CCDIK`
+</span>		<span class="n">gameObject</span><span class="p">.</span><span class="n">AddComponent</span><span class="p">&lt;</span><span class="n">CCDIK</span><span class="p">&gt;();</span>
+
+        <span class="c1">//获取要添加的其他两个`bones`
+</span>	    <span class="n">obj1</span> <span class="p">=</span> <span class="n">GameObject</span><span class="p">.</span><span class="nf">Find</span> <span class="p">(</span><span class="s">"Axis_2_2"</span><span class="p">).</span><span class="n">transform</span><span class="p">;</span>
+		<span class="n">obj2</span> <span class="p">=</span> <span class="n">GameObject</span><span class="p">.</span><span class="nf">Find</span> <span class="p">(</span><span class="s">"Axis_2_2/Axis_2_3"</span><span class="p">).</span><span class="n">transform</span><span class="p">;</span>
+		
+		<span class="n">Transform</span><span class="p">[]</span> <span class="n">tran</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Transform</span><span class="p">[]</span> <span class="p">{</span><span class="n">gameObject</span><span class="p">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">obj1</span><span class="p">,</span> <span class="n">obj2</span> <span class="p">};</span>
+	
+		<span class="n">ccdIK</span> <span class="p">=</span> <span class="n">gameObject</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">CCDIK</span><span class="p">&gt;</span> <span class="p">();</span>
+		
+		<span class="c1">// 使用`ccdIK.solver.SetChain()`绑定骨骼
+</span>		<span class="n">ccdIK</span><span class="p">.</span><span class="n">solver</span><span class="p">.</span><span class="nf">SetChain</span> <span class="p">(</span><span class="n">tran</span><span class="p">,</span><span class="n">gameObject</span><span class="p">.</span><span class="n">transform</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">void</span> <span class="nf">Update</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="n">ccdIK</span><span class="p">.</span><span class="n">solver</span><span class="p">.</span><span class="n">IKPosition</span><span class="p">.</span><span class="n">x</span> <span class="p">=</span> <span class="p">-</span><span class="m">2</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+
+</code></pre>
+</div>
+
+<p><img src="http://ww4.sinaimg.cn/mw690/c584f169gw1f9jtub0zjhj20ur0emtab.jpg" alt="outPut" /></p>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/09/28/javaScript-timedChunk/">大数组分时加载算法 timedChunk</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/10/14/Unity-3d-Animation/">Unity3d 动画系统</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/10/12/Unity-3d-Final-IK/" data-title="Unity3d Final IK 插件的使用" data-url="http://localhost:4000/2016/10/12/Unity-3d-Final-IK/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

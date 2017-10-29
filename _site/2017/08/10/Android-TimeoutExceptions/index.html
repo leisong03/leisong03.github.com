@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> Android TimeoutExceptions及 wakelock</title>
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2017/08/10/Android-TimeoutExceptions/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1> Android TimeoutExceptions及 wakelock</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2017-08-10
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#Android" title="Tag: Android" rel="tag">Android</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#问题描述" id="markdown-toc-问题描述">问题描述</a></li>
+  <li><a href="#解决方案" id="markdown-toc-解决方案">解决方案</a></li>
+  <li><a href="#wakelock" id="markdown-toc-wakelock"><code class="highlighter-rouge">wakelock</code></a></li>
+</ul>
+
+<p>本篇简单介绍调试机器人出现的<code class="highlighter-rouge">TimeoutExceptions</code>问题。</p>
+
+<h2 id="问题描述">问题描述</h2>
+
+<p><code class="highlighter-rouge">机器人介绍</code>：讲解机器人软件部分 分为双层结构。机器人胸口屏幕负责 UI 交互以及和服务器的通信。机器人底层<code class="highlighter-rouge">Android v4.4</code> 主板负责机器人运动控制。</p>
+
+<p>两层软件 通过网线进行通讯。在机器人的讲解过程中经常底层<code class="highlighter-rouge">Android</code> 主板上的App经常会出现<code class="highlighter-rouge">TimeoutExceptions</code> 问题崩溃。</p>
+
+<blockquote>
+  <p>java.util.concurrent.TimeoutException: com.android.internal.os.BinderInternal$GcWatcher.finalize() timed out after 10 seconds</p>
+</blockquote>
+
+<h2 id="解决方案">解决方案</h2>
+
+<p><code class="highlighter-rouge">GcWatcher.finalize</code>, <code class="highlighter-rouge">BinderProxy.finalize</code> 和 <code class="highlighter-rouge">PlainSocketImpl.finalize</code> 中的一类<code class="highlighter-rouge">TimeoutExceptions</code>。这个异常90%都是发生在<code class="highlighter-rouge">4.3</code>、<code class="highlighter-rouge">4.4</code>的<code class="highlighter-rouge">android</code>系统上。</p>
+
+<p>这个问题的根源在于设备会<code class="highlighter-rouge">Goes to Sleep</code>一会儿，就是说操作系统会通过熄屏、降低cpu循环等方式降低电量消耗，进入休眠状态。它是通过在内核层暂停进程的方式来实现的。这可能发生在常规<code class="highlighter-rouge">app</code>运行的过程中, 但是会停在一次内核调用上，比如内核层的上下文切换。这就是<code class="highlighter-rouge">Dalvik GC</code>参与最初所说<code class="highlighter-rouge">TimeoutExceptions</code>问题的方式。</p>
+
+<p><code class="highlighter-rouge">Dalvik GC</code>的基本工作方式就是，在<code class="highlighter-rouge">GC</code>循环中将收集到的一系列的对象去销毁。</p>
+
+<p>如果有一个后台运行的进程，在运行过程中，对象被创建、使用以及被收集(以释放内存)。一般的，应用不会使用<code class="highlighter-rouge">Wakelock</code>，因为会很耗电并且也没必要，这意味着应用会不时的执行GC动作。通常情况下，GC动作会正常的执行完成而不会被挂起。但是，有些时候(很稀少)，操作系统会在GC动作的过程中进入休眠。如果你的应用运行时间足够长，它就有可能发生。现在，想一下GC循环中的有关时间戳的逻辑：有可能发生，设备开始进行GC，并且在处理系统对象销毁(native层的destroy())的过程中进入休眠， 然后被唤醒，恢复运行，记录现在的时间戳，也就是说这次GC动作花费的时间=销毁动作执行时长+休眠时长。如果休眠时间超过10s, 就会抛出<code class="highlighter-rouge">concurrent.timeout</code>异常。</p>
+
+<p>这个问题不能完全避免，只要你的应用在后台运行。我们可以通过调用<code class="highlighter-rouge">wakelock</code>减少设备休眠。</p>
+
+<h2 id="wakelock"><code class="highlighter-rouge">wakelock</code></h2>
+
+<p>对于系统来说，系统为了节省电量，<code class="highlighter-rouge">cpu</code>在没有任务很忙的时候会进入休眠状态。当有任务需要cpu高效执行的时候，就会给cpu加一个<code class="highlighter-rouge">wakelock</code>锁，我们给CPU加一个锁，系统就不会处于休眠状态。</p>
+
+<p><code class="highlighter-rouge">AndroidManifest.xml</code>:</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">"android.permission.WAKE_LOCK"</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">"android.permission.DEVICE_POWER"</span><span class="o">/&gt;</span>
+
+</code></pre>
+</div>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">iswakeLock</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span><span class="c1">// 是否常亮   </span>
+    <span class="kd">private</span> <span class="n">WakeLock</span> <span class="n">wakeLock</span><span class="o">;</span>  
+
+	<span class="nd">@Override</span>
+		<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onResume</span><span class="o">()</span> <span class="o">{</span>
+			<span class="c1">// TODO Auto-generated method stub</span>
+			<span class="n">PowerManager</span> <span class="n">pm</span> <span class="o">=</span> <span class="o">(</span><span class="n">PowerManager</span><span class="o">)</span> <span class="n">getSystemService</span><span class="o">(</span><span class="n">POWER_SERVICE</span><span class="o">);</span>
+			<span class="n">wakeLock</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="na">newWakeLock</span><span class="o">(</span><span class="n">PowerManager</span><span class="o">.</span><span class="na">SCREEN_BRIGHT_WAKE_LOCK</span>
+					<span class="o">|</span> <span class="n">PowerManager</span><span class="o">.</span><span class="na">ON_AFTER_RELEASE</span><span class="o">,</span> <span class="s">"DPA"</span><span class="o">);</span>
+
+			<span class="k">if</span> <span class="o">(</span><span class="n">iswakeLock</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">wakeLock</span><span class="o">.</span><span class="na">acquire</span><span class="o">();</span>
+			<span class="o">}</span>
+			<span class="kd">super</span><span class="o">.</span><span class="na">onResume</span><span class="o">();</span>
+
+		<span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onPause</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// TODO Auto-generated method stub</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onDestroy</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">wakeLock</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">wakeLock</span><span class="o">.</span><span class="na">release</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="n">android</span><span class="o">.</span><span class="na">os</span><span class="o">.</span><span class="na">Process</span><span class="o">.</span><span class="na">killProcess</span><span class="o">(</span><span class="n">android</span><span class="o">.</span><span class="na">os</span><span class="o">.</span><span class="na">Process</span><span class="o">.</span><span class="na">myPid</span><span class="o">());</span>
+    <span class="o">}</span>
+
+
+</code></pre>
+</div>
+
+<p>在<code class="highlighter-rouge">onRusume</code>方法中将获得到的锁使用<code class="highlighter-rouge">acquire()</code>方法来保持唤醒，在<code class="highlighter-rouge">onPause</code>方法中使用<code class="highlighter-rouge">release()</code>方法来释放掉该锁。</p>
+
+<p><code class="highlighter-rouge">锁类型</code>:</p>
+
+<ul>
+  <li>
+    <p><code class="highlighter-rouge">PARTIAL_WAKE_LOCK</code>:保持CPU 运转，屏幕和键盘灯有可能是关闭的</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">SCREEN_DIM_WAKE_LOCK</code>：保持CPU 运转，允许保持屏幕显示但有可能是灰的，允许关闭键盘灯</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">SCREEN_BRIGHT_WAKE_LOCK</code>：保持CPU 运转，允许保持屏幕高亮显示，允许关闭键盘灯</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">FULL_WAKE_LOCK</code>：保持CPU 运转，保持屏幕高亮显示，键盘灯也保持亮度</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">ACQUIRE_CAUSES_WAKEUP</code>：正常唤醒锁实际上并不打开照明。相反，一旦打开他们会一直仍然保持。当获得wakelock，这个标志会使屏幕或/和键盘立即打开。一个典型的使用就是可以立即看到那些对用户重要的通知</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">ON_AFTER_RELEASE</code>：设置了这个标志，当<code class="highlighter-rouge">wakelock</code>释放时用户<code class="highlighter-rouge">activity</code>计时器会被重置，导致照明持续一段时间。如果你在<code class="highlighter-rouge">wacklock</code>条件中循环，这个可以用来减少闪烁</p>
+  </li>
+</ul>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/15/Android-wechat-share/"> Android wechat 分享
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/08/Android-Activity-life-time/"> Android Activity 生命周期
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/08/Android-Change-Language/">Android App 切换语言
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2017/08/08/Android-Activity-life-time/"> Android Activity 生命周期</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2017/08/15/Android-wechat-share/"> Android wechat 分享</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2017/08/10/Android-TimeoutExceptions/" data-title=" Android TimeoutExceptions及 wakelock" data-url="http://localhost:4000/2017/08/10/Android-TimeoutExceptions/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

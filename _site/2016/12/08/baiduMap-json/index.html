@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>百度地图逆地址解析</title>
+    <meta name="description" content="本篇使用Geocoding API逆地址解析经纬度，并且通过fastjson获取地址。">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/12/08/baiduMap-json/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>百度地图逆地址解析</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-12-08
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#Java" title="Tag: Java" rel="tag">Java</a>&nbsp;
+    
+        <a href="/tag/#JavaScript" title="Tag: JavaScript" rel="tag">JavaScript</a>&nbsp;
+    
+        <a href="/tag/#fastjson" title="Tag: fastjson" rel="tag">fastjson</a>&nbsp;
+    
+        <a href="/tag/#httpclient" title="Tag: httpclient" rel="tag">httpclient</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#geocoding-api" id="markdown-toc-geocoding-api"><code class="highlighter-rouge">Geocoding API</code></a>    <ul>
+      <li><a href="#javascipt调用" id="markdown-toc-javascipt调用"><code class="highlighter-rouge">JavaScipt</code>调用</a></li>
+      <li><a href="#java调用" id="markdown-toc-java调用"><code class="highlighter-rouge">Java</code>调用</a></li>
+      <li><a href="#使用httpclient封装请求" id="markdown-toc-使用httpclient封装请求">使用<code class="highlighter-rouge">HttpClient</code>封装请求</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>本篇使用<code class="highlighter-rouge">Geocoding API</code>逆地址解析经纬度，并且通过<code class="highlighter-rouge">fastjson</code>获取地址。</p>
+
+<h2 id="geocoding-api"><code class="highlighter-rouge">Geocoding API</code></h2>
+
+<p>Geocoding API 是一类接口，用于提供从地址到经纬度坐标或者从经纬度坐标到地址的转换服务，用户可以使用C# 、C++、Java等开发语言发送请求且接收JSON、XML的返回数据。</p>
+
+<p><em>http://lbsyun.baidu.com/index.php?title=webapi/guide/webservice-geocoding</em></p>
+
+<p>简单的说就是通过向<code class="highlighter-rouge">http://api.map.baidu.com/geocoder/v2/</code>发送一个<code class="highlighter-rouge">HTTP/HTTPS</code>请求然后获取返回的数据。</p>
+
+<p>请求示例：</p>
+
+<p><code class="highlighter-rouge">http://api.map.baidu.com/geocoder/v2/?callback=renderReverse&amp;location=39.915,116.404&amp;output=json&amp;pois=1&amp;ak=你的ak密钥</code></p>
+
+<p>Tips:ak密钥需要登录百度账号申请。</p>
+
+<h3 id="javascipt调用"><code class="highlighter-rouge">JavaScipt</code>调用</h3>
+
+<p>由于<code class="highlighter-rouge">ajax</code>跨域问题这里使用了<code class="highlighter-rouge">dataType: 'JSONP'</code>。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="o">&lt;!</span><span class="nx">DOCTYPE</span> <span class="nx">html</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="nx">html</span><span class="o">&gt;</span>
+	<span class="o">&lt;</span><span class="nx">head</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">charset</span><span class="o">=</span><span class="s2">"UTF-8"</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="nx">title</span><span class="o">&gt;&lt;</span><span class="sr">/title</span><span class="err">&gt;
+</span>	<span class="o">&lt;</span><span class="sr">/head</span><span class="err">&gt;
+</span>	<span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="nx">button</span><span class="o">&gt;</span><span class="err">提交</span><span class="o">&lt;</span><span class="sr">/button</span><span class="err">&gt;
+</span>	<span class="o">&lt;</span><span class="sr">/body</span><span class="err">&gt;
+</span>	<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">"text/javascript"</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"js/jquery-1.9.1.js"</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>	<span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+		<span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nx">$</span><span class="p">(</span><span class="s2">"button"</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+				<span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+					<span class="na">type</span><span class="p">:</span> <span class="s2">"GET"</span><span class="p">,</span>
+					<span class="na">url</span><span class="p">:</span> <span class="s2">"http://api.map.baidu.com/geocoder/v2/?callback=renderReverse&amp;location=39.915,116.404&amp;output=json&amp;pois=1&amp;ak=你的ak密钥"</span><span class="p">,</span>					
+					<span class="na">dataType</span><span class="p">:</span> <span class="s1">'JSONP'</span><span class="p">,</span>
+					<span class="na">success</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+						<span class="kd">var</span> <span class="nx">list</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">result</span><span class="p">.</span><span class="nx">addressComponent</span><span class="p">;</span>
+						<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+						<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">list</span><span class="p">.</span><span class="nx">country</span><span class="o">+</span><span class="s2">""</span><span class="o">+</span><span class="nx">list</span><span class="p">.</span><span class="nx">province</span><span class="o">+</span><span class="s2">""</span><span class="o">+</span><span class="nx">list</span><span class="p">.</span><span class="nx">district</span><span class="o">+</span><span class="s2">""</span><span class="o">+</span><span class="nx">list</span><span class="p">.</span><span class="nx">street</span><span class="p">);</span>
+					<span class="p">}</span>
+				<span class="p">})</span>
+			<span class="p">});</span>
+
+		<span class="p">});</span>
+	<span class="o">&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span><span class="o">&lt;</span><span class="sr">/html</span><span class="err">&gt;
+</span>
+</code></pre>
+</div>
+
+<p>output:</p>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/c584f169gw1faktepn1u8j20do0bgmxj.jpg" alt="outPut" /></p>
+
+<h3 id="java调用"><code class="highlighter-rouge">Java</code>调用</h3>
+
+<p>这里使用<code class="highlighter-rouge">fastjson</code>来解析。</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="kn">package</span> <span class="n">HttpRequest</span><span class="o">;</span>
+
+<span class="c1">// 导入`fastjson`</span>
+<span class="kn">import</span> <span class="nn">com.alibaba.fastjson.JSONObject</span><span class="o">;</span>
+<span class="c1">// 封装的`HttpRequest`类</span>
+<span class="kn">import</span> <span class="nn">HttpRequest.HttpRequest</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BaiduMapRequset</span> <span class="o">{</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+
+		<span class="n">String</span> <span class="n">responseData</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">sendGet</span><span class="o">(</span><span class="s">"http://api.map.baidu.com/geocoder/v2/"</span><span class="o">,</span>
+				<span class="s">"callback=renderReverse&amp;location=39.915,116.404&amp;output=json&amp;pois=1&amp;ak=你的ak密钥"</span><span class="o">);</span>
+		
+		<span class="c1">//解析返回的`Json`</span>
+		<span class="kt">int</span> <span class="n">start</span> <span class="o">=</span> <span class="n">responseData</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="s">"("</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+		<span class="n">responseData</span> <span class="o">=</span> <span class="n">responseData</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">start</span><span class="o">,</span> <span class="n">responseData</span><span class="o">.</span><span class="na">lastIndexOf</span><span class="o">(</span><span class="s">")"</span><span class="o">));</span>
+		
+		<span class="c1">//获取返回的`city`值</span>
+		<span class="n">JSONObject</span> <span class="n">jsonobject</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">(</span><span class="n">responseData</span><span class="o">);</span>  
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonobject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">responseData</span><span class="o">).</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">"result"</span><span class="o">).</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">"addressComponent"</span><span class="o">).</span><span class="na">get</span><span class="o">(</span><span class="s">"city"</span><span class="o">));</span>
+		
+
+	<span class="o">}</span>
+
+<span class="o">}</span>
+
+</code></pre>
+</div>
+
+<p>output:</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="err">北京市</span>
+</code></pre>
+</div>
+
+<p>由于返回的值为<code class="highlighter-rouge">Gson</code>:renderReverse&amp;&amp;renderReverse({“status”:0, …… “cityCode”:131}}),所以需要简单的解析一下。</p>
+
+<p><a href="https://github.com/Chenjy1225/ChenjyDemo/tree/gh-pages/Chenjy1225">源代码</a></p>
+
+<h3 id="使用httpclient封装请求">使用<code class="highlighter-rouge">HttpClient</code>封装请求</h3>
+
+<p><code class="highlighter-rouge">HttpClient</code>是<code class="highlighter-rouge">Apache Jakarta Common</code>下的子项目，用来提供高效的、最新的、功能丰富的支持<code class="highlighter-rouge">HTTP</code>协议的客户端编程工具包。</p>
+
+<p>Maven地址：</p>
+
+<div class="language-xml highlighter-rouge"><pre class="highlight"><code>
+<span class="c">&lt;!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.apache.httpcomponents<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>httpclient<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>4.5.2<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+
+</code></pre>
+</div>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="kn">package</span> <span class="n">HttpClient</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.URI</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.URISyntaxException</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.apache.http.HttpEntity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.http.client.methods.CloseableHttpResponse</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.http.client.methods.HttpGet</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.http.client.utils.URIBuilder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.http.impl.client.CloseableHttpClient</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.http.impl.client.HttpClients</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.http.util.EntityUtils</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.alibaba.fastjson.JSONObject</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HttpClient</span> <span class="o">{</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+
+		<span class="k">try</span> <span class="o">{</span>
+			
+		<span class="n">CloseableHttpClient</span> <span class="n">httpclient</span> <span class="o">=</span> <span class="n">HttpClients</span><span class="o">.</span><span class="na">createDefault</span><span class="o">();</span>
+			<span class="n">URI</span> <span class="n">uri</span><span class="o">;</span>
+			<span class="n">uri</span> <span class="o">=</span> <span class="k">new</span> <span class="n">URIBuilder</span><span class="o">()</span>
+					    <span class="o">.</span><span class="na">setScheme</span><span class="o">(</span><span class="s">"http"</span><span class="o">)</span>
+					    <span class="o">.</span><span class="na">setHost</span><span class="o">(</span><span class="s">"api.map.baidu.com"</span><span class="o">)</span>
+					    <span class="o">.</span><span class="na">setPath</span><span class="o">(</span><span class="s">"/geocoder/v2/"</span><span class="o">)</span>
+					    <span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">"callback"</span><span class="o">,</span> <span class="s">"renderOption"</span><span class="o">)</span>
+					    <span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">"output"</span><span class="o">,</span> <span class="s">"json"</span><span class="o">)</span>
+					    <span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">"address"</span><span class="o">,</span> <span class="s">"惠山区"</span><span class="o">)</span>
+					    <span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">"ak"</span><span class="o">,</span> <span class="s">"ONYb7QVTnolEPPGQhBsX2jG2kX3ki9yq"</span><span class="o">)</span>
+					    <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+		
+
+        <span class="c1">// 创建httpget.  </span>
+		<span class="n">HttpGet</span> <span class="n">httpget</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HttpGet</span><span class="o">(</span><span class="n">uri</span><span class="o">);</span>
+		    
+		<span class="n">CloseableHttpResponse</span> <span class="n">response</span> <span class="o">=</span> <span class="n">httpclient</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">httpget</span><span class="o">);</span>
+
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">response</span><span class="o">);</span>
+		 <span class="k">try</span> <span class="o">{</span>
+			 <span class="n">HttpEntity</span> <span class="n">entity</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="na">getEntity</span><span class="o">();</span> 
+			 
+			 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">entity</span><span class="o">);</span>
+			 
+			 <span class="k">if</span> <span class="o">(</span><span class="n">entity</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>   
+                 <span class="c1">// 打印响应内容长度    </span>
+                 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Response content length: "</span> <span class="o">+</span> <span class="n">entity</span><span class="o">.</span><span class="na">getContentLength</span><span class="o">());</span>  
+                 <span class="c1">// 打印响应内容    </span>
+                 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Response content: "</span> <span class="o">+</span> <span class="n">EntityUtils</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">entity</span><span class="o">));</span>  
+                 
+             <span class="o">}</span>  
+			 
+		    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+		        <span class="n">response</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+		    <span class="o">}</span>
+		
+
+		 
+		<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">URISyntaxException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+			<span class="c1">// TODO Auto-generated catch block</span>
+			<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+		<span class="o">}</span>
+
+	<span class="o">}</span>
+<span class="o">}</span>
+
+
+</code></pre>
+</div>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/23/java-ThreadPoolExecutor/"> Java ThreadPoolExecutor
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/07/500-Data-Structures-and-Algorithms-practice/">500 Data Structures and Algorithms practice problems and their solutions
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/09/java-Executors/">java 并发库之 Executors
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/08/java-Netty-TCP/">java Netty tcp通讯
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/07/java-Semaphore/">java 并发库之 Semaphore
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/04/28/svg-to-png/">java svg转png
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/12/01/JFinal-project/">Jfinal 项目搭建</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/12/12/JFinal-project-Page/">Jfinal 列表分页</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/12/08/baiduMap-json/" data-title="百度地图逆地址解析" data-url="http://localhost:4000/2016/12/08/baiduMap-json/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

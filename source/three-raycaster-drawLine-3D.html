@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>three-raycaster-drawLine-3D</title>
+		<style>
+			body {
+				margin: 0;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+
+	<body>
+		<script type="text/javascript" src="../js/three/three.min.js"></script>
+		<script type="text/javascript" src="../js/three/Detector.js"></script>
+		<script type="text/javascript" src="../js/three/stats.min.js"></script>
+
+		<script>
+			var renderer, scene, camera, light, mesh, control, ground;
+			var raycaster;
+			var array = [],
+				v = [];
+
+			var obj = new THREE.Object3D();
+			var mouse;
+			var INTERSECTED;
+			var helpPoint = new THREE.Vector3();
+
+			/* detector */
+			if(!Detector.webgl) Detector.addGetWebGLMessage();
+
+			function init() {
+
+				renderer = new THREE.WebGLRenderer({
+					antialias: true
+				});
+				renderer.setClearColor(0xffffff);
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				renderer.shadowMap.enabled = true;
+
+				scene = new THREE.Scene();
+
+				camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
+				camera.position.set(0, 0, 500);
+				camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+				var geometry = new THREE.PlaneGeometry(10000, 10000, 20);
+				var material = new THREE.MeshBasicMaterial({
+					opacity: 0,
+					transparent: true
+				});
+				var ground = new THREE.Mesh(geometry, material);
+				
+				ground.position.set(0, 0, 0);
+				array.push(ground);
+				scene.add(ground);
+
+
+				raycaster = new THREE.Raycaster();
+				mouse = new THREE.Vector2();
+
+				document.body.appendChild(renderer.domElement);
+				document.addEventListener('mousemove', onDocumentMouseMove, false);
+				window.addEventListener('resize', onWindowResize, false);
+
+				document.addEventListener('mousedown', onDocumentMouseDownLine, false);
+				document.addEventListener('mouseup', onDocumentMouseUpLine, false);
+
+				render();
+			}
+
+			function onDocumentMouseMove(event) {
+				event.preventDefault();
+				mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+				mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+			}
+
+			function onDocumentMouseDownLine(event) {
+				event.preventDefault();
+				v = [];
+				document.addEventListener('mousemove', onDocumentMouseMoveLine, false);
+			}
+
+			function onDocumentMouseMoveLine(event) {
+				event.preventDefault();
+
+				var temp = v[v.length - 1];
+
+				if(temp) {
+					if(temp.x == helpPoint.x && temp.y == helpPoint.y && temp.z == 50) {
+						return;
+					}
+				}
+				v.push(new THREE.Vector3(helpPoint.x, helpPoint.y, 50));
+			}
+
+			function onDocumentMouseUpLine(event) {
+				event.preventDefault();
+				obj.add(mesh);
+				v=[];
+				document.removeEventListener('mousemove', onDocumentMouseMoveLine, false);
+			}
+
+			function drawLine(v) {
+				var curve = new THREE.CatmullRomCurve3(v);
+
+				var extrudeSettings = {
+					curveSegments: 12,
+					steps: 200,
+					amount: 2,
+					extrudePath: curve
+				};
+				var pts = [];
+				pts.push(new THREE.Vector2(5, 5));
+				pts.push(new THREE.Vector2(5, -5));
+				pts.push(new THREE.Vector2(-5, -5));
+				pts.push(new THREE.Vector2(-5, 5));
+
+				var shape = new THREE.Shape(pts);
+
+				var geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+
+				var material = new THREE.MeshBasicMaterial({
+					color: 0xff8000
+				});
+
+				mesh = new THREE.Mesh(geometry, material);
+
+				scene.add(mesh);
+
+			}
+
+			/* resize */
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize(window.innerWidth, window.innerHeight);
+			}
+			/* stats */
+			var stats = new Stats();
+			stats.showPanel(1);
+			document.body.appendChild(stats.domElement);
+
+			function render() {
+
+				if(v.length > 2) {
+					scene.remove(mesh);
+					drawLine(v);
+					scene.add(obj);
+				}
+
+				stats.update();
+
+				raycaster.setFromCamera(mouse, camera);
+				var intersects = raycaster.intersectObjects(array);
+
+				if(intersects.length > 0) {
+					helpPoint = intersects[0].point;
+				}
+				requestAnimationFrame(render);
+				renderer.render(scene, camera);
+			}
+			init();
+		</script>
+		<script type="text/javascript" src="../js/cjy_info.js"></script>
+
+	</body>
+
+</html>

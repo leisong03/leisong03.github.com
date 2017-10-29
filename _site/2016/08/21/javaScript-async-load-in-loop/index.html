@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>JavaScript 循环中异步加载问题</title>
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/08/21/javaScript-async-load-in-loop/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>JavaScript 循环中异步加载问题</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-08-21
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#three.js" title="Tag: three.js" rel="tag">three.js</a>&nbsp;
+    
+        <a href="/tag/#JavaScript" title="Tag: JavaScript" rel="tag">JavaScript</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#bug" id="markdown-toc-bug">BUG</a></li>
+  <li><a href="#解决方案" id="markdown-toc-解决方案">解决方案</a>    <ul>
+      <li><a href="#解决方案1" id="markdown-toc-解决方案1">解决方案1</a></li>
+      <li><a href="#解决方案2" id="markdown-toc-解决方案2">解决方案2</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="bug">BUG</h2>
+
+<p>直接上代码：</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">objArray</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"1"</span><span class="p">,</span><span class="s2">"2"</span><span class="p">,</span><span class="s2">"3"</span><span class="p">,</span><span class="s2">"4"</span><span class="p">];</span>
+    
+    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">objArray</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        
+        <span class="kd">var</span> <span class="nx">mtlLoader</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MTLLoader</span><span class="p">();</span>
+			<span class="nx">mtlLoader</span><span class="p">.</span><span class="nx">setPath</span><span class="p">(</span><span class="s2">"obj/"</span><span class="p">);</span>
+			<span class="nx">mtlLoader</span><span class="p">.</span><span class="nx">load</span><span class="p">(</span><span class="s2">""</span> <span class="o">+</span> <span class="nx">objArray</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">".mtl"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">materials</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="nx">materials</span><span class="p">.</span><span class="nx">preload</span><span class="p">();</span>
+
+				<span class="kd">var</span> <span class="nx">objLoader</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">OBJLoader</span><span class="p">();</span>
+					<span class="nx">objLoader</span><span class="p">.</span><span class="nx">setMaterials</span><span class="p">(</span><span class="nx">materials</span><span class="p">);</span>
+					<span class="nx">objLoader</span><span class="p">.</span><span class="nx">setPath</span><span class="p">(</span><span class="s2">"obj/"</span><span class="p">);</span>
+					<span class="nx">objLoader</span><span class="p">.</span><span class="nx">load</span><span class="p">(</span><span class="s2">""</span> <span class="o">+</span> <span class="nx">objArray</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">".obj"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span> <span class="p">{</span>
+
+				    <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+
+					<span class="p">},</span> <span class="nx">onProgress</span><span class="p">,</span> <span class="nx">onError</span><span class="p">);</span>
+
+				<span class="p">});</span>
+         
+				<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>最新版本的<code class="highlighter-rouge">three.js</code>中加载obj模型可以分为两步，第一步先加载mtl文件，提取mtl文件作为对象的材质。第二部加载obj文件，提取obj文件作为
+对象的三维网格，然后创建对象。</p>
+
+<p>当我们使用以上方式循环加载一组模型的时候。它会报错。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>   
+    obj/undefined.obj  NOT_FOUND   X4
+   
+</code></pre>
+</div>
+
+<p><em>but i dont’t know what happend!</em></p>
+
+<p>然后在加载obj文件的时候打印出i会发现此事的 <code class="highlighter-rouge">i=5</code> 数组越界了所以找不到文件。但是为什么mtl都被加载了呢？</p>
+
+<p>then 我稍微学习了一下发现，由于文件的加载时异步的</p>
+
+<p>第一次加载的时候<code class="highlighter-rouge">i=0</code>， mtl加载的时候是正常的，但是加载obj的时候由于是单线程的obj的加载被阻塞了,所以它只好等mtl加载完成将一个函数<code class="highlighter-rouge">objLoader.load(i)</code>放到线程池中。
+但是由于是异步的，所以在加载第一个mtl加载完成时候循环早已结束。
+所以<code class="highlighter-rouge">mtlLoader.load(i)</code> （此处<code class="highlighter-rouge">i=0</code>）结束的时候，要执行<code class="highlighter-rouge">objLoader.load(i)</code>的时候<code class="highlighter-rouge">i</code>早已为<code class="highlighter-rouge">5</code>，所以会出现<code class="highlighter-rouge">NOT_FOUND</code>。</p>
+
+<h2 id="解决方案">解决方案</h2>
+
+<h3 id="解决方案1">解决方案1</h3>
+
+<p>我发现只要在循环中加入这么一句：</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>   
+    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">objArray</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        
+        <span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="nx">array</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+   
+</code></pre>
+</div>
+
+<p>这句话在使用ajax的时候很常见，我一直天真的以为它仅仅是用来简化代码的。</p>
+
+<h3 id="解决方案2">解决方案2</h3>
+
+<p>可以将需要循环的封装成一个函数，然后外部循环调用。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>   
+    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">objArray</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    
+        <span class="nx">loadObj</span><span class="p">(</span><span class="nx">objArray</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+         
+    <span class="p">}</span>
+    
+    <span class="kd">function</span> <span class="nx">loadObj</span><span class="p">(</span><span class="nx">objName</span><span class="p">){</span>
+        
+        <span class="c1">//todo</span>
+       
+    <span class="p">}</span>
+   
+</code></pre>
+</div>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/08/16/three-js-texture/">three.js-texture</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/08/22/javaScript-execution-order/">客户端 JavaScript 程序</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/08/21/javaScript-async-load-in-loop/" data-title="JavaScript 循环中异步加载问题" data-url="http://localhost:4000/2016/08/21/javaScript-async-load-in-loop/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

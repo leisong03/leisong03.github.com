@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>three-obj-shadow</title>
+		<style>
+			body {
+				margin: 0;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+
+	<body>
+		<script type="text/javascript" src="../js/three/three.min.js"></script>
+		<script type="text/javascript" src="../js/three/DDSLoader.js"></script>
+		<script type="text/javascript" src="../js/three/MTLLoader.js"></script>
+		<script type="text/javascript" src="../js/three/OBJLoader.js"></script>
+		<script type="text/javascript" src="../js/three/Detector.js"></script>
+		<script type="text/javascript" src="../js/three/stats.min.js"></script>
+		<script type="text/javascript" src="../js/three/TrackballControls.js"></script>
+
+		<script>
+			var renderer, scene, camera, light, mesh, control;
+
+			/* detector */
+			if(!Detector.webgl) Detector.addGetWebGLMessage();
+
+			function init() {
+
+				renderer = new THREE.WebGLRenderer({
+					antialias: true,
+					alpha: true
+				});
+				renderer.setClearColor(0xffffff);
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				renderer.shadowMap.enabled = true;
+
+				scene = new THREE.Scene();
+
+				camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+				camera.position.set(-50, 20, -50);
+				camera.lookAt(new THREE.Vector3(10, 2, 10));
+
+				var light = new THREE.AmbientLight(0xeeeeee);
+				scene.add(light);
+
+				var spotLight = new THREE.SpotLight(0xffffff);
+				spotLight.position.set(10, 10, 20);
+				spotLight.castShadow = true;
+				scene.add(spotLight);
+
+				control = new THREE.TrackballControls(camera)
+
+				var plane_geometry = new THREE.CubeGeometry(100, 1, 100);
+				var plane_material = new THREE.MeshLambertMaterial({
+					color: 0xffffff
+				});
+
+				var plane = new THREE.Mesh(plane_geometry, plane_material);
+				plane.receiveShadow = true;
+				plane.position.set(10, -10, 10);
+				scene.add(plane);
+
+				document.body.appendChild(renderer.domElement);
+				window.addEventListener('resize', onWindowResize, false);
+
+				loadObj();
+
+				render();
+			}
+
+			/* resize */
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize(window.innerWidth, window.innerHeight);
+			}
+			/* stats */
+			var stats = new Stats();
+			stats.showPanel(1);
+			document.body.appendChild(stats.domElement);
+
+			function loadObj() {
+				// model
+
+				var onProgress = function(xhr) {
+					if(xhr.lengthComputable) {
+						var percentComplete = xhr.loaded / xhr.total * 100;
+						console.log(Math.round(percentComplete, 2) + '% downloaded');
+					}
+				};
+
+				var onError = function(xhr) {};
+
+				THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader());
+
+				var mtlLoader = new THREE.MTLLoader();
+				mtlLoader.setPath('../js/three/obj/');
+				mtlLoader.load('test.mtl', function(materials) {
+
+					materials.preload();
+
+					var objLoader = new THREE.OBJLoader();
+					objLoader.setMaterials(materials);
+					objLoader.setPath('../js/three/obj/');
+					objLoader.load('test.obj', function(object) {
+                        
+                        object.scale.x = 0.4;
+                        object.scale.y = 0.5;
+                        object.scale.z = 0.6;
+                        
+						for(var i = 0; i < object.children.length; i++) {
+							object.children[i].castShadow = true;
+						}
+						scene.add(object);
+
+						console.log(object);
+					}, onProgress, onError);
+
+				});
+
+			}
+
+			var clock = new THREE.Clock();
+
+			function render() {
+				var delta = clock.getDelta();
+
+				control.update(delta);
+				stats.update();
+
+				requestAnimationFrame(render);
+				renderer.render(scene, camera);
+
+			}
+			init();
+		</script>
+		<script type="text/javascript" src="../js/cjy_info.js"></script>
+
+	</body>
+
+</html>

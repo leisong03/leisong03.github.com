@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>ZMQ</title>
+    <meta name="description" content="本篇简单介绍ZMQ的使用。">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2017/03/26/Android-ZMQ/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>ZMQ</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2017-03-26
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#ZMQ" title="Tag: ZMQ" rel="tag">ZMQ</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#zmq简介" id="markdown-toc-zmq简介"><code class="highlighter-rouge">ZMQ</code>简介</a></li>
+  <li><a href="#zmq几种模式" id="markdown-toc-zmq几种模式"><code class="highlighter-rouge">ZMQ</code>几种模式</a></li>
+  <li><a href="#请求-回复实例-java" id="markdown-toc-请求-回复实例-java">请求-回复实例 （JAVA）</a></li>
+  <li><a href="#发布-订阅模式实例-java" id="markdown-toc-发布-订阅模式实例-java">发布-订阅模式实例 （JAVA）</a></li>
+</ul>
+
+<p>本篇简单介绍<code class="highlighter-rouge">ZMQ</code>的使用。</p>
+
+<h2 id="zmq简介"><code class="highlighter-rouge">ZMQ</code>简介</h2>
+
+<p>ZMQ被称为史上最快的消息队列,它处于会话层之上,应用层之下,使用后台异步线程完成消息的接受和发送,完美的封装了Socket API,大大简化了编程人员的复杂度。</p>
+
+<ul>
+  <li>ZMQ发送和接受的是具有固定长度的二进制对象,ZMQ的消息包最大254个字节，前6个字节是协议，然后是数据包。</li>
+</ul>
+
+<p>如果超过255个字节（有一个字节表示包属性）,则ZMQ会自动分包传输;而对于TCP Socket，是面向字节流的连接。</p>
+
+<ul>
+  <li>
+    <p>传统的TCP Socket的连接是1对1的,ZMQ的Socket可以很轻松的实现1对N，N对1和N对N的连接模式。</p>
+  </li>
+  <li>
+    <p>ZMQ使用异步后台线程处理接受和发送请求，这意味着发送完消息，不可以立即释放资源，消息什么时候发送用户是无法控制的，同时，ZMQ自动重连，</p>
+  </li>
+</ul>
+
+<p>这意味着用户可以以任意顺序加入到网络中，服务器也可以随时加入或者退出网络；</p>
+
+<h2 id="zmq几种模式"><code class="highlighter-rouge">ZMQ</code>几种模式</h2>
+
+<p>1) 请求-回复模式</p>
+
+<p>这种模式主要用于从客户端向一个或多个服务器发送请求,客户端首先使用zmq_send 发送消息,再用zmq_recv来接收消息。</p>
+
+<p>服务端先用zmq_recv接收消息如果收到了客户端的消息,则使用zmq_send向客户端发送消息。如此循环。形成请求-回复模式。</p>
+
+<p><img src="http://wx4.sinaimg.cn/mw690/c584f169ly1fe3iuv6omqj20ar0833ye.jpg" alt="outPut" /></p>
+
+<p>2) 发布-订阅模式（PUB-SUB）</p>
+
+<p>这种模式主要用于一个服务器对应一个或多个客户端,该模式相对来说是异步的。客户端在一个循环体中执行zmq_recv来接收消息。</p>
+
+<p>如果尝试向SUB socket发送消息会导致错误。</p>
+
+<p>TIPS: 你无法知道订阅者从什么时候开始获取消息。即使是启动订阅者，过一段时间启动发布者。订阅者总是会错过发布者的第一条信息。</p>
+
+<p>因为订阅者连接到发布者需要一点时间（虽然可能很小）。</p>
+
+<p><img src="http://wx2.sinaimg.cn/mw690/c584f169ly1fe3iuvha7nj20d70b7jrg.jpg" alt="outPut" /></p>
+
+<p>3)管道模式</p>
+
+<p>这种模式会将数据发布（PUSH）到由管道排列的节点上面，数据总是沿着管道流动。每个管道至少连接了一个节点（Worker），节点不会主动从管道中获取（PULL）数据，数据会负载均衡的分配在节点上。。</p>
+
+<p>如果平均的批次时间为5S。</p>
+
+<ul>
+  <li>
+    <p>1个节点，总时长 5034 ms</p>
+  </li>
+  <li>
+    <p>2个节点，总时长 2421 ms</p>
+  </li>
+  <li>
+    <p>4个节点，总时长 1018 ms</p>
+  </li>
+</ul>
+
+<p><img src="http://wx2.sinaimg.cn/mw690/c584f169ly1fe3iuw78tgj20d70e70sw.jpg" alt="outPut" /></p>
+
+<h2 id="请求-回复实例-java">请求-回复实例 （JAVA）</h2>
+
+<p><strong>Client:</strong></p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="kn">import</span> <span class="nn">org.zeromq.ZMQ</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">hwclient</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">ZMQ</span><span class="o">.</span><span class="na">Context</span> <span class="n">context</span> <span class="o">=</span> <span class="n">ZMQ</span><span class="o">.</span><span class="na">context</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+        <span class="c1">//  Socket to talk to server</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Connecting to hello world server…"</span><span class="o">);</span>
+
+        <span class="n">ZMQ</span><span class="o">.</span><span class="na">Socket</span> <span class="n">requester</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">socket</span><span class="o">(</span><span class="n">ZMQ</span><span class="o">.</span><span class="na">REQ</span><span class="o">);</span>
+        <span class="n">requester</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"tcp://localhost:5555"</span><span class="o">);</span>
+
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">requestNbr</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">requestNbr</span> <span class="o">!=</span> <span class="mi">10</span><span class="o">;</span> <span class="n">requestNbr</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">String</span> <span class="n">request</span> <span class="o">=</span> <span class="s">"Hello"</span><span class="o">;</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Sending Hello "</span> <span class="o">+</span> <span class="n">requestNbr</span><span class="o">);</span>
+            <span class="n">requester</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(),</span> <span class="mi">0</span><span class="o">);</span>
+
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">reply</span> <span class="o">=</span> <span class="n">requester</span><span class="o">.</span><span class="na">recv</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Received "</span> <span class="o">+</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">reply</span><span class="o">)</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">requestNbr</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">requester</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="n">context</span><span class="o">.</span><span class="na">term</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre>
+</div>
+
+<p><strong>Server:</strong></p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="kn">import</span> <span class="nn">org.zeromq.ZMQ</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">hwserver</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">ZMQ</span><span class="o">.</span><span class="na">Context</span> <span class="n">context</span> <span class="o">=</span> <span class="n">ZMQ</span><span class="o">.</span><span class="na">context</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+        <span class="c1">//  Socket to talk to clients</span>
+        <span class="n">ZMQ</span><span class="o">.</span><span class="na">Socket</span> <span class="n">responder</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">socket</span><span class="o">(</span><span class="n">ZMQ</span><span class="o">.</span><span class="na">REP</span><span class="o">);</span>
+        <span class="n">responder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="s">"tcp://*:5555"</span><span class="o">);</span>
+
+        <span class="k">while</span> <span class="o">(!</span><span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">isInterrupted</span><span class="o">())</span> <span class="o">{</span>
+            <span class="c1">// Wait for next request from the client</span>
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">request</span> <span class="o">=</span> <span class="n">responder</span><span class="o">.</span><span class="na">recv</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Received Hello"</span><span class="o">);</span>
+
+            <span class="c1">// Do some 'work'</span>
+            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
+
+            <span class="c1">// Send reply back to client</span>
+            <span class="n">String</span> <span class="n">reply</span> <span class="o">=</span> <span class="s">"World"</span><span class="o">;</span>
+            <span class="n">responder</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">reply</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(),</span> <span class="mi">0</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">responder</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="n">context</span><span class="o">.</span><span class="na">term</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre>
+</div>
+
+<p><strong>Client:</strong></p>
+
+<p><img src="http://wx2.sinaimg.cn/mw690/c584f169ly1fe3iuvv99cj208v05kt8i.jpg" alt="outPut" /></p>
+
+<p><strong>Server:</strong></p>
+
+<p><img src="http://wx3.sinaimg.cn/mw690/c584f169ly1fe3iuuozo8j20bi06emx6.jpg" alt="outPut" /></p>
+
+<h2 id="发布-订阅模式实例-java">发布-订阅模式实例 （JAVA）</h2>
+
+<p><strong>Client:</strong></p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="kn">import</span> <span class="nn">org.zeromq.ZMQ</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">hwclient</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">client</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="n">ZMQ</span><span class="o">.</span><span class="na">Context</span> <span class="n">zContext</span> <span class="o">=</span> <span class="n">ZMQ</span><span class="o">.</span><span class="na">context</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+                <span class="n">ZMQ</span><span class="o">.</span><span class="na">Socket</span> <span class="n">socket</span> <span class="o">=</span> <span class="n">zContext</span><span class="o">.</span><span class="na">socket</span><span class="o">(</span><span class="n">ZMQ</span><span class="o">.</span><span class="na">SUB</span><span class="o">);</span>
+                <span class="n">socket</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"tcp://"</span> <span class="o">+</span> <span class="s">"127.0.0.1"</span> <span class="o">+</span> <span class="s">":5553"</span><span class="o">);</span>
+                <span class="n">socket</span><span class="o">.</span><span class="na">subscribe</span><span class="o">(</span><span class="s">"Hello World!"</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+                <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">){</span>
+                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"client:"</span><span class="o">+</span><span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">socket</span><span class="o">.</span><span class="na">recv</span><span class="o">(</span><span class="mi">0</span><span class="o">)));</span>
+                <span class="o">}</span>
+					
+                <span class="c1">//socket.close();</span>
+            <span class="o">}</span>
+        <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span>  <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[]){</span>
+        <span class="n">client</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre>
+</div>
+
+<p><strong>Server:</strong></p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="kn">import</span> <span class="nn">org.zeromq.ZMQ</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">hwserver</span> <span class="o">{</span>
+
+     <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">server</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="n">ZMQ</span><span class="o">.</span><span class="na">Context</span> <span class="n">zContext</span> <span class="o">=</span> <span class="n">ZMQ</span><span class="o">.</span><span class="na">context</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+                <span class="n">ZMQ</span><span class="o">.</span><span class="na">Socket</span> <span class="n">publisher</span> <span class="o">=</span> <span class="n">zContext</span><span class="o">.</span><span class="na">socket</span><span class="o">(</span><span class="n">ZMQ</span><span class="o">.</span><span class="na">PUB</span><span class="o">);</span>
+                <span class="n">publisher</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="s">"tcp://*:5553"</span><span class="o">);</span>
+					<span class="k">while</span> <span class="o">(!</span><span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">isInterrupted</span><span class="o">())</span> <span class="o">{</span>
+                        <span class="k">try</span> <span class="o">{</span>
+
+                            <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
+                            <span class="n">String</span> <span class="n">reply</span> <span class="o">=</span> <span class="s">"Hello World!"</span><span class="o">;</span>
+                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server:"</span><span class="o">+</span><span class="n">reply</span><span class="o">);</span>
+                            <span class="n">publisher</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">reply</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(),</span> <span class="mi">0</span><span class="o">);</span>
+
+                        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                        <span class="o">}</span>
+
+					<span class="o">}</span>
+                <span class="cm">/*publisher.close ();
+                zContext.term ();*/</span>
+
+            <span class="o">}</span>
+        <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span>  <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[]){</span>
+        <span class="n">server</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre>
+</div>
+
+<p><strong>Client:</strong></p>
+
+<p><img src="http://wx3.sinaimg.cn/mw690/c584f169ly1ffxfzivjsgj20cj06jwel.jpg" alt="outPut" /></p>
+
+<blockquote>
+  <p>more in <a href="http://zguide.zeromq.org/">ZMQ</a></p>
+</blockquote>
+
+<blockquote>
+  <p>more in other blog <a href="http://blog.codingnow.com/2011/02/zeromq_message_patterns.html">云风</a></p>
+</blockquote>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2017/03/26/mysql-1045/">mysql 错误1045</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2017/03/29/Android-LAN-scan/">Android 局域网扫描</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2017/03/26/Android-ZMQ/" data-title="ZMQ" data-url="http://localhost:4000/2017/03/26/Android-ZMQ/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

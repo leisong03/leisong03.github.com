@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>three.js-Raycaster</title>
+    <meta name="description" content="Three.js学习笔记 本篇为Raycaster(射线)的使用。">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/08/10/three-js-Raycaster/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>three.js-Raycaster</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-08-10
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#three.js" title="Tag: three.js" rel="tag">three.js</a>&nbsp;
+    
+        <a href="/tag/#javaScript" title="Tag: javaScript" rel="tag">javaScript</a>&nbsp;
+    
+        <a href="/tag/#WebGL" title="Tag: WebGL" rel="tag">WebGL</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#raycaster" id="markdown-toc-raycaster">Raycaster</a>    <ul>
+      <li><a href="#constructor" id="markdown-toc-constructor">Constructor</a></li>
+      <li><a href="#main-properties" id="markdown-toc-main-properties">Main Properties</a></li>
+    </ul>
+  </li>
+  <li><a href="#拾取物体" id="markdown-toc-拾取物体">拾取物体</a>    <ul>
+      <li><a href="#添加一组物体" id="markdown-toc-添加一组物体">添加一组物体</a></li>
+      <li><a href="#添加raycaster" id="markdown-toc-添加raycaster">添加raycaster</a></li>
+      <li><a href="#拾取物体改变颜色" id="markdown-toc-拾取物体改变颜色">拾取物体改变颜色</a></li>
+    </ul>
+  </li>
+  <li><a href="#view-source" id="markdown-toc-view-source">View source</a></li>
+</ul>
+
+<p>Three.js学习笔记 本篇为Raycaster(射线)的使用。</p>
+
+<h2 id="raycaster">Raycaster</h2>
+
+<h3 id="constructor">Constructor</h3>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">raycaster</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Raycaster</span><span class="p">(</span> <span class="nx">origin</span><span class="p">,</span> <span class="nx">direction</span><span class="p">,</span> <span class="nx">near</span><span class="p">,</span> <span class="nx">far</span> <span class="p">);</span>
+
+</code></pre>
+</div>
+
+<h3 id="main-properties">Main Properties</h3>
+
+<ul>
+  <li><code class="highlighter-rouge">origin</code>：射线放射的位置</li>
+  <li><code class="highlighter-rouge">direction</code> ：方向向量，应该是标准化的<code class="highlighter-rouge">.normalize()</code></li>
+  <li><code class="highlighter-rouge">near</code> ：能投射的最近距离<code class="highlighter-rouge">default：0</code></li>
+  <li><code class="highlighter-rouge">far</code>： 能投射的最远距离 <code class="highlighter-rouge">default：Infinity</code></li>
+</ul>
+
+<h2 id="拾取物体">拾取物体</h2>
+<p>我们可以定义一个由mouse(鼠标)发出的射线，从而来拾取物体。
+获取第一个和射线相交的物体，进一步可以进行其他操作（本篇用于改变获取物体的颜色）。</p>
+
+<h3 id="添加一组物体">添加一组物体</h3>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>    
+    <span class="c1">//用来保存物体对象</span>
+    <span class="kd">var</span> <span class="nx">array</span> <span class="o">=</span> <span class="p">[];</span>
+    
+    <span class="kd">var</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">CubeGeometry</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">);</span>
+    
+    <span class="kd">var</span> <span class="nx">materisl</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MeshBasicMaterial</span><span class="p">({</span> <span class="na">color</span><span class="p">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mh">0xffffff</span><span class="p">,</span> <span class="na">opacity</span><span class="p">:</span> <span class="mf">0.5</span> <span class="p">}</span> <span class="p">);</span>
+    
+    <span class="c1">//定义20个cube</span>
+    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">i</span><span class="o">&lt;</span><span class="mi">20</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">){</span>
+       
+       <span class="kd">var</span> <span class="nx">mesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span><span class="nx">geometry</span><span class="p">,</span><span class="nx">materisl</span><span class="p">);</span>
+          
+           <span class="nx">object</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">800</span> <span class="o">-</span> <span class="mi">400</span><span class="p">;</span>
+		   <span class="nx">object</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">800</span> <span class="o">-</span> <span class="mi">400</span><span class="p">;</span>
+		   <span class="nx">object</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">z</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">800</span> <span class="o">-</span> <span class="mi">400</span><span class="p">;</span>
+		   
+       <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">mesh</span><span class="p">);</span>
+       
+       <span class="nx">array</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">mesh</span><span class="p">);</span>
+       
+    <span class="p">}</span>
+
+</code></pre>
+</div>
+
+<h3 id="添加raycaster">添加raycaster</h3>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+    <span class="kd">var</span> <span class="nx">raycaster</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Raycaster</span><span class="p">();</span> 
+    
+    <span class="c1">//用来保存鼠标坐标信息</span>
+    <span class="kd">var</span> <span class="nx">mouse</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Vector2</span><span class="p">();</span>  
+    
+    <span class="c1">//添加鼠标移动事件，检测鼠标的移动</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'mousemove'</span><span class="p">,</span> <span class="nx">onDocumentMouseMove</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>  
+    
+    <span class="kd">function</span> <span class="nx">onDocumentMouseMove</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>  
+        
+        <span class="c1">//获取鼠标的x，y坐标</span>
+        <span class="nx">mouse</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">clientX</span> <span class="o">/</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>  
+        <span class="nx">mouse</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">clientY</span> <span class="o">/</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>  
+        
+            <span class="p">}</span>  
+            
+    <span class="kd">function</span> <span class="nx">render</span><span class="p">(){</span>
+        
+        <span class="c1">//更新鼠标和射线位置</span>
+        <span class="nx">raycaster</span><span class="p">.</span><span class="nx">setFromCamera</span><span class="p">(</span><span class="nx">mouse</span><span class="p">,</span> <span class="nx">camera</span><span class="p">);</span> 
+        
+        <span class="nx">renderer</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span><span class="p">);</span>  
+        <span class="nx">raycaster</span><span class="p">.</span><span class="nx">setFromCamera</span><span class="p">(</span><span class="nx">mouse</span><span class="p">,</span> <span class="nx">camera</span><span class="p">);</span>  
+    <span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="拾取物体改变颜色">拾取物体改变颜色</h3>
+<p>前面两步我们添加了object（物体）和raycaster（射线），当我们获取到物体还需要进一步操作。改变获取物体的颜色。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>     <span class="kd">function</span> <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>  
+     
+                <span class="nx">requestAnimationFrame</span><span class="p">(</span><span class="nx">render</span><span class="p">);</span>  
+                <span class="nx">renderer</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span><span class="p">);</span>  
+                
+                <span class="nx">raycaster</span><span class="p">.</span><span class="nx">setFromCamera</span><span class="p">(</span><span class="nx">mouse</span><span class="p">,</span> <span class="nx">camera</span><span class="p">);</span>  
+                
+                <span class="c1">//获取和射线相交的array[]中的物体</span>
+                <span class="kd">var</span> <span class="nx">intersects</span> <span class="o">=</span> <span class="nx">raycaster</span><span class="p">.</span><span class="nx">intersectObjects</span><span class="p">(</span><span class="nx">array</span><span class="p">);</span>  
+                
+                <span class="kd">var</span> <span class="nx">INTERSECTED</span><span class="err">；</span>
+                
+                <span class="c1">//这里我们操作第一个相交的物体</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">intersects</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>  
+                    <span class="k">if</span> <span class="p">(</span><span class="nx">INTERSECTED</span> <span class="o">!=</span> <span class="nx">intersects</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">object</span><span class="p">)</span> <span class="p">{</span>
+                          
+                        <span class="k">if</span> <span class="p">(</span><span class="nx">INTERSECTED</span><span class="p">)</span> <span class="nx">INTERSECTED</span><span class="p">.</span><span class="nx">material</span><span class="p">.</span><span class="nx">color</span><span class="p">.</span><span class="nx">setHex</span><span class="p">(</span><span class="nx">INTERSECTED</span><span class="p">.</span><span class="nx">currentHex</span><span class="p">);</span>  
+                        <span class="nx">INTERSECTED</span> <span class="o">=</span> <span class="nx">intersects</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">object</span><span class="p">;</span>  
+                        
+                        <span class="c1">//设置相交的第一个物体的颜色</span>
+                        <span class="nx">INTERSECTED</span><span class="p">.</span><span class="nx">currentHex</span> <span class="o">=</span> <span class="nx">INTERSECTED</span><span class="p">.</span><span class="nx">material</span><span class="p">.</span><span class="nx">color</span><span class="p">.</span><span class="nx">getHex</span><span class="p">();</span> 
+                        <span class="c1">//将该物体设为随机的其他颜色 </span>
+                        <span class="nx">INTERSECTED</span><span class="p">.</span><span class="nx">material</span><span class="p">.</span><span class="nx">color</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="mh">0xff0000</span> <span class="p">);</span>  
+                    <span class="p">}</span>  
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>  
+                    <span class="c1">//当射线离开的时候变为原来的颜色</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="nx">INTERSECTED</span><span class="p">)</span> <span class="nx">INTERSECTED</span><span class="p">.</span><span class="nx">material</span><span class="p">.</span><span class="nx">color</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">INTERSECTED</span><span class="p">.</span><span class="nx">currentHex</span><span class="p">);</span>  
+                    <span class="nx">INTERSECTED</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>  
+                <span class="p">}</span>  
+            <span class="p">}</span>  
+
+
+
+</code></pre>
+</div>
+
+<hr />
+<p><img src="http://ww2.sinaimg.cn/mw690/c584f169gw1f6pt9gr3c5j20p20hm75k.jpg" alt="outPut" /></p>
+
+<h2 id="view-source">View source</h2>
+
+<p><em><a href="https://github.com/Chenjy1225/Chenjy1225.github.io/blob/master/source/three-raycaster.html">source code</a></em></p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/08/10/three-js-sun-lensflare/">three.js-sun-lensflare</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/08/11/three-js-draw-line/">three.js-drawLine</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/08/10/three-js-Raycaster/" data-title="three.js-Raycaster" data-url="http://localhost:4000/2016/08/10/three-js-Raycaster/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

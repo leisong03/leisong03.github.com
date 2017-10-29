@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Android SharedPreferences</title>
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2017/04/10/Android-SharedPreferences/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>Android SharedPreferences</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2017-04-10
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#Android" title="Tag: Android" rel="tag">Android</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#sharedpreferences简介" id="markdown-toc-sharedpreferences简介"><code class="highlighter-rouge">SharedPreferences</code>简介</a></li>
+  <li><a href="#sharedpreferences使用" id="markdown-toc-sharedpreferences使用"><code class="highlighter-rouge">SharedPreferences</code>使用</a></li>
+  <li><a href="#sharedpreferences源码" id="markdown-toc-sharedpreferences源码"><code class="highlighter-rouge">SharedPreferences</code>源码</a></li>
+</ul>
+
+<p>本篇简单SharedPreferences的应用。</p>
+
+<h2 id="sharedpreferences简介"><code class="highlighter-rouge">SharedPreferences</code>简介</h2>
+
+<p><code class="highlighter-rouge">SharedPreferences</code>是用来存储一些简单的配置文件的机制,<code class="highlighter-rouge">SharedPreferences</code>使用<code class="highlighter-rouge">Map</code>数据结构来存储数据(<code class="highlighter-rouge">key-value</code>)。采用<code class="highlighter-rouge">XML</code>格式将数据存储到设备中。</p>
+
+<div class="language-xml highlighter-rouge"><pre class="highlight"><code>
+<span class="cp">&lt;?xml version='1.0' encoding='utf-8' standalone='yes' ?&gt;</span>
+
+<span class="nt">&lt;map&gt;</span>
+
+   <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">"name"</span><span class="nt">&gt;</span>chenjy<span class="nt">&lt;/string&gt;</span>
+
+   <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"age"</span> <span class="na">value=</span><span class="s">"18"</span> <span class="nt">/&gt;</span>
+
+<span class="nt">&lt;/map&gt;</span>
+
+
+</code></pre>
+</div>
+
+<h2 id="sharedpreferences使用"><code class="highlighter-rouge">SharedPreferences</code>使用</h2>
+
+<p>获取<code class="highlighter-rouge">SharedPreferences</code>有两种方式:</p>
+
+<p>1.1 调用<code class="highlighter-rouge">Context</code>对象的<code class="highlighter-rouge">getSharedPreferences()</code>方法,可以被用一个应用程序下的其他组件共享。</p>
+
+<p>2.2 调用<code class="highlighter-rouge">Activity</code>对象的<code class="highlighter-rouge">getPreferences()</code>方法,该对象只能在<code class="highlighter-rouge">Activity</code>中使用。</p>
+
+<p><code class="highlighter-rouge">SharedPreferences</code>的四种操作模式：</p>
+
+<p><code class="highlighter-rouge">Context.MODE_PRIVATE</code>:默认的操作模式,代表改文件为私有数据,只能被应用本身访问。该模式下,写入的文件会覆盖原文件。</p>
+
+<p><code class="highlighter-rouge">Context.MODE_APPEND</code>:改模式会检查文件是否存在,如果存在就往文件追加内容否则就创建新文件。</p>
+
+<p><code class="highlighter-rouge">Context.MODE_WORLD_READABLE</code>：表示当前文件可以被其他应用读取。</p>
+
+<p><code class="highlighter-rouge">Context.MODE_WORLD_WRITEABLE</code>：表示当前文件可以被其他应用写入。</p>
+
+<h2 id="sharedpreferences源码"><code class="highlighter-rouge">SharedPreferences</code>源码</h2>
+
+<p><code class="highlighter-rouge">SharedPreferences</code>通过<code class="highlighter-rouge">SharedPreferences.Editor</code>来存储数据</p>
+
+<ul>
+  <li>
+    <p><code class="highlighter-rouge">SharedPreferences.Editor.putInt</code>、<code class="highlighter-rouge">SharedPreferences.Editor.putString</code>存<code class="highlighter-rouge">key</code> <code class="highlighter-rouge">value</code>值。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">SharedPreferences.Editor.remove</code> 清除指定<code class="highlighter-rouge">key</code>的字段。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">SharedPreferences.Editor.clear</code> 清空所有数据。</p>
+  </li>
+</ul>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="kn">import</span> <span class="nn">android.content.Context</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.content.SharedPreferences</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.preference.PreferenceManager</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EasySharePreference</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">SharedPreferences</span> <span class="n">sharedPreferences</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">SharedPreferences</span><span class="o">.</span><span class="na">Editor</span> <span class="n">sp_editor</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="n">Context</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">sharedPreferences</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">sharedPreferences</span> <span class="o">=</span> <span class="n">PreferenceManager</span><span class="o">.</span><span class="na">getDefaultSharedPreferences</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">sp_editor</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">sp_editor</span> <span class="o">=</span> <span class="n">sharedPreferences</span><span class="o">.</span><span class="na">edit</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">SharedPreferences</span> <span class="nf">getPrefInstance</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">sharedPreferences</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">SharedPreferences</span><span class="o">.</span><span class="na">Editor</span> <span class="nf">getEditorInstance</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">sp_editor</span><span class="o">;</span>
+    <span class="o">}</span>
+
+	<span class="c1">// 获取名为token的`SharedPreferences`</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">getToken</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">token</span> <span class="o">=</span> <span class="n">sharedPreferences</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">"token"</span><span class="o">,</span> <span class="s">""</span><span class="o">).</span><span class="na">trim</span><span class="o">().</span><span class="na">replace</span><span class="o">(</span><span class="s">"\n"</span><span class="o">,</span> <span class="s">""</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">token</span><span class="o">.</span><span class="na">replace</span><span class="o">(</span><span class="s">"\""</span><span class="o">,</span> <span class="s">""</span><span class="o">);</span>
+    <span class="o">}</span>
+
+	<span class="c1">// 存储名为token的`SharedPreferences`</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">saveToken</span><span class="o">(</span><span class="n">String</span> <span class="n">token</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">sp_editor</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">"token"</span><span class="o">,</span> <span class="n">token</span><span class="o">.</span><span class="na">trim</span><span class="o">().</span><span class="na">replace</span><span class="o">(</span><span class="s">"\n"</span><span class="o">,</span> <span class="s">""</span><span class="o">)).</span><span class="na">commit</span><span class="o">();</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+
+
+</code></pre>
+</div>
+
+<p>MainActivity:</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">chenjy</span><span class="o">.</span><span class="na">chenjy</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">android.app.Activity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.os.Bundle</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.widget.TextView</span><span class="o">;</span>
+
+
+<span class="kn">import</span> <span class="nn">utils.EasySharePreference</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">TextView</span> <span class="n">tv_token</span><span class="o">;</span>
+
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+        <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">activity_main</span><span class="o">);</span>
+
+        <span class="n">EasySharePreference</span><span class="o">.</span><span class="na">init</span><span class="o">(</span><span class="n">getApplicationContext</span><span class="o">());</span>
+
+        <span class="n">initView</span><span class="o">();</span>
+
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">initView</span><span class="o">(){</span>
+
+        <span class="n">tv_token</span> <span class="o">=</span> <span class="o">(</span><span class="n">TextView</span><span class="o">)</span><span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">tv_token</span><span class="o">);</span>
+
+        <span class="n">EasySharePreference</span><span class="o">.</span><span class="na">saveToken</span><span class="o">(</span><span class="s">"chenjy"</span><span class="o">);</span>
+
+        <span class="n">tv_token</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">EasySharePreference</span><span class="o">.</span><span class="na">getToken</span><span class="o">());</span>
+
+    <span class="o">}</span>
+
+<span class="o">}</span>
+
+</code></pre>
+</div>
+
+<p><img src="http://wx2.sinaimg.cn/mw690/c584f169ly1fexqek5atrj20af08yq2y.jpg" alt="outPut" /></p>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/15/Android-wechat-share/"> Android wechat 分享
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/10/Android-TimeoutExceptions/"> Android TimeoutExceptions及 wakelock
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/08/Android-Activity-life-time/"> Android Activity 生命周期
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/08/Android-Change-Language/">Android App 切换语言
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2017/04/02/Android-serialport/">Android 串口通信</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2017/04/10/Android-Update-UI/">Android 更新UI</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2017/04/10/Android-SharedPreferences/" data-title="Android SharedPreferences" data-url="http://localhost:4000/2017/04/10/Android-SharedPreferences/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Jquery Tips</title>
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/06/01/jquery-tips/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>Jquery Tips</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-06-01
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#jquery" title="Tag: jquery" rel="tag">jquery</a>&nbsp;
+    
+        <a href="/tag/#JavaScript" title="Tag: JavaScript" rel="tag">JavaScript</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#tips-about-jquery" id="markdown-toc-tips-about-jquery">Tips About Jquery.</a>    <ul>
+      <li><a href="#jquery动态绑定事件" id="markdown-toc-jquery动态绑定事件"><code class="highlighter-rouge">Jquery</code>动态绑定事件</a></li>
+      <li><a href="#jquery-on绑定hover事件" id="markdown-toc-jquery-on绑定hover事件"><code class="highlighter-rouge">Jquery</code> <code class="highlighter-rouge">on</code>绑定<code class="highlighter-rouge">hover</code>事件</a></li>
+      <li><a href="#jquery获取时间并且格式化" id="markdown-toc-jquery获取时间并且格式化"><code class="highlighter-rouge">Jquery</code>获取时间并且格式化</a></li>
+      <li><a href="#滚动条滚动底部" id="markdown-toc-滚动条滚动底部">滚动条滚动底部</a></li>
+      <li><a href="#jquery-size-和length" id="markdown-toc-jquery-size-和length"><code class="highlighter-rouge">Jquery</code> <code class="highlighter-rouge">size( )</code>和<code class="highlighter-rouge">length</code></a></li>
+      <li><a href="#页面之间传值" id="markdown-toc-页面之间传值">页面之间传值</a></li>
+      <li><a href="#正确引用jquery" id="markdown-toc-正确引用jquery">正确引用jQuery</a></li>
+      <li><a href="#优化jquery选择器" id="markdown-toc-优化jquery选择器">优化jQuery选择器</a></li>
+      <li><a href="#缓存jquery对象" id="markdown-toc-缓存jquery对象">缓存jQuery对象</a>        <ul>
+          <li><a href="#使用子查询缓存的父元素" id="markdown-toc-使用子查询缓存的父元素">使用子查询缓存的父元素</a></li>
+        </ul>
+      </li>
+      <li><a href="#精简jquery代码" id="markdown-toc-精简jquery代码">精简jQuery代码</a></li>
+      <li><a href="#减少dom操作" id="markdown-toc-减少dom操作">减少DOM操作</a>        <ul>
+          <li><a href="#最小化dom更新" id="markdown-toc-最小化dom更新">最小化DOM更新</a></li>
+        </ul>
+      </li>
+      <li><a href="#prop和attr方法" id="markdown-toc-prop和attr方法">prop和attr方法</a></li>
+      <li><a href="#each遍历" id="markdown-toc-each遍历">each遍历</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="tips-about-jquery">Tips About Jquery.</h2>
+
+<h3 id="jquery动态绑定事件"><code class="highlighter-rouge">Jquery</code>动态绑定事件</h3>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="c1">//Jquery绑定事件</span>
+
+<span class="nx">$</span><span class="p">(</span><span class="s1">'.div'</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(){});</span>
+
+<span class="c1">//Jquery动态绑定事件</span>
+
+<span class="nx">$</span><span class="p">(</span><span class="s1">'.div'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'click'</span><span class="p">,</span><span class="kd">function</span><span class="p">(){});</span>
+
+<span class="o">&lt;--</span> <span class="err">当页面动态刷新时，新加载的元素依然可以绑定事件</span> <span class="o">--&gt;</span>
+
+<span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'click'</span><span class="p">,</span><span class="s1">'.div'</span><span class="p">,</span><span class="kd">function</span><span class="p">(){});</span>
+
+</code></pre>
+</div>
+
+<h3 id="jquery-on绑定hover事件"><code class="highlighter-rouge">Jquery</code> <code class="highlighter-rouge">on</code>绑定<code class="highlighter-rouge">hover</code>事件</h3>
+
+<p>不能用<code class="highlighter-rouge">on</code>处理<code class="highlighter-rouge">hover</code>事件，因为<code class="highlighter-rouge">Jquery</code>的<code class="highlighter-rouge">hover</code>事件是一个封装的事件，不是真正的事件。</p>
+
+<p>所以使用<code class="highlighter-rouge">mouseenter</code>和<code class="highlighter-rouge">mouseleave</code>来代替鼠标悬浮和离开事件。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'mouseenter'</span><span class="p">,</span> <span class="s1">'.div'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<span class="p">});</span>
+
+<span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'mouseleave'</span><span class="p">,</span> <span class="s1">'.div'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<span class="p">});</span>
+
+
+</code></pre>
+</div>
+
+<h3 id="jquery获取时间并且格式化"><code class="highlighter-rouge">Jquery</code>获取时间并且格式化</h3>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="nb">Date</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">format</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">format</span><span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/*
+     * eg:format="YYYY-MM-dd hh:mm:ss";
+
+     */</span>
+    <span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"M+"</span> <span class="p">:</span><span class="k">this</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="c1">// month</span>
+        <span class="s2">"d+"</span> <span class="p">:</span><span class="k">this</span><span class="p">.</span><span class="nx">getDate</span><span class="p">(),</span> <span class="c1">// day</span>
+        <span class="s2">"h+"</span> <span class="p">:</span><span class="k">this</span><span class="p">.</span><span class="nx">getHours</span><span class="p">(),</span> <span class="c1">// hour</span>
+        <span class="s2">"m+"</span> <span class="p">:</span><span class="k">this</span><span class="p">.</span><span class="nx">getMinutes</span><span class="p">(),</span> <span class="c1">// minute</span>
+        <span class="s2">"s+"</span> <span class="p">:</span><span class="k">this</span><span class="p">.</span><span class="nx">getSeconds</span><span class="p">(),</span> <span class="c1">// second</span>
+        <span class="s2">"q+"</span> <span class="p">:</span><span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">((</span><span class="k">this</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">()</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span><span class="p">),</span> <span class="c1">// quarter</span>
+        <span class="s2">"S"</span> <span class="p">:</span><span class="k">this</span><span class="p">.</span><span class="nx">getMilliseconds</span><span class="p">()</span>
+    <span class="c1">// millisecond</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="sr">/</span><span class="se">(</span><span class="sr">y+</span><span class="se">)</span><span class="sr">/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">format</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">format</span> <span class="o">=</span> <span class="nx">format</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nb">RegExp</span><span class="p">.</span><span class="nx">$1</span><span class="p">,</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">()</span> <span class="o">+</span> <span class="s2">""</span><span class="p">)</span>
+                <span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">4</span> <span class="o">-</span> <span class="nb">RegExp</span><span class="p">.</span><span class="nx">$1</span><span class="p">.</span><span class="nx">length</span><span class="p">));</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">k</span> <span class="k">in</span> <span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s2">"("</span> <span class="o">+</span> <span class="nx">k</span> <span class="o">+</span> <span class="s2">")"</span><span class="p">).</span><span class="nx">test</span><span class="p">(</span><span class="nx">format</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nx">format</span> <span class="o">=</span> <span class="nx">format</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nb">RegExp</span><span class="p">.</span><span class="nx">$1</span><span class="p">,</span> <span class="nb">RegExp</span><span class="p">.</span><span class="nx">$1</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">?</span> <span class="nx">o</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span>
+                    <span class="p">:</span> <span class="p">(</span><span class="s2">"00"</span> <span class="o">+</span> <span class="nx">o</span><span class="p">[</span><span class="nx">k</span><span class="p">]).</span><span class="nx">substr</span><span class="p">((</span><span class="s2">""</span> <span class="o">+</span> <span class="nx">o</span><span class="p">[</span><span class="nx">k</span><span class="p">]).</span><span class="nx">length</span><span class="p">));</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">format</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">startTime</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">format</span><span class="p">(</span><span class="s2">"yyyy-MM-dd 00:00:00"</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">endTime</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">format</span><span class="p">(</span><span class="s2">"yyyy-MM-dd hh:mm:ss"</span><span class="p">);</span>
+
+</code></pre>
+</div>
+
+<h3 id="滚动条滚动底部">滚动条滚动底部</h3>
+
+<ul>
+  <li>
+    <p><code class="highlighter-rouge">scrollTop([val])</code> 获取匹配元素相对滚动条顶部的偏移。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">scrollLeft([val])</code> 获取匹配元素相对滚动条左侧的偏移。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">scrollHeight</code> 滚动条高度</p>
+  </li>
+</ul>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="nx">$</span><span class="p">(</span><span class="s2">".div"</span><span class="p">).</span><span class="nx">scrollTop</span><span class="p">(</span> <span class="nx">$</span><span class="p">(</span><span class="s2">".div"</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">scrollHeight</span><span class="p">);</span>
+
+
+</code></pre>
+</div>
+
+<h3 id="jquery-size-和length"><code class="highlighter-rouge">Jquery</code> <code class="highlighter-rouge">size( )</code>和<code class="highlighter-rouge">length</code></h3>
+
+<p><code class="highlighter-rouge">size()</code>是<code class="highlighter-rouge">jQuery</code> 提供的函数，而 <code class="highlighter-rouge">length</code>是属性。两者的取值是一样的。</p>
+
+<h3 id="页面之间传值">页面之间传值</h3>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+   <span class="c1">//页面一</span>
+   <span class="nx">location</span><span class="p">.</span><span class="nx">href</span> <span class="o">=</span> <span class="s2">"href2.html?id=3"</span><span class="p">;</span>
+
+</code></pre>
+</div>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>   <span class="c1">//页面二</span>
+   <span class="kd">var</span> <span class="nx">_url</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">URL</span><span class="p">;</span>
+   <span class="kd">var</span> <span class="nx">_urlParam</span> <span class="o">=</span> <span class="nx">_url</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">'?'</span><span class="p">)[</span><span class="mi">1</span><span class="p">];</span>
+   <span class="kd">var</span> <span class="nx">_value</span> <span class="o">=</span> <span class="nx">_urlParam</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">'='</span><span class="p">)[</span><span class="mi">1</span><span class="p">];</span>
+
+</code></pre>
+</div>
+
+<p>也可以使用<code class="highlighter-rouge">jquery.params.js</code> <code class="highlighter-rouge">$.query.get("id");</code></p>
+
+<p>### 灵活运用三目运算符</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code> 
+ <span class="p">(</span><span class="nx">_list</span><span class="p">.</span><span class="nx">equipStatus</span> <span class="o">==</span><span class="mi">1</span><span class="p">?</span><span class="s2">"运行中"</span><span class="p">:(</span><span class="nx">_list</span><span class="p">.</span><span class="nx">repairStatus</span> <span class="o">==</span><span class="mi">2</span><span class="p">?</span><span class="s2">"维修中"</span><span class="p">:</span><span class="s2">"待确认"</span><span class="p">))</span>
+ 
+</code></pre>
+</div>
+
+<h3 id="正确引用jquery">正确引用jQuery</h3>
+
+<ol>
+  <li>尽量在<code class="highlighter-rouge">body</code>结束前才引入<code class="highlighter-rouge">jQuery</code>，而不是在<code class="highlighter-rouge">head</code>中。</li>
+  <li>借助第三方提供的CDN来引入jQuery，同时注意当使用第三方CDN出现问题时，要引入本地的<code class="highlighter-rouge">jQuery</code>文件。</li>
+  <li><u>如果在`&lt;/body&gt;`前引入`script`文件的话，就不用写`document.ready`了</u>，因为这时执行<code class="highlighter-rouge">js</code>代码时<code class="highlighter-rouge">DOM</code>已经加载完毕了。</li>
+</ol>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>  
+    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"http://lib.sinaapp.com/js/jquery11/1.8/jquery.min.js"</span><span class="o">&gt;&lt;</span><span class="sr">/script&gt; </span><span class="err"> 
+</span>    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span><span class="nb">window</span><span class="p">.</span><span class="nx">jQuery</span>  <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;script src="jquery1.8.min.js"&gt;\x3C/script&gt;'</span><span class="p">)</span><span class="o">&lt;</span><span class="sr">/script&gt; </span><span class="err"> 
+</span><span class="o">&lt;</span><span class="sr">/body&gt;</span><span class="err"> 
+</span>
+</code></pre>
+</div>
+
+<h3 id="优化jquery选择器">优化jQuery选择器</h3>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">"nav"</span> <span class="kr">class</span><span class="o">=</span><span class="s2">"nav"</span><span class="o">&gt;</span>  
+    <span class="o">&lt;</span><span class="nx">a</span> <span class="kr">class</span><span class="o">=</span><span class="s2">"home"</span> <span class="nx">href</span><span class="o">=</span><span class="s2">"http://www.jquery001.com"</span><span class="o">&gt;</span><span class="nx">jQuery</span><span class="err">学习网</span><span class="o">&lt;</span><span class="sr">/a&gt; </span><span class="err"> 
+</span>    <span class="o">&lt;</span><span class="nx">a</span> <span class="kr">class</span><span class="o">=</span><span class="s2">"articles"</span> <span class="nx">href</span><span class="o">=</span><span class="s2">"http://www.jquery001.com/articles/"</span><span class="o">&gt;</span><span class="nx">jQuery</span><span class="err">教程</span><span class="o">&lt;</span><span class="sr">/a&gt; </span><span class="err"> 
+</span><span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>
+</code></pre>
+</div>
+
+<p>如果我们选择class为home的a元素时，可以使用下边代码：</p>
+
+<p>$(‘.home’);  //1</p>
+
+<p>$(‘#nav a.home’);  //2</p>
+
+<p>$(‘#nav’).find(‘a.home’);  //3</p>
+
+<ol>
+  <li>方法1，会使jQuery在整个DOM中查找class为home的a元素，性能可想而知。</li>
+  <li>方法2，为要查找的元素添加了上下文，在这里变为查找id为nav的子元素，查找性能得到了很大提升。</li>
+  <li>方法3，使用了find方法，它的速度更快，所以方法三最好。</li>
+</ol>
+
+<p>关于jQuery选择器的性能优先级，ID选择器快于元素选择器，元素选择器快于class选择器。因为ID选择器和元素选择器是原生的<code class="highlighter-rouge">JavaScript</code>操作，而类选择器不是。</p>
+
+<h3 id="缓存jquery对象">缓存jQuery对象</h3>
+
+<p>缓存jQuery对象可以减少不必要的DOM查找，关于这点大家可以参考下缓存jQuery对象来提高性能。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="c1">// 糟糕</span>
+<span class="nx">h</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'#element'</span><span class="p">).</span><span class="nx">height</span><span class="p">();</span>
+<span class="nx">$</span><span class="p">(</span><span class="s1">'#element'</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s1">'height'</span><span class="p">,</span><span class="nx">h</span><span class="o">-</span><span class="mi">20</span><span class="p">);</span>
+
+<span class="c1">// 建议</span>
+<span class="nx">$element</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'#element'</span><span class="p">);</span>
+<span class="nx">h</span> <span class="o">=</span> <span class="nx">$element</span><span class="p">.</span><span class="nx">height</span><span class="p">();</span>
+<span class="nx">$element</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s1">'height'</span><span class="p">,</span><span class="nx">h</span><span class="o">-</span><span class="mi">20</span><span class="p">);</span>
+
+</code></pre>
+</div>
+
+<h4 id="使用子查询缓存的父元素">使用子查询缓存的父元素</h4>
+<p>正如前面所提到的，DOM遍历是一项昂贵的操作。典型做法是缓存父元素并在选择子元素时重用这些缓存元素。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="c1">// 糟糕</span>
+<span class="kd">var</span>
+    <span class="nx">$container</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'#container'</span><span class="p">),</span>
+    <span class="nx">$containerLi</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'#container li'</span><span class="p">),</span>
+    <span class="nx">$containerLiSpan</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'#container li span'</span><span class="p">);</span>
+<span class="c1">// 建议 (高效)</span>
+<span class="kd">var</span>
+    <span class="nx">$container</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'#container '</span><span class="p">),</span>
+    <span class="nx">$containerLi</span> <span class="o">=</span> <span class="nx">$container</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">'li'</span><span class="p">),</span>
+    <span class="nx">$containerLiSpan</span><span class="o">=</span> <span class="nx">$containerLi</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">'span'</span><span class="p">);</span>
+
+</code></pre>
+</div>
+
+<h3 id="精简jquery代码">精简jQuery代码</h3>
+
+<p>一般来说,最好尽可能合并函数。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="c1">// 糟糕</span>
+<span class="nx">$first</span><span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">$first</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s1">'border'</span><span class="p">,</span><span class="s1">'1px solid red'</span><span class="p">);</span>
+    <span class="nx">$first</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s1">'color'</span><span class="p">,</span><span class="s1">'blue'</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="c1">// 建议</span>
+<span class="nx">$first</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'click'</span><span class="p">,</span><span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">$first</span><span class="p">.</span><span class="nx">css</span><span class="p">({</span>
+        <span class="s1">'border'</span><span class="p">:</span><span class="s1">'1px solid red'</span><span class="p">,</span>
+        <span class="s1">'color'</span><span class="p">:</span><span class="s1">'blue'</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+
+</code></pre>
+</div>
+
+<h3 id="减少dom操作">减少DOM操作</h3>
+
+<h4 id="最小化dom更新">最小化DOM更新</h4>
+
+<p>重布局和重绘是WEB页面中最常见的也是最昂贵的两种操作。
+当改变样式，而不改变页面几何布局时，将会发生重绘。隐藏一个元素或者改变一个元素的背景色时都将导致一次重绘。
+当对页面结构进行更新时，将导致页面重布局。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+	<span class="c1">//糟糕</span>
+	<span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="mi">10000</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">){</span>
+	<span class="nx">$</span><span class="p">(</span><span class="s2">"#main table"</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="s2">"&lt;tr&gt;&lt;td&gt;aaaa&lt;/td&gt;&lt;/tr&gt;"</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="c1">//建议</span>
+	<span class="kd">var</span> <span class="nx">tablerow</span> <span class="o">=</span> <span class="s2">""</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="mi">10000</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">){</span>
+	<span class="nx">tablerow</span>  <span class="o">+=</span> <span class="s2">"&lt;tr&gt;&lt;td&gt;aaaa&lt;/td&gt;&lt;/tr&gt;"</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="nx">$</span><span class="p">(</span><span class="s2">"#main table"</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">tablerow</span><span class="p">);</span>
+
+</code></pre>
+</div>
+
+<h3 id="prop和attr方法">prop和attr方法</h3>
+
+<p>对于元素自身的固有属性 使用 prop 对于自定义的属性使用attr方法</p>
+
+<p>例：获取选中的checkbox的value值</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+	<span class="nx">$</span><span class="p">(</span><span class="s2">"input[type=checkbox]"</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+					<span class="k">if</span><span class="p">(</span><span class="kc">true</span> <span class="o">==</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s2">"checked"</span><span class="p">))</span> <span class="p">{</span>
+					
+						<span class="nx">alert</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">"value"</span><span class="p">));</span>
+						
+					<span class="p">}</span>
+				<span class="p">});</span>
+
+</code></pre>
+</div>
+
+<h3 id="each遍历">each遍历</h3>
+
+<p>用<code class="highlighter-rouge">each</code>实现全选或是取消全选。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+	<span class="nx">$</span><span class="p">(</span><span class="s2">"#selectAll"</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+	
+				<span class="k">if</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">"#selectAll"</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s2">"checked"</span><span class="p">))</span> <span class="p">{</span>
+					<span class="nx">$</span><span class="p">(</span><span class="s2">"#selectAll input[type=checkbox]"</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+						<span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s2">"checked"</span><span class="p">,</span> <span class="s2">"true"</span><span class="p">);</span>
+					<span class="p">});</span>
+					
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				
+					<span class="nx">$</span><span class="p">(</span><span class="s2">"#selectAll input[type=checkbox]"</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+						<span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">removeAttr</span><span class="p">(</span><span class="s2">"checked"</span><span class="p">);</span>
+					<span class="p">});</span>
+				<span class="p">}</span>
+			<span class="p">});</span>
+
+
+</code></pre>
+</div>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/06/01/jquery-plugin-tips/">Jquery Plugin Tips</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/07/10/welcome-to-jekyll/">hello jekyll!</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/06/01/jquery-tips/" data-title="Jquery Tips" data-url="http://localhost:4000/2016/06/01/jquery-tips/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

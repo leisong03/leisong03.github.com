@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> Android wechat 分享</title>
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2017/08/15/Android-wechat-share/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1> Android wechat 分享</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2017-08-15
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#Android" title="Tag: Android" rel="tag">Android</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#wechat分享" id="markdown-toc-wechat分享"><code class="highlighter-rouge">wechat</code>分享</a>    <ul>
+      <li><a href="#微信开放平台" id="markdown-toc-微信开放平台">微信开放平台</a></li>
+      <li><a href="#wechat分享开放" id="markdown-toc-wechat分享开放"><code class="highlighter-rouge">wechat</code>分享开放</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>本篇简单介绍<code class="highlighter-rouge">Android App</code>中接入<code class="highlighter-rouge">wechat</code>分享。</p>
+
+<h2 id="wechat分享"><code class="highlighter-rouge">wechat</code>分享</h2>
+
+<h3 id="微信开放平台">微信开放平台</h3>
+
+<p>1.1 在微信开放平台申请成为开发者 <a href="https://open.weixin.qq.com/">微信开放平台</a></p>
+
+<p>2.2 创建移动应用 -&gt; 创建成功以后（七天之内）</p>
+
+<p>3.3 应用签名和包名，使用微信提供的签名生成工具获取应用签名和包名。<a href="https://open.weixin.qq.com/">签名生成工具</a></p>
+
+<p><strong>注：App 要是release版本, debug版本不能正常分享</strong></p>
+
+<h3 id="wechat分享开放"><code class="highlighter-rouge">wechat</code>分享开放</h3>
+
+<p>1.1 项目build.gradle 添加</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="n">dependencies</span> <span class="o">{</span>
+     <span class="n">compile</span> <span class="err">'</span><span class="n">com</span><span class="o">.</span><span class="na">tencent</span><span class="o">.</span><span class="na">mm</span><span class="o">.</span><span class="na">opensdk</span><span class="o">:</span><span class="n">wechat</span><span class="o">-</span><span class="n">sdk</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">with</span><span class="o">-</span><span class="nl">mta:</span><span class="o">+</span><span class="err">'</span>
+<span class="o">}</span>
+
+</code></pre>
+</div>
+
+<p><strong>注：以往的libammsdk.jar 不建议使用，因为libammsdk.jar中的包名com.tencent.mm.sdk已更改为com.tencent.mm.opensdk。所以可能会出现冲突</strong></p>
+
+<p>2.2 AndroidManifest.xml 配置</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+    <span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">"android.permission.INTERNET"</span> <span class="o">/&gt;</span>
+    <span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">"android.permission.ACCESS_NETWORK_STATE"</span> <span class="o">/&gt;</span>
+    <span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">"android.permission.ACCESS_WIFI_STATE"</span> <span class="o">/&gt;</span>
+    <span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">"android.permission.READ_PHONE_STATE"</span> <span class="o">/&gt;</span>
+    <span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">"android.permission.READ_EXTERNAL_STORAGE"</span> <span class="o">/&gt;</span>
+
+</code></pre>
+</div>
+
+<p>3.3 在申请的包名创建子包wxapi包。</p>
+
+<p>新建 WXEntryActivity,主要处理微信返回的数据</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="cm">/**
+ * Created by chenjy on 2017/10/12.
+ */</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">WXEntryActivity</span> <span class="kd">extends</span> <span class="n">AppCompatActivity</span> <span class="kd">implements</span> <span class="n">IWXAPIEventHandler</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+        <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">activity_wxentry</span><span class="o">);</span>
+        <span class="n">WXActivity</span><span class="o">.</span><span class="na">api</span><span class="o">.</span><span class="na">handleIntent</span><span class="o">(</span><span class="n">getIntent</span><span class="o">(),</span> <span class="k">this</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onResp</span><span class="o">(</span><span class="n">BaseResp</span> <span class="n">resp</span><span class="o">)</span> <span class="o">{</span> <span class="c1">//在这个方法中处理微信传回的数据</span>
+        <span class="c1">//形参resp 有下面两个个属性比较重要</span>
+        <span class="c1">//1.resp.errCode</span>
+        <span class="c1">//2.resp.transaction则是在分享数据的时候手动指定的字符创,用来分辨是那次分享(参照4.中req.transaction)</span>
+        <span class="k">switch</span> <span class="o">(</span><span class="n">resp</span><span class="o">.</span><span class="na">errCode</span><span class="o">)</span> <span class="o">{</span> <span class="c1">//根据需要的情况进行处理</span>
+            <span class="k">case</span> <span class="n">BaseResp</span><span class="o">.</span><span class="na">ErrCode</span><span class="o">.</span><span class="na">ERR_OK</span><span class="o">:</span>
+                <span class="c1">//正确返回</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="n">BaseResp</span><span class="o">.</span><span class="na">ErrCode</span><span class="o">.</span><span class="na">ERR_USER_CANCEL</span><span class="o">:</span>
+                <span class="c1">//用户取消</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="n">BaseResp</span><span class="o">.</span><span class="na">ErrCode</span><span class="o">.</span><span class="na">ERR_AUTH_DENIED</span><span class="o">:</span>
+                <span class="c1">//认证被否决</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="n">BaseResp</span><span class="o">.</span><span class="na">ErrCode</span><span class="o">.</span><span class="na">ERR_SENT_FAILED</span><span class="o">:</span>
+                <span class="c1">//发送失败</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="n">BaseResp</span><span class="o">.</span><span class="na">ErrCode</span><span class="o">.</span><span class="na">ERR_UNSUPPORT</span><span class="o">:</span>
+                <span class="c1">//不支持错误</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="n">BaseResp</span><span class="o">.</span><span class="na">ErrCode</span><span class="o">.</span><span class="na">ERR_COMM</span><span class="o">:</span>
+                <span class="c1">//一般错误</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">default</span><span class="o">:</span>
+                <span class="c1">//其他不可名状的情况</span>
+                <span class="k">break</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onReq</span><span class="o">(</span><span class="n">BaseReq</span> <span class="n">req</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre>
+</div>
+
+<p>4.4 创建一个 WXActivity 用于发送请求</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="cm">/**
+ * Created by chenjy on 2017/10/12.
+ */</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">WXActivity</span> <span class="kd">extends</span> <span class="n">AppCompatActivity</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">IWXAPI</span> <span class="n">api</span><span class="o">;</span><span class="c1">//这个对象是专门用来向微信发送数据的一个重要接口,使用强引用持有,所有的信息发送都是基于这个对象的</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+        <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">share_popup</span><span class="o">);</span>
+        <span class="n">ButterKnife</span><span class="o">.</span><span class="na">inject</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+        <span class="n">registerWeChat</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@OnClick</span><span class="o">({</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">weichat</span><span class="o">,</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">weichat_friend</span><span class="o">})</span>
+    <span class="kt">void</span> <span class="nf">onActionViewClick</span><span class="o">(</span><span class="n">View</span> <span class="n">view</span><span class="o">){</span>
+        <span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="k">switch</span> <span class="o">(</span><span class="n">view</span><span class="o">.</span><span class="na">getId</span><span class="o">()){</span>
+            <span class="k">case</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">weichat</span><span class="o">:</span>
+                <span class="n">sharePicByFile</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">weichat_friend</span><span class="o">:</span>
+                <span class="n">sharePicByFile</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+                <span class="k">break</span><span class="o">;</span>
+
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">registerWeChat</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>   <span class="c1">//向微信注册app</span>
+        <span class="n">api</span> <span class="o">=</span> <span class="n">WXAPIFactory</span><span class="o">.</span><span class="na">createWXAPI</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">WXConstants</span><span class="o">.</span><span class="na">APP_ID</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+        <span class="n">api</span><span class="o">.</span><span class="na">registerApp</span><span class="o">(</span><span class="n">WXConstants</span><span class="o">.</span><span class="na">APP_ID</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * @param isShareFriend true 分享到朋友，false分享到朋友圈
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sharePicByFile</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">isShareFriend</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="k">if</span> <span class="o">(!</span><span class="n">api</span><span class="o">.</span><span class="na">isWXAppInstalled</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">Toast</span><span class="o">.</span><span class="na">makeText</span><span class="o">(</span><span class="n">WXActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span><span class="s">"您还未安装微信"</span><span class="o">,</span> <span class="n">Toast</span><span class="o">.</span><span class="na">LENGTH_SHORT</span><span class="o">);</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">//创建一个WXWebPageObject对象，用于封装要发送的Url</span>
+        <span class="n">WXWebpageObject</span> <span class="n">webpage</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WXWebpageObject</span><span class="o">();</span>
+        <span class="n">webpage</span><span class="o">.</span><span class="na">webpageUrl</span> <span class="o">=</span> <span class="s">"https://open.weixin.qq.com/"</span><span class="o">;</span>
+        <span class="c1">//创建一个WXMediaMessage对象</span>
+        <span class="n">WXMediaMessage</span> <span class="n">msg</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WXMediaMessage</span><span class="o">(</span><span class="n">webpage</span><span class="o">);</span>
+        <span class="n">msg</span><span class="o">.</span><span class="na">title</span> <span class="o">=</span> <span class="s">"微信分享！"</span><span class="o">;</span>
+        <span class="n">msg</span><span class="o">.</span><span class="na">description</span> <span class="o">=</span> <span class="s">"我在使用微信分享，快来加入我吧！"</span><span class="o">;</span>
+
+        <span class="n">SendMessageToWX</span><span class="o">.</span><span class="na">Req</span> <span class="n">req</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SendMessageToWX</span><span class="o">.</span><span class="na">Req</span><span class="o">();</span>
+        <span class="n">req</span><span class="o">.</span><span class="na">transaction</span> <span class="o">=</span> <span class="n">buildTransaction</span><span class="o">(</span><span class="s">"webpage"</span><span class="o">);</span><span class="c1">//transaction字段用于唯一标识一个请求，这个必须有，否则会出错</span>
+        <span class="n">req</span><span class="o">.</span><span class="na">message</span> <span class="o">=</span> <span class="n">msg</span><span class="o">;</span>
+
+        <span class="n">req</span><span class="o">.</span><span class="na">scene</span> <span class="o">=</span> <span class="n">isShareFriend</span> <span class="o">?</span> <span class="n">SendMessageToWX</span><span class="o">.</span><span class="na">Req</span><span class="o">.</span><span class="na">WXSceneSession</span> <span class="o">:</span> <span class="n">SendMessageToWX</span><span class="o">.</span><span class="na">Req</span><span class="o">.</span><span class="na">WXSceneTimeline</span><span class="o">;</span>
+
+        <span class="n">api</span><span class="o">.</span><span class="na">sendReq</span><span class="o">(</span><span class="n">req</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="nf">buildTransaction</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="o">(</span><span class="n">type</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">?</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">())</span> <span class="o">:</span> <span class="n">type</span> <span class="o">+</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+
+
+</code></pre>
+</div>
+
+<p>5.5 配置AndroidManifest.xml</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+ <span class="o">&lt;</span><span class="n">activity</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">".WXActivity"</span><span class="o">/&gt;</span>
+ <span class="o">&lt;</span><span class="n">activity</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">".wxapi.WXEntryActivity"</span>
+            <span class="nl">android:</span><span class="n">launchMode</span><span class="o">=</span><span class="s">"singleTop"</span>
+            <span class="nl">android:</span><span class="n">exported</span><span class="o">=</span><span class="s">"true"</span><span class="o">/&gt;</span>   <span class="c1">//注意这个属性一定是true,不然微信不能调用</span>
+
+			
+</code></pre>
+</div>
+
+<p><img src="http://wx2.sinaimg.cn/mw690/c584f169ly1fksetdx8y5j206h0303yb.jpg" alt="output" /></p>
+
+<p>其他分享示例可以参照，<a href="https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&amp;t=resource/res_list&amp;verify=1&amp;id=open1419317340&amp;token=&amp;lang=zh_CN">其他格式示例</a></p>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/10/Android-TimeoutExceptions/"> Android TimeoutExceptions及 wakelock
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/08/Android-Activity-life-time/"> Android Activity 生命周期
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/08/Android-Change-Language/">Android App 切换语言
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2017/08/10/Android-TimeoutExceptions/"> Android TimeoutExceptions及 wakelock</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2017/08/23/java-ThreadPoolExecutor/"> Java ThreadPoolExecutor</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2017/08/15/Android-wechat-share/" data-title=" Android wechat 分享" data-url="http://localhost:4000/2017/08/15/Android-wechat-share/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

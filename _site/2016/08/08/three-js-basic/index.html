@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>three.js-Basic</title>
+    <meta name="description" content="Three.js学习笔记 本篇为基础部分(学习如何快速的创建一个三维场景)">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/08/08/three-js-basic/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>three.js-Basic</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-08-08
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#three.js" title="Tag: three.js" rel="tag">three.js</a>&nbsp;
+    
+        <a href="/tag/#javaScript" title="Tag: javaScript" rel="tag">javaScript</a>&nbsp;
+    
+        <a href="/tag/#WebGL" title="Tag: WebGL" rel="tag">WebGL</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#threejs是什么" id="markdown-toc-threejs是什么">three.js是什么</a></li>
+  <li><a href="#threejs能干什么" id="markdown-toc-threejs能干什么">three.js能干什么</a></li>
+  <li><a href="#为什么要用threejs" id="markdown-toc-为什么要用threejs">为什么要用three.js</a></li>
+  <li><a href="#如何使用threejs" id="markdown-toc-如何使用threejs">如何使用three.js</a>    <ul>
+      <li><a href="#新建html页面" id="markdown-toc-新建html页面">新建HTML页面</a></li>
+      <li><a href="#创建一个三维场景" id="markdown-toc-创建一个三维场景">创建一个三维场景</a></li>
+      <li><a href="#添加一个渲染器" id="markdown-toc-添加一个渲染器">添加一个渲染器</a></li>
+      <li><a href="#三维场景中重要的组件" id="markdown-toc-三维场景中重要的组件">三维场景中重要的组件</a>        <ul>
+          <li><a href="#camera" id="markdown-toc-camera">camera</a></li>
+          <li><a href="#light" id="markdown-toc-light">light</a></li>
+          <li><a href="#object" id="markdown-toc-object">object</a></li>
+        </ul>
+      </li>
+      <li><a href="#渲染场景" id="markdown-toc-渲染场景">渲染场景</a></li>
+      <li><a href="#添加动画" id="markdown-toc-添加动画">添加动画</a></li>
+    </ul>
+  </li>
+  <li><a href="#view-source" id="markdown-toc-view-source">View source</a></li>
+</ul>
+
+<p>Three.js学习笔记 本篇为基础部分(学习如何快速的创建一个三维场景)</p>
+
+<h2 id="threejs是什么">three.js是什么</h2>
+
+<blockquote>
+  <p>Three.js是一个<code class="highlighter-rouge">3D</code> <code class="highlighter-rouge">JavaScript</code>库。</p>
+</blockquote>
+
+<h2 id="threejs能干什么">three.js能干什么</h2>
+
+<ul>
+  <li>创建简单或是比较复杂的三维图形并应用丰富多彩的纹理和材质。</li>
+  <li>添加五光十色的光源。</li>
+  <li>在3D场景中移动物体或是添加脚本动画。</li>
+  <li>从三维建模软件(3dmax,maya..)中加载三维模型。</li>
+  <li>定制着色器和后期渲染的处理。</li>
+</ul>
+
+<p><img src="http://ww2.sinaimg.cn/mw690/c584f169gw1f6mdsnocdjj20q50fonmp.jpg" alt="whatThree" /></p>
+
+<p><em>learn more from <code class="highlighter-rouge">http://threejs.org/</code></em></p>
+
+<h2 id="为什么要用threejs">为什么要用three.js</h2>
+
+<p>Three.js为我们封装了底层的<code class="highlighter-rouge">WebGl接口</code>，使我们在无需掌握繁冗的图形学知识的基础下可以轻松的创建三维场景。相比较使用底层的WebGL我们可以使用更少的代码，大大的降低了学习成本，使开发变的更高效。</p>
+
+<h2 id="如何使用threejs">如何使用three.js</h2>
+
+<h3 id="新建html页面">新建HTML页面</h3>
+
+<p>首先新建一个HTML页面，引入Three.js文件。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="o">&lt;!</span><span class="nx">DOCTYPE</span> <span class="nx">html</span><span class="o">&gt;</span>  
+<span class="o">&lt;</span><span class="nx">html</span><span class="o">&gt;</span>  
+
+    <span class="o">&lt;</span><span class="nx">head</span><span class="o">&gt;</span>  
+        <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">charset</span><span class="o">=</span><span class="s2">"UTF-8"</span><span class="o">&gt;</span> 
+        <span class="o">&lt;</span><span class="nx">title</span><span class="o">&gt;</span><span class="nx">three</span><span class="p">.</span><span class="nx">js</span><span class="o">&lt;</span><span class="sr">/title&gt;</span><span class="err"> 
+</span>    <span class="o">&lt;</span><span class="sr">/head&gt;</span><span class="err"> 
+</span>    <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span> 
+        <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">"text/javascript"</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"js/Three/three.js"</span><span class="o">&gt;&lt;</span><span class="sr">/script&gt;</span><span class="err"> 
+</span>        <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span> 
+          
+        <span class="o">&lt;</span><span class="sr">/script&gt;</span><span class="err"> 
+</span>    <span class="o">&lt;</span><span class="sr">/body&gt;</span><span class="err"> 
+</span>  
+<span class="o">&lt;</span><span class="sr">/html&gt; </span><span class="err"> 
+</span>
+</code></pre>
+</div>
+
+<h3 id="创建一个三维场景">创建一个三维场景</h3>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>    <span class="kd">var</span> <span class="nx">scene</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Scene</span><span class="p">();</span>
+</code></pre>
+</div>
+
+<h3 id="添加一个渲染器">添加一个渲染器</h3>
+
+<p>Three.js为我们提供了如：canvas,SVG,CSS3..众多渲染器，但是WebGL渲染器相较比较灵活，所以均以WebGL为例。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>    <span class="kd">var</span> <span class="nx">render</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">WebGLRenderer</span><span class="p">({</span>  
+                    <span class="c1">//抗锯齿属性，WebGLRenderer常用的一个属性</span>
+                    <span class="na">antialias</span><span class="p">:</span> <span class="kc">true</span>  
+                <span class="p">});</span>  
+                
+        <span class="c1">//设置背景色为白色(0xffffff)</span>
+        <span class="nx">render</span><span class="p">.</span><span class="nx">setClearColor</span><span class="p">(</span><span class="mh">0xffffff</span><span class="p">);</span>  
+        
+        <span class="c1">//设置渲染尺寸为页面大小</span>
+        <span class="nx">render</span><span class="p">.</span><span class="nx">setSize</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span><span class="p">,</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span><span class="p">);</span> 
+        
+        <span class="c1">//使用WebGLRenderer生成canvas元素。</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">render</span><span class="p">.</span><span class="nx">domElement</span><span class="p">);</span>  
+   
+</code></pre>
+</div>
+
+<blockquote>
+  <p>当然也可以自己定义一个<code class="highlighter-rouge">canvas</code></p>
+
+  <p><code class="highlighter-rouge">canvas &lt;canvas id="myCanvas" width="400px" height="300px" &gt;&lt;/canvas&gt;</code></p>
+
+  <p>并将WebGLRenderer定义改为</p>
+
+  <p><code class="highlighter-rouge">var render = new THREE.WebGLRenderer({</code><br />
+            <code class="highlighter-rouge">canvas: document.getElementById('myCanvas'),</code><br />
+            <code class="highlighter-rouge">antialias: true</code><br />
+                <code class="highlighter-rouge">});</code></p>
+</blockquote>
+
+<h3 id="三维场景中重要的组件">三维场景中重要的组件</h3>
+
+<p>三维场景中重要的组件包括 <code class="highlighter-rouge">camera</code>,<code class="highlighter-rouge">light</code>,<code class="highlighter-rouge">object</code>。</p>
+
+<p>three.js使用的<code class="highlighter-rouge">右手坐标系</code>。</p>
+
+<p><img src="http://ww3.sinaimg.cn/mw690/c584f169gw1f6mecd1d28j20ci0augll.jpg" alt="rightAxis" /></p>
+
+<h4 id="camera">camera</h4>
+
+<p>camera(相机)，决定了你开始看到三维场景的位置，朝向和角度等信息。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>    <span class="kd">var</span> <span class="nx">camera</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">PerspectiveCamera</span><span class="p">(</span><span class="mi">45</span><span class="p">,</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span> <span class="o">/</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span>  
+   
+       <span class="c1">//设置相机朝向位置为(20,0,20) </span>
+        <span class="nx">camera</span><span class="p">.</span><span class="nx">lookAt</span><span class="p">(</span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Vector3</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">));</span>  
+
+</code></pre>
+</div>
+
+<h4 id="light">light</h4>
+
+<p>light(光源)，决定了你的场景拥有的光源类型和会产生的光照效果。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>    <span class="kd">var</span> <span class="nx">light</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">AmbientLight</span><span class="p">(</span><span class="mh">0xffffff</span><span class="p">);</span>
+    
+        <span class="c1">//使用 Scene()的add方法将light添加到Scene中  </span>
+        <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">light</span><span class="p">);</span>
+</code></pre>
+</div>
+
+<h4 id="object">object</h4>
+
+<p>object(物体)，你想要添加到场景中的各式各样的物体。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>    <span class="c1">//物体三维图形</span>
+    <span class="kd">var</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">CubeGeometry</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span> 
+    
+    <span class="c1">//物体材质 </span>
+    <span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">({</span>  
+                    <span class="na">color</span><span class="p">:</span> <span class="mh">0x4d6dad</span>  
+                <span class="p">});</span>  
+                
+    <span class="c1">//生成三维物体</span>
+    <span class="kd">var</span> <span class="nx">mesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span><span class="nx">geometry</span><span class="p">,</span> <span class="nx">material</span><span class="p">);</span>  
+    
+        <span class="nx">mesh</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>  
+        
+        <span class="c1">//使用 Scene()的add方法将mesh添加到Scene中</span>
+        <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">mesh</span><span class="p">);</span>  
+</code></pre>
+</div>
+
+<h3 id="渲染场景">渲染场景</h3>
+
+<p>定时刷新场景，调用WebGLRenderer的render函数刷新场景。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>    <span class="kd">function</span> <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+ 
+            <span class="nx">requestAnimationFrame</span><span class="p">(</span><span class="nx">render</span><span class="p">);</span>
+            <span class="nx">renderer</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span><span class="p">);</span>
+ 
+           <span class="p">}</span>  
+</code></pre>
+</div>
+
+<h3 id="添加动画">添加动画</h3>
+
+<p>我们可以通过在render()函数中对object(物体)的position(位置)，rotation(旋转)和scale(缩放)属性进行控制来实现简单地动画效果。渲染的FPS为60，也就意味着一秒钟会变化60次。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+   <span class="nx">mesh</span><span class="p">.</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">y</span> <span class="o">+=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">/</span> <span class="mi">180</span> <span class="o">*</span> <span class="mi">1</span><span class="p">;</span> 
+
+</code></pre>
+</div>
+
+<hr />
+<p><img src="http://ww1.sinaimg.cn/mw690/c584f169gw1f6mejp1jsnj211e0hbjrk.jpg" alt="outPut" /></p>
+
+<h2 id="view-source">View source</h2>
+
+<p><em><a href="https://github.com/Chenjy1225/Chenjy1225.github.io/blob/master/source/three-basic.html">source code</a></em></p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/08/06/run-your-blog-system-locally/">run your blog system locally</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/08/09/three-js-basic-expand/">three.js-Basic-Expand</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/08/08/three-js-basic/" data-title="three.js-Basic" data-url="http://localhost:4000/2016/08/08/three-js-basic/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

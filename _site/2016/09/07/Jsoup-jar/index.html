@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Jsoup 配置和使用</title>
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/09/07/Jsoup-jar/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>Jsoup 配置和使用</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-09-07
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#Java" title="Tag: Java" rel="tag">Java</a>&nbsp;
+    
+        <a href="/tag/#Jsoup" title="Tag: Jsoup" rel="tag">Jsoup</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#jsoup-下载" id="markdown-toc-jsoup-下载">Jsoup 下载</a></li>
+  <li><a href="#jsoup-使用" id="markdown-toc-jsoup-使用">Jsoup 使用</a></li>
+</ul>
+
+<h2 id="jsoup-下载">Jsoup 下载</h2>
+
+<p><code class="highlighter-rouge">Jsoup</code>是一个基于Java的HTML解析器，可直接解析某个URL地址、HTML文本内容。</p>
+
+<ul>
+  <li>使用<code class="highlighter-rouge">Maven</code>下载：
+(Maven使用可以参照以往的博客)</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><pre class="highlight"><code>
+		<span class="c">&lt;!-- https://mvnrepository.com/artifact/org.jsoup/jsoup --&gt;</span>
+		<span class="nt">&lt;dependency&gt;</span>
+		    <span class="nt">&lt;groupId&gt;</span>org.jsoup<span class="nt">&lt;/groupId&gt;</span>
+		    <span class="nt">&lt;artifactId&gt;</span>jsoup<span class="nt">&lt;/artifactId&gt;</span>
+		    <span class="nt">&lt;version&gt;</span>1.9.2<span class="nt">&lt;/version&gt;</span>
+		<span class="nt">&lt;/dependency&gt;</span>
+
+</code></pre>
+</div>
+
+<ul>
+  <li>官网<a href="https://jsoup.org/download">Jsoup</a></li>
+</ul>
+
+<h2 id="jsoup-使用">Jsoup 使用</h2>
+
+<p>特点：</p>
+
+<ul>
+  <li>没有关闭的标签 (比如： &lt;p&gt;Lorem &lt;p&gt;Ipsum parses to &lt;p&gt;Lorem&lt;/p&gt; &lt;p&gt;Ipsum&lt;/p&gt;)</li>
+  <li>隐式标签 (比如. 它可以自动将 &lt;td&gt;Table data&lt;/td&gt;包装成&lt;table&gt;&lt;tr&gt;&lt;td&gt;?)</li>
+  <li>创建可靠的文档结构（html标签包含head 和 body，在head只出现恰当的元素）</li>
+</ul>
+
+<ol>
+  <li>1 Jsoup.parse(String html)和Jsoup.parse(String html, String baseUri); // 解析一个<code class="highlighter-rouge">HTMl</code>字符串</li>
+  <li>2 Jsoup.parseBodyFragment(String html); // 解析一个<code class="highlighter-rouge">body</code>片断</li>
+  <li>3 Jsoup.connect(String url); //从一个<code class="highlighter-rouge">URL</code>解析一个<code class="highlighter-rouge">Document</code> 可以通过选择器来查找元素</li>
+  <li>4 Jsoup.parse(File in, String charsetName, String baseUri); //从本地加载一个<code class="highlighter-rouge">文档</code></li>
+</ol>
+
+<hr />
+
+<ul>
+  <li>解析一个<code class="highlighter-rouge">HTMl</code>字符串</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+		 <span class="n">String</span> <span class="n">html</span> <span class="o">=</span> <span class="s">"&lt;html&gt;&lt;head&gt;&lt;meta charset='UTF-8'&gt;&lt;title&gt;three.js&lt;/title&gt;&lt;/head&gt;&lt;body&gt;"</span><span class="o">+</span> 
+                       <span class="s">"&lt;script type='text/javascript' src='js/Three/three.js'&gt;&lt;/script&gt;"</span><span class="o">+</span>  
+                       <span class="s">"&lt;script&gt;&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"</span><span class="o">;</span> 
+		 <span class="n">Document</span> <span class="n">doc</span> <span class="o">=</span> <span class="n">Jsoup</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">html</span><span class="o">);</span> 
+		 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">doc</span><span class="o">);</span>
+		 
+</code></pre>
+</div>
+
+<p>output:</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+		<span class="o">&lt;</span><span class="nx">html</span><span class="o">&gt;</span>
+		 <span class="o">&lt;</span><span class="nx">head</span><span class="o">&gt;</span>
+		  <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">charset</span><span class="o">=</span><span class="s2">"UTF-8"</span> <span class="o">/&gt;</span>
+		  <span class="o">&lt;</span><span class="nx">title</span><span class="o">&gt;</span><span class="nx">three</span><span class="p">.</span><span class="nx">js</span><span class="o">&lt;</span><span class="sr">/title</span><span class="err">&gt;
+</span>		 <span class="o">&lt;</span><span class="sr">/head</span><span class="err">&gt;
+</span>		 <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+		  <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">"text/javascript"</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"js/Three/three.js"</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>		  <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>		 <span class="o">&lt;</span><span class="sr">/body</span><span class="err">&gt;
+</span>		<span class="o">&lt;</span><span class="sr">/html</span><span class="err">&gt;
+</span>
+
+</code></pre>
+</div>
+
+<ul>
+  <li>解析一个<code class="highlighter-rouge">URL</code>，这里我们解析的是<code class="highlighter-rouge">Google</code>的首页的登陆按钮(按钮<code class="highlighter-rouge">id:gb_70</code>)然后回去按钮的文本。</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+		 <span class="n">Document</span> <span class="n">google</span> <span class="o">=</span> <span class="n">Jsoup</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"https://www.google.com.hk/"</span><span class="o">).</span><span class="na">get</span><span class="o">();</span> 
+		 
+		 <span class="n">Element</span> <span class="n">login</span> <span class="o">=</span> <span class="n">google</span><span class="o">.</span><span class="na">getElementById</span><span class="o">(</span><span class="s">"gb_70"</span><span class="o">);</span>
+		 
+		 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">login</span><span class="o">.</span><span class="na">text</span><span class="o">());</span>
+		 
+</code></pre>
+</div>
+
+<p>output:登入</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/23/java-ThreadPoolExecutor/"> Java ThreadPoolExecutor
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/07/500-Data-Structures-and-Algorithms-practice/">500 Data Structures and Algorithms practice problems and their solutions
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/09/java-Executors/">java 并发库之 Executors
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/08/java-Netty-TCP/">java Netty tcp通讯
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/07/java-Semaphore/">java 并发库之 Semaphore
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/04/28/svg-to-png/">java svg转png
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/09/05/javaScript-password-encryption/">JavaScript 加密方法(Hash算法)</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/09/07/fastjson-jar/">fastjson 配置和使用</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/09/07/Jsoup-jar/" data-title="Jsoup 配置和使用" data-url="http://localhost:4000/2016/09/07/Jsoup-jar/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

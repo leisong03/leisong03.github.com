@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>高效的数独算法-位运算</title>
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2017/04/25/shudu-algorithm/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>高效的数独算法-位运算</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2017-04-25
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#Java" title="Tag: Java" rel="tag">Java</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#简介" id="markdown-toc-简介">简介</a></li>
+</ul>
+
+<p>本篇介绍一种高效的<code class="highlighter-rouge">数独算法</code>通过位运算。</p>
+
+<h2 id="简介">简介</h2>
+
+<blockquote>
+  <p>原文: <a href="https://my.oschina.net/u/1859679/blog/868056">https://my.oschina.net/u/1859679/blog/868056</a></p>
+</blockquote>
+
+<p><code class="highlighter-rouge">Java</code>版本</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">shudu</span> <span class="o">{</span>
+
+    <span class="c1">// 数独题目 ‘0’为空</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">shuduNum</span> <span class="o">=</span> <span class="o">{</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">9</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">9</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">9</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">9</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">};</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">tempNum</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">81</span><span class="o">];</span>
+	
+	<span class="c1">// 列状态</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">statusH</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">9</span><span class="o">];</span>
+	<span class="c1">// 行状态</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">statusV</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">9</span><span class="o">];</span>
+	<span class="c1">// 九宫格状态</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">statusB</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">9</span><span class="o">];</span>
+	<span class="c1">// 上一次填数位置</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">tempSp</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">;</span>
+	
+	<span class="c1">// 最大状态值 `1 1111 1111`</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">STATUS_MAX_VALUE</span> <span class="o">=</span> <span class="mi">511</span><span class="o">;</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">// TODO Auto-generated method stub</span>
+		   
+		   <span class="c1">// 打印出当前数独题目</span>
+		   <span class="n">printSudoku</span><span class="o">(</span><span class="n">shuduNum</span><span class="o">)</span> <span class="o">;</span>
+		   <span class="c1">// 数独算法初始化</span>
+		   <span class="n">initShudo</span><span class="o">()</span> <span class="o">;</span>   
+           <span class="c1">// 开始解题		   </span>
+		   <span class="n">tryAns2</span><span class="o">()</span> <span class="o">;</span>
+           <span class="c1">// 打印出数独题目答案		   </span>
+		   <span class="n">printSudoku</span><span class="o">(</span><span class="n">shuduNum</span><span class="o">)</span> <span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">initShudo</span><span class="o">(){</span>
+		
+		<span class="c1">// 将所有的状态置为0</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">9</span><span class="o">;</span><span class="n">i</span><span class="o">++){</span>
+			<span class="n">statusH</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="n">statusV</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="n">statusB</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="o">}</span>
+		
+		<span class="c1">// 遍历数独题目中不为0的数,重置对应的行、列、九宫格状态</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">81</span><span class="o">;</span><span class="n">i</span><span class="o">++){</span>
+		
+			 <span class="kt">int</span> <span class="n">indexH</span> <span class="o">=</span> <span class="n">i</span><span class="o">%</span><span class="mi">9</span><span class="o">;</span> 
+			 
+		   	 <span class="kt">int</span> <span class="n">indexV</span><span class="o">=</span> <span class="n">i</span><span class="o">/</span><span class="mi">9</span><span class="o">;</span>	
+			 
+		   	 <span class="kt">int</span> <span class="n">indexB</span><span class="o">=((</span><span class="n">i</span><span class="o">/</span><span class="mi">9</span><span class="o">)/</span><span class="mi">3</span><span class="o">)*</span><span class="mi">3</span><span class="o">+(</span><span class="n">i</span><span class="o">%</span><span class="mi">9</span><span class="o">)/</span><span class="mi">3</span><span class="o">;</span>
+			 
+		   	 <span class="k">if</span><span class="o">(</span><span class="n">shuduNum</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">){</span>
+		   		<span class="kt">int</span> <span class="n">number</span> <span class="o">=</span> <span class="n">shuduNum</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+				<span class="c1">// 通过位操作重置状态</span>
+		   		<span class="n">markStatus</span><span class="o">(</span><span class="n">indexV</span><span class="o">,</span><span class="n">indexH</span><span class="o">,</span><span class="n">indexB</span><span class="o">,</span><span class="n">number</span><span class="o">);</span>
+		   	 <span class="o">}</span>
+		   	 
+			<span class="o">}</span>
+		
+	<span class="o">}</span>
+	
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">markStatus</span><span class="o">(</span><span class="kt">int</span> <span class="n">indexV</span><span class="o">,</span><span class="kt">int</span> <span class="n">indexH</span><span class="o">,</span><span class="kt">int</span> <span class="n">indexB</span><span class="o">,</span><span class="kt">int</span> <span class="n">number</span><span class="o">){</span>
+	     <span class="c1">// 将第‘number’位,置位‘1’</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">number</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">)</span><span class="k">return</span><span class="o">;</span>
+		
+		<span class="cm">/* ‘|=’ 位或 
+		 *  以`statusV[indexV]|=(1&lt;&lt;(number-1))` , `statusV[indexV] = 0 0000 0000` `number = 4`为例,
+		 *
+		 *  				  (1&lt;&lt;(number-1)) = 0 0000 0001 &lt;&lt; 3 = 0 0000 1000
+		 *   statusV[indexV]|=(1&lt;&lt;(number-1)) = 0 0000 0000 &amp; 0 0000 1000 = 0 0000 1000
+		 *
+		 */</span>
+		 
+		<span class="n">statusV</span><span class="o">[</span><span class="n">indexV</span><span class="o">]|=(</span><span class="mi">1</span><span class="o">&lt;&lt;(</span><span class="n">number</span><span class="o">-</span><span class="mi">1</span><span class="o">));</span>
+    	<span class="n">statusH</span><span class="o">[</span><span class="n">indexH</span><span class="o">]|=(</span><span class="mi">1</span><span class="o">&lt;&lt;(</span><span class="n">number</span><span class="o">-</span><span class="mi">1</span><span class="o">));</span>
+    	<span class="n">statusB</span><span class="o">[</span><span class="n">indexB</span><span class="o">]|=(</span><span class="mi">1</span><span class="o">&lt;&lt;(</span><span class="n">number</span><span class="o">-</span><span class="mi">1</span><span class="o">));</span>
+	<span class="o">}</span>
+	
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">tryAns2</span><span class="o">(){</span>
+		
+		<span class="c1">// 获取第一个空值 `0`</span>
+		<span class="kt">int</span> <span class="n">sp</span> <span class="o">=</span> <span class="n">getNextBlank</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
+		
+		<span class="k">do</span><span class="o">{</span>
+			<span class="kt">int</span> <span class="n">indexH</span> <span class="o">=</span><span class="n">sp</span><span class="o">%</span><span class="mi">9</span><span class="o">;</span>      					
+	   	  	<span class="kt">int</span> <span class="n">indexV</span><span class="o">=</span> <span class="n">sp</span><span class="o">/</span><span class="mi">9</span><span class="o">;</span>						
+	   	  	<span class="kt">int</span> <span class="n">indexB</span><span class="o">=((</span><span class="n">sp</span><span class="o">/</span><span class="mi">9</span><span class="o">)/</span><span class="mi">3</span><span class="o">)*</span><span class="mi">3</span><span class="o">+(</span><span class="n">sp</span><span class="o">%</span><span class="mi">9</span><span class="o">)/</span><span class="mi">3</span><span class="o">;</span>
+	   	  	
+	   	  	<span class="kt">int</span> <span class="n">skipValue</span>  <span class="o">=</span> <span class="n">shuduNum</span><span class="o">[</span><span class="n">sp</span><span class="o">];</span>
+			
+	   	 <span class="n">resetStatus</span><span class="o">(</span><span class="n">indexV</span><span class="o">,</span><span class="n">indexH</span><span class="o">,</span><span class="n">indexB</span><span class="o">,</span><span class="n">skipValue</span><span class="o">);</span>
+	   	 
+	   	<span class="kt">int</span> <span class="n">number</span> <span class="o">=</span> <span class="n">findNumber</span><span class="o">(</span><span class="n">indexV</span><span class="o">,</span><span class="n">indexH</span><span class="o">,</span><span class="n">indexB</span><span class="o">,</span><span class="n">skipValue</span><span class="o">);</span>
+	   	
+	   	<span class="k">if</span><span class="o">(</span><span class="n">number</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="o">){</span>
+	   		<span class="n">shuduNum</span><span class="o">[</span><span class="n">sp</span><span class="o">]</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+	   		<span class="n">sp</span><span class="o">=</span> <span class="n">pop</span><span class="o">()</span> <span class="o">;</span>
+	   		<span class="k">if</span> <span class="o">(</span><span class="n">sp</span><span class="o">==-</span><span class="mi">1</span><span class="o">)</span>
+   	  		<span class="o">{</span>
+   	  			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"not cycle last sp,last sp ==-1"</span><span class="o">);</span>
+   	  		<span class="o">}</span>
+	   		<span class="k">continue</span><span class="o">;</span>
+	   	<span class="o">}</span>
+	   	
+	   	<span class="n">shuduNum</span><span class="o">[</span><span class="n">sp</span><span class="o">]=</span><span class="n">number</span><span class="o">;</span>
+   	  	<span class="c1">// 标记状态</span>
+    	<span class="n">markStatus</span><span class="o">(</span><span class="n">indexV</span><span class="o">,</span><span class="n">indexH</span><span class="o">,</span><span class="n">indexB</span><span class="o">,</span><span class="n">number</span><span class="o">);</span>
+    	<span class="n">push</span><span class="o">(</span><span class="n">sp</span><span class="o">);</span>
+    	<span class="n">sp</span><span class="o">=</span> <span class="n">getNextBlank</span><span class="o">(</span><span class="n">sp</span><span class="o">)</span> <span class="o">;</span>
+		<span class="o">}</span><span class="k">while</span><span class="o">(</span><span class="n">sp</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">sp</span> <span class="o">&lt;</span> <span class="mi">81</span> <span class="o">);</span>
+		
+		
+	<span class="o">}</span>
+	
+	
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">getNextBlank</span><span class="o">(</span><span class="kt">int</span> <span class="n">sp</span><span class="o">)</span> <span class="o">{</span>
+		   <span class="k">do</span> <span class="o">{</span>
+		      <span class="n">sp</span><span class="o">++</span> <span class="o">;</span>
+		   <span class="o">}</span> <span class="k">while</span><span class="o">(</span><span class="n">sp</span><span class="o">&lt;</span><span class="mi">81</span> <span class="o">&amp;&amp;</span> <span class="n">shuduNum</span><span class="o">[</span><span class="n">sp</span><span class="o">]&gt;</span><span class="mi">0</span><span class="o">)</span> <span class="o">;</span>
+		   <span class="k">return</span><span class="o">(</span><span class="n">sp</span><span class="o">)</span> <span class="o">;</span>
+		<span class="o">}</span>
+	
+	<span class="kd">private</span> <span class="kd">static</span>  <span class="kt">void</span> <span class="nf">resetStatus</span><span class="o">(</span><span class="kt">int</span> <span class="n">indexV</span><span class="o">,</span><span class="kt">int</span> <span class="n">indexH</span><span class="o">,</span><span class="kt">int</span> <span class="n">indexB</span><span class="o">,</span><span class="kt">int</span> <span class="n">number</span><span class="o">){</span>
+	
+		<span class="c1">// 将第‘number’位,置位‘0’</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">number</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="k">return</span><span class="o">;</span>
+		<span class="o">}</span>
+		
+		<span class="cm">/* ‘&amp;=’ 位与 
+		 *  以`statusV[indexV]&amp;=~(1&lt;&lt;(number-1))` , `statusV[indexV] = 0 0000 1000` `number = 4`为例,
+		 *
+		 *  				  (1&lt;&lt;(number-1)) = 0 0000 0001 &lt;&lt; 3 = 0 0000 1000
+		 *                   ~(1&lt;&lt;(number-1)) = 1 1111 0111
+		 *  statusV[indexV]&amp;=~(1&lt;&lt;(number-1)) = 0 0000 1000 &amp; 1 1111 0111 = 0 0000 0000
+		 *
+		 */</span>
+	  	<span class="n">statusV</span><span class="o">[</span><span class="n">indexV</span><span class="o">]&amp;=~(</span><span class="mi">1</span><span class="o">&lt;&lt;(</span><span class="n">number</span><span class="o">-</span><span class="mi">1</span><span class="o">));</span>
+		<span class="n">statusH</span><span class="o">[</span><span class="n">indexH</span><span class="o">]&amp;=~(</span><span class="mi">1</span><span class="o">&lt;&lt;(</span><span class="n">number</span><span class="o">-</span><span class="mi">1</span><span class="o">));</span>
+		<span class="n">statusB</span><span class="o">[</span><span class="n">indexB</span><span class="o">]&amp;=~(</span><span class="mi">1</span><span class="o">&lt;&lt;(</span><span class="n">number</span><span class="o">-</span><span class="mi">1</span><span class="o">));</span>
+	<span class="o">}</span>
+	
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">findNumber</span><span class="o">(</span><span class="kt">int</span> <span class="n">indexV</span><span class="o">,</span><span class="kt">int</span> <span class="n">indexH</span><span class="o">,</span><span class="kt">int</span> <span class="n">indexB</span><span class="o">,</span><span class="kt">int</span> <span class="n">skipValue</span><span class="o">){</span>
+		
+		<span class="kt">int</span> <span class="n">status</span> <span class="o">=</span> <span class="n">statusV</span><span class="o">[</span><span class="n">indexV</span><span class="o">]|</span><span class="n">statusH</span><span class="o">[</span><span class="n">indexH</span><span class="o">]|</span><span class="n">statusB</span><span class="o">[</span><span class="n">indexB</span><span class="o">];</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">skipValue</span><span class="o">&gt;</span><span class="mi">0</span><span class="o">){</span>
+			<span class="n">status</span> <span class="o">=</span> <span class="n">status</span><span class="o">|((</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">skipValue</span><span class="o">)-</span><span class="mi">1</span><span class="o">);</span>							
+		<span class="o">}</span>
+
+		<span class="k">if</span> <span class="o">(</span><span class="n">status</span><span class="o">&gt;=</span><span class="n">STATUS_MAX_VALUE</span><span class="o">)</span><span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+		
+		<span class="c1">//把右起第一个0变成1</span>
+		<span class="kt">int</span> <span class="n">nextStatus</span> <span class="o">=</span> <span class="n">status</span><span class="o">|(</span><span class="n">status</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
+
+		<span class="c1">//获取差值</span>
+		<span class="kt">int</span> <span class="n">difValue</span> <span class="o">=</span> <span class="n">nextStatus</span><span class="o">^</span><span class="n">status</span><span class="o">;</span>
+
+		<span class="c1">//获取logn</span>
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="o">;</span> <span class="o">++</span><span class="n">i</span><span class="o">){</span>
+			<span class="k">if</span> <span class="o">((</span><span class="n">difValue</span><span class="o">&gt;&gt;</span><span class="n">i</span><span class="o">)==</span><span class="mi">1</span><span class="o">)</span><span class="k">return</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span>
+			
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">pop</span><span class="o">(){</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">tempSp</span><span class="o">&lt;=</span><span class="mi">0</span><span class="o">)</span> <span class="k">return</span><span class="o">(-</span><span class="mi">1</span><span class="o">)</span> <span class="o">;</span>
+		   <span class="k">else</span> <span class="nf">return</span><span class="o">(</span><span class="n">tempNum</span><span class="o">[--</span><span class="n">tempSp</span><span class="o">])</span> <span class="o">;</span>
+	
+	<span class="o">}</span>
+	
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">push</span><span class="o">(</span><span class="kt">int</span> <span class="n">sp</span><span class="o">)</span> <span class="o">{</span>
+		   <span class="n">tempNum</span><span class="o">[</span><span class="n">tempSp</span><span class="o">++]=</span> <span class="n">sp</span> <span class="o">;</span>
+		<span class="o">}</span>
+	
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span>  <span class="nf">printSudoku</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">prn</span><span class="o">)</span> <span class="o">{</span>
+		   <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">81</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			   <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">prn</span><span class="o">[</span><span class="n">i</span><span class="o">]+</span><span class="s">"  "</span><span class="o">);</span>
+		      <span class="k">if</span><span class="o">(</span><span class="n">i</span><span class="o">%</span><span class="mi">9</span><span class="o">==</span><span class="mi">8</span><span class="o">)</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
+		   <span class="o">}</span>
+		<span class="o">}</span>
+
+<span class="o">}</span>
+
+</code></pre>
+</div>
+
+<p><img src="http://wx4.sinaimg.cn/mw690/c584f169ly1ffzw1562x7j20640ih0sq.jpg" alt="outPut" /></p>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/23/java-ThreadPoolExecutor/"> Java ThreadPoolExecutor
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/07/500-Data-Structures-and-Algorithms-practice/">500 Data Structures and Algorithms practice problems and their solutions
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/09/java-Executors/">java 并发库之 Executors
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/08/java-Netty-TCP/">java Netty tcp通讯
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/07/java-Semaphore/">java 并发库之 Semaphore
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/04/28/svg-to-png/">java svg转png
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2017/04/16/Android-ButterKnife/">Android 高效的`InjectView – ButterKnife`</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2017/04/28/svg-to-png/">java svg转png</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2017/04/25/shudu-algorithm/" data-title="高效的数独算法-位运算" data-url="http://localhost:4000/2017/04/25/shudu-algorithm/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

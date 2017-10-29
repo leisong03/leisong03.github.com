@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Android 局域网扫描</title>
+    <meta name="description" content="本篇简单介绍通过UDP广播扫描局域网设备IP,并且通过ZMQ进行通信。">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2017/03/29/Android-LAN-scan/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>Android 局域网扫描</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2017-03-29
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#Android" title="Tag: Android" rel="tag">Android</a>&nbsp;
+    
+        <a href="/tag/#UDP" title="Tag: UDP" rel="tag">UDP</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#udp连接" id="markdown-toc-udp连接"><code class="highlighter-rouge">UDP</code>连接</a>    <ul>
+      <li><a href="#主机" id="markdown-toc-主机">主机</a></li>
+      <li><a href="#接收端" id="markdown-toc-接收端">接收端</a></li>
+      <li><a href="#添加用户数据" id="markdown-toc-添加用户数据">添加用户数据</a></li>
+      <li><a href="#备注" id="markdown-toc-备注">备注</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>本篇简单介绍通过<code class="highlighter-rouge">UDP</code>广播扫描局域网设备<code class="highlighter-rouge">IP</code>,并且通过<code class="highlighter-rouge">ZMQ</code>进行通信。</p>
+
+<h2 id="udp连接"><code class="highlighter-rouge">UDP</code>连接</h2>
+
+<p>主要流程：</p>
+
+<p>1.1  Step1:主机发送广播信息,并指定接收端的端口<code class="highlighter-rouge">(9000)</code> 广播地址<code class="highlighter-rouge">(255.255.255.255)</code></p>
+
+<p>2.2  Step2:主机将数据报以固定报头并且和用户数据一起打包封装在<code class="highlighter-rouge">DatagramPacket</code>,为了防丢失一共发三次，每次发送以后监听一段时间</p>
+
+<p>3.3  Step3:接收端监听端口<code class="highlighter-rouge">(9000)</code>,收到数据报以后解析数据如果和和约定的数据格式一样,则通过数据报获取主机的<code class="highlighter-rouge">ip</code>和端口</p>
+
+<p>4.4  Step4:接收端设备通过主机的<code class="highlighter-rouge">ip</code>和端口给主机发送响应信息</p>
+
+<p>5.5  Step5:主机收到响应信息,主机返回确认响应信息(防止信息丢失)</p>
+
+<p>6.6  Step6:至少主机和接收端都有了对方的<code class="highlighter-rouge">IP</code>地址</p>
+
+<h3 id="主机">主机</h3>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">zjun</span><span class="o">.</span><span class="na">searcher</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">android.annotation.TargetApi</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.os.Build</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.lang.reflect.Constructor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.lang.reflect.InvocationTargetException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.DatagramPacket</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.DatagramSocket</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.InetAddress</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.SocketException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.SocketTimeoutException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.UnknownHostException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.nio.charset.Charset</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.HashSet</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Set</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">SearcherHost</span><span class="o">&lt;</span><span class="n">T</span> <span class="kd">extends</span> <span class="n">SearcherHost</span><span class="o">.</span><span class="na">DeviceBean</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">Thread</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">mUserDataMaxLen</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">mDeviceClazz</span><span class="o">;</span>
+
+    <span class="c1">// UDP socket连接</span>
+    <span class="kd">private</span> <span class="n">DatagramSocket</span> <span class="n">mHostSocket</span><span class="o">;</span>
+    <span class="c1">// UDP socket对应的数据报</span>
+    <span class="kd">private</span> <span class="n">DatagramPacket</span> <span class="n">mSendPack</span><span class="o">;</span>
+
+    <span class="c1">// 搜索到的设备列表</span>
+    <span class="kd">private</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">mDeviceSet</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="kt">byte</span> <span class="n">mPackType</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">mDeviceIP</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">SearcherHost</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">DeviceBean</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">SearcherHost</span><span class="o">(</span><span class="kt">int</span> <span class="n">userDataMaxLen</span><span class="o">,</span> <span class="n">Class</span> <span class="n">clazz</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">mDeviceClazz</span> <span class="o">=</span> <span class="n">clazz</span><span class="o">;</span>
+        <span class="n">mUserDataMaxLen</span> <span class="o">=</span> <span class="n">userDataMaxLen</span><span class="o">;</span>
+        <span class="n">mDeviceSet</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;();</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+		
+		    <span class="cm">/***************** Step1 *****************/</span>
+		    
+            <span class="c1">// 实例udp socket ip默认为本机ip,端口为所有可用端口中随机端口</span>
+            <span class="n">mHostSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatagramSocket</span><span class="o">();</span>
+            <span class="c1">// 设置接收超时时间</span>
+            <span class="n">mHostSocket</span><span class="o">.</span><span class="na">setSoTimeout</span><span class="o">(</span><span class="n">SearcherConst</span><span class="o">.</span><span class="na">RECEIVE_TIME_OUT</span><span class="o">);</span>
+
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">sendData</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">1024</span><span class="o">];</span>
+            <span class="n">InetAddress</span> <span class="n">broadIP</span> <span class="o">=</span> <span class="n">InetAddress</span><span class="o">.</span><span class="na">getByName</span><span class="o">(</span><span class="s">"255.255.255.255"</span><span class="o">);</span>
+
+            <span class="c1">// udp socket 数据报 端口号为 9000</span>
+            <span class="n">mSendPack</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatagramPacket</span><span class="o">(</span><span class="n">sendData</span><span class="o">,</span> <span class="n">sendData</span><span class="o">.</span><span class="na">length</span><span class="o">,</span> <span class="n">broadIP</span><span class="o">,</span> <span class="n">SearcherConst</span><span class="o">.</span><span class="na">DEVICE_FIND_PORT</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SocketException</span> <span class="o">|</span> <span class="n">UnknownHostException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">printLog</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">mHostSocket</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">mHostSocket</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 开始搜索
+     * @return true-正常启动，false-已经start()启动过，无法再启动。若要启动需重新new
+     */</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">search</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getState</span><span class="o">()</span> <span class="o">!=</span> <span class="n">State</span><span class="o">.</span><span class="na">NEW</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">this</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">mHostSocket</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">mHostSocket</span><span class="o">.</span><span class="na">isClosed</span><span class="o">()</span> <span class="o">||</span> <span class="n">mSendPack</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">onSearchStart</span><span class="o">();</span>
+
+		    <span class="cm">/***************** Step2 *****************/</span>
+			
+            <span class="c1">// 开始搜索</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+
+
+                <span class="c1">// 打包搜索数据报,数据报类型为 `搜索请求`</span>
+                <span class="n">mPackType</span> <span class="o">=</span> <span class="n">SearcherConst</span><span class="o">.</span><span class="na">PACKET_TYPE_FIND_DEVICE_REQ_10</span><span class="o">;</span>
+                <span class="n">mSendPack</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="n">packData</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">));</span>
+                <span class="c1">// 发送搜索广播</span>
+                <span class="n">mHostSocket</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">mSendPack</span><span class="o">);</span>
+
+                <span class="c1">// 监听来信</span>
+                <span class="kt">byte</span><span class="o">[]</span> <span class="n">receData</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">2</span> <span class="o">+</span> <span class="n">mUserDataMaxLen</span><span class="o">];</span>
+                <span class="n">DatagramPacket</span> <span class="n">recePack</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatagramPacket</span><span class="o">(</span><span class="n">receData</span><span class="o">,</span> <span class="n">receData</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+                <span class="k">try</span> <span class="o">{</span>
+				
+					<span class="cm">/***************** Step5 *****************/</span>
+                    <span class="c1">// 最多接收250个，或超时跳出循环</span>
+                    <span class="kt">int</span> <span class="n">rspCount</span> <span class="o">=</span> <span class="n">SearcherConst</span><span class="o">.</span><span class="na">RESPONSE_DEVICE_MAX</span><span class="o">;</span>
+                    <span class="k">while</span> <span class="o">(</span><span class="n">rspCount</span><span class="o">--</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">recePack</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="n">receData</span><span class="o">);</span>
+                        <span class="n">mHostSocket</span><span class="o">.</span><span class="na">receive</span><span class="o">(</span><span class="n">recePack</span><span class="o">);</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">recePack</span><span class="o">.</span><span class="na">getLength</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="n">mDeviceIP</span> <span class="o">=</span> <span class="n">recePack</span><span class="o">.</span><span class="na">getAddress</span><span class="o">().</span><span class="na">getHostAddress</span><span class="o">();</span>
+                            <span class="k">if</span> <span class="o">(</span><span class="n">parsePack</span><span class="o">(</span><span class="n">recePack</span><span class="o">))</span> <span class="o">{</span>
+                                <span class="n">printLog</span><span class="o">(</span><span class="s">"a response from："</span> <span class="o">+</span> <span class="n">mDeviceIP</span><span class="o">);</span>
+                                <span class="c1">// 发送一对一的确认信息。使用接收报，因为接收报中有对方的实际IP，发送报时广播IP</span>
+
+                                <span class="c1">// 打包搜索确认数据报,数据报类型为 `搜索确认`</span>
+                                <span class="n">mPackType</span> <span class="o">=</span> <span class="n">SearcherConst</span><span class="o">.</span><span class="na">PACKET_TYPE_FIND_DEVICE_CHK_12</span><span class="o">;</span>
+                                <span class="n">recePack</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="n">packData</span><span class="o">(</span><span class="n">rspCount</span><span class="o">));</span>
+
+                                <span class="n">mHostSocket</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">recePack</span><span class="o">);</span>
+                            <span class="o">}</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SocketTimeoutException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="o">}</span>
+                <span class="n">printLog</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"the %dth search finished"</span><span class="o">,</span> <span class="n">i</span><span class="o">));</span>
+
+            <span class="o">}</span>
+            <span class="c1">// finish</span>
+            <span class="n">onSearchFinish</span><span class="o">(</span><span class="n">mDeviceSet</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">mHostSocket</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">mHostSocket</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 搜索开始时执行
+     */</span>
+    <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">onSearchStart</span><span class="o">();</span>
+
+    <span class="cm">/**
+     * 打包搜索时的用户数据
+     * packed the userData by caller when searching
+     */</span>
+    <span class="kd">protected</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">packUserData_Search</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 打包确认时的用户数据
+     * packed userData by caller when checking，and override the method when pack
+     */</span>
+    <span class="kd">protected</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">packUserData_Check</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+    <span class="o">}</span>
+
+
+    <span class="cm">/**
+     * 解析数据
+     * parse if have userData
+     * @param type 数据类型
+     * @param device 设备
+     * @param userData 数据
+     *
+     * @return return the result of parse, true if parse success, else false
+     */</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">parseUserData</span><span class="o">(</span><span class="kt">byte</span> <span class="n">type</span><span class="o">,</span> <span class="n">T</span> <span class="n">device</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">userData</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 搜索结束后执行
+     * @param deviceSet 搜索到的设备集合
+     */</span>
+    <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">onSearchFinish</span><span class="o">(</span><span class="n">Set</span> <span class="n">deviceSet</span><span class="o">);</span>
+
+    <span class="cm">/**
+     * 打印日志
+     * 由调用者打印，SE和Android不同
+     */</span>
+    <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">printLog</span><span class="o">(</span><span class="n">String</span> <span class="n">log</span><span class="o">);</span>
+
+
+    <span class="cm">/**
+     * 解析报文
+     * 协议：$ + packType(1) + userData(n)
+     *
+     *  @param pack 数据报
+     */</span>
+    <span class="nd">@TargetApi</span><span class="o">(</span><span class="n">Build</span><span class="o">.</span><span class="na">VERSION_CODES</span><span class="o">.</span><span class="na">KITKAT</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">parsePack</span><span class="o">(</span><span class="n">DatagramPacket</span> <span class="n">pack</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">pack</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">pack</span><span class="o">.</span><span class="na">getAddress</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="n">String</span> <span class="n">ip</span> <span class="o">=</span> <span class="n">pack</span><span class="o">.</span><span class="na">getAddress</span><span class="o">().</span><span class="na">getHostAddress</span><span class="o">();</span>
+        <span class="kt">int</span> <span class="n">port</span> <span class="o">=</span> <span class="n">pack</span><span class="o">.</span><span class="na">getPort</span><span class="o">();</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">T</span> <span class="n">d</span> <span class="o">:</span> <span class="n">mDeviceSet</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">d</span><span class="o">.</span><span class="na">getIp</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">ip</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="c1">// 解析头部数据</span>
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="n">pack</span><span class="o">.</span><span class="na">getData</span><span class="o">();</span>
+        <span class="kt">int</span> <span class="n">dataLen</span> <span class="o">=</span> <span class="n">pack</span><span class="o">.</span><span class="na">getLength</span><span class="o">();</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">dataLen</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">||</span> <span class="n">data</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">!=</span> <span class="sc">'$'</span> <span class="o">||</span> <span class="n">data</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">!=</span> <span class="n">SearcherConst</span><span class="o">.</span><span class="na">PACKET_TYPE_FIND_DEVICE_RSP_11</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="n">T</span> <span class="n">device</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">Constructor</span> <span class="n">constructor</span> <span class="o">=</span> <span class="n">mDeviceClazz</span><span class="o">.</span><span class="na">getDeclaredConstructor</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="kt">int</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="o">(</span><span class="n">T</span><span class="o">)</span> <span class="n">constructor</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="n">ip</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">NoSuchMethodException</span> <span class="o">|</span> <span class="n">InvocationTargetException</span> <span class="o">|</span> <span class="n">InstantiationException</span> <span class="o">|</span> <span class="n">IllegalAccessException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">device</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">mUserDataMaxLen</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">dataLen</span> <span class="o">==</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">mDeviceSet</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">device</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">// 解析用户数据</span>
+        <span class="kt">int</span> <span class="n">userDataLen</span> <span class="o">=</span> <span class="n">dataLen</span> <span class="o">-</span> <span class="mi">2</span><span class="o">;</span>
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">userData</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">userDataLen</span><span class="o">];</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="n">userData</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">userDataLen</span><span class="o">);</span>
+
+        <span class="k">return</span> <span class="nf">parseUserData</span><span class="o">(</span><span class="n">data</span><span class="o">[</span><span class="mi">1</span><span class="o">],</span> <span class="n">device</span><span class="o">,</span> <span class="n">userData</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">mDeviceSet</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">device</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 打包搜索报文
+     * 协议：$ + packType(1) + sendSeq(4) [+ deviceIpLen(1) + deviceIp(n&lt;=15)] [+ userData]
+     *  packType - 报文类型
+     *  sendSeq - 发送序列
+     *  deviceIpLen - 设备IP长度
+     *  deviceIp - 设备IP，仅在确认时携带
+     *  userData - 用户数据
+     *
+     *  @param seq 发送序列号
+     */</span>
+    <span class="kd">private</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">packData</span><span class="o">(</span><span class="kt">int</span> <span class="n">seq</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">1024</span><span class="o">];</span>
+        <span class="kt">int</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+
+        <span class="c1">// 打包数据头部</span>
+        <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="sc">'$'</span><span class="o">;</span>
+
+        <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="n">mPackType</span><span class="o">;</span>
+
+        <span class="n">seq</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="mi">3</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="o">++</span><span class="n">seq</span><span class="o">;</span> <span class="c1">// can't use findSeq++</span>
+        <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="n">seq</span><span class="o">;</span>
+        <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">seq</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span> <span class="o">);</span>
+        <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">seq</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="o">);</span>
+        <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">seq</span> <span class="o">&gt;&gt;</span> <span class="mi">24</span><span class="o">);</span>
+
+        <span class="k">switch</span> <span class="o">(</span><span class="n">mPackType</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// packType为 `搜索请求`</span>
+            <span class="k">case</span> <span class="n">SearcherConst</span><span class="o">.</span><span class="na">PACKET_TYPE_FIND_DEVICE_REQ_10</span><span class="o">:</span> <span class="o">{</span>
+
+                <span class="c1">// 打包userData</span>
+                <span class="kt">byte</span><span class="o">[]</span> <span class="n">userData</span> <span class="o">=</span> <span class="n">packUserData_Search</span><span class="o">();</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">userData</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="kt">byte</span><span class="o">[]</span> <span class="n">tmp</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">offset</span> <span class="o">+</span> <span class="n">userData</span><span class="o">.</span><span class="na">length</span><span class="o">];</span>
+                    <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">tmp</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">offset</span><span class="o">);</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">userData</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">data</span><span class="o">,</span> <span class="n">offset</span><span class="o">,</span> <span class="n">userData</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+                <span class="n">offset</span> <span class="o">+=</span> <span class="n">userData</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="c1">// packType为 `搜索确认`</span>
+            <span class="k">case</span> <span class="n">SearcherConst</span><span class="o">.</span><span class="na">PACKET_TYPE_FIND_DEVICE_CHK_12</span><span class="o">:</span> <span class="o">{</span>
+                <span class="c1">// deviceIp</span>
+                <span class="kt">byte</span><span class="o">[]</span> <span class="n">ips</span> <span class="o">=</span> <span class="n">mDeviceIP</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(</span><span class="n">Charset</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">"UTF-8"</span><span class="o">));</span>
+                <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="n">ips</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+                <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">ips</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">data</span><span class="o">,</span> <span class="n">offset</span><span class="o">,</span> <span class="n">ips</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+                <span class="n">offset</span> <span class="o">+=</span> <span class="n">ips</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+
+                <span class="c1">// userData</span>
+                <span class="kt">byte</span><span class="o">[]</span> <span class="n">userData</span> <span class="o">=</span> <span class="n">packUserData_Check</span><span class="o">();</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">userData</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="kt">byte</span><span class="o">[]</span> <span class="n">tmp</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">offset</span> <span class="o">+</span> <span class="n">userData</span><span class="o">.</span><span class="na">length</span><span class="o">];</span>
+                    <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">tmp</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">offset</span><span class="o">);</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">userData</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">data</span><span class="o">,</span> <span class="n">offset</span><span class="o">,</span> <span class="n">userData</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+                <span class="n">offset</span> <span class="o">+=</span> <span class="n">userData</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="k">default</span><span class="o">:</span>
+        <span class="o">}</span>
+
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">offset</span><span class="o">];</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">result</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">offset</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+    <span class="o">}</span>
+
+
+    <span class="cm">/**
+     * 设备Bean
+     * 只要IP一样，则认为是同一个设备
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">DeviceBean</span><span class="o">{</span>
+        <span class="n">String</span> <span class="n">ip</span><span class="o">;</span>      <span class="c1">// IP地址</span>
+        <span class="kt">int</span> <span class="n">port</span><span class="o">;</span>       <span class="c1">// 端口</span>
+
+        <span class="kd">public</span> <span class="nf">DeviceBean</span><span class="o">(){}</span>
+
+        <span class="kd">public</span> <span class="nf">DeviceBean</span><span class="o">(</span><span class="n">String</span> <span class="n">ip</span><span class="o">,</span> <span class="kt">int</span> <span class="n">port</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">ip</span> <span class="o">=</span> <span class="n">ip</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">port</span> <span class="o">=</span> <span class="n">port</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">int</span> <span class="nf">hashCode</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">ip</span><span class="o">.</span><span class="na">hashCode</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">o</span> <span class="k">instanceof</span> <span class="n">DeviceBean</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">ip</span><span class="o">.</span><span class="na">equals</span><span class="o">(((</span><span class="n">DeviceBean</span><span class="o">)</span><span class="n">o</span><span class="o">).</span><span class="na">getIp</span><span class="o">());</span>
+            <span class="o">}</span>
+            <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">o</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="kd">public</span> <span class="n">String</span> <span class="nf">getIp</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">ip</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setIp</span><span class="o">(</span><span class="n">String</span> <span class="n">ip</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">ip</span> <span class="o">=</span> <span class="n">ip</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getPort</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">port</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPort</span><span class="o">(</span><span class="kt">int</span> <span class="n">port</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">port</span> <span class="o">=</span> <span class="n">port</span><span class="o">;</span>
+        <span class="o">}</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+
+
+</code></pre>
+</div>
+
+<h3 id="接收端">接收端</h3>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">zjun</span><span class="o">.</span><span class="na">searcher</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.DatagramPacket</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.DatagramSocket</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.SocketException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.SocketTimeoutException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.nio.charset.Charset</span><span class="o">;</span>
+
+
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">SearcherDevice</span> <span class="kd">extends</span> <span class="n">Thread</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">mUserDataMaxLen</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="kd">volatile</span> <span class="kt">boolean</span> <span class="n">mOpenFlag</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="n">DatagramSocket</span> <span class="n">mSocket</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 构造函数
+     * 不需要用户数据
+     */</span>
+    <span class="kd">public</span> <span class="nf">SearcherDevice</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 构造函数
+     *
+     * @param userDataMaxLen 搜索主机发送数据的最大长度
+     */</span>
+    <span class="kd">public</span> <span class="nf">SearcherDevice</span><span class="o">(</span><span class="kt">int</span> <span class="n">userDataMaxLen</span><span class="o">)</span> <span class="o">{</span>
+       <span class="k">this</span><span class="o">.</span><span class="na">mUserDataMaxLen</span> <span class="o">=</span> <span class="n">userDataMaxLen</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 打开
+     * 即可以上线
+     */</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">open</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// 线程只能start()一次，重启必须重新new。因此这里也只能open()一次</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getState</span><span class="o">()</span> <span class="o">!=</span> <span class="n">State</span><span class="o">.</span><span class="na">NEW</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="n">mOpenFlag</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 关闭
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">close</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">mOpenFlag</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">printLog</span><span class="o">(</span><span class="s">"设备开启"</span><span class="o">);</span>
+        <span class="n">DatagramPacket</span> <span class="n">recePack</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+		
+		
+		<span class="cm">/***************** Step3 *****************/</span>
+		
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="c1">// 实例接收socket 端口号 9000 和发送端一致</span>
+            <span class="n">mSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatagramSocket</span><span class="o">(</span><span class="n">SearcherConst</span><span class="o">.</span><span class="na">DEVICE_FIND_PORT</span><span class="o">);</span>
+            <span class="c1">// 设置接收超时时间</span>
+            <span class="n">mSocket</span><span class="o">.</span><span class="na">setSoTimeout</span><span class="o">(</span><span class="n">SearcherConst</span><span class="o">.</span><span class="na">DEVICE_RECEIVE_DEFAULT_TIME_OUT</span><span class="o">);</span>
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">buf</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">32</span> <span class="o">+</span> <span class="n">mUserDataMaxLen</span><span class="o">];</span>
+            <span class="n">recePack</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatagramPacket</span><span class="o">(</span><span class="n">buf</span><span class="o">,</span> <span class="n">buf</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SocketException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">mSocket</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">mSocket</span><span class="o">.</span><span class="na">isClosed</span><span class="o">()</span> <span class="o">||</span> <span class="n">recePack</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+		
+		<span class="cm">/***************** Step4 *****************/</span>
+		
+        <span class="k">while</span> <span class="o">(</span><span class="n">mOpenFlag</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="c1">// 等待接收主机数据报</span>
+                <span class="n">mSocket</span><span class="o">.</span><span class="na">receive</span><span class="o">(</span><span class="n">recePack</span><span class="o">);</span>
+
+                <span class="c1">// 校验接收的数据报</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">verifySearchData</span><span class="o">(</span><span class="n">recePack</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="kt">byte</span><span class="o">[]</span> <span class="n">sendData</span> <span class="o">=</span> <span class="n">packData</span><span class="o">();</span>
+
+                    <span class="c1">// 给主机发送确认报文,等待主机回复</span>
+                    <span class="n">DatagramPacket</span> <span class="n">sendPack</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatagramPacket</span><span class="o">(</span><span class="n">sendData</span><span class="o">,</span> <span class="n">sendData</span><span class="o">.</span><span class="na">length</span><span class="o">,</span> <span class="n">recePack</span><span class="o">.</span><span class="na">getAddress</span><span class="o">(),</span> <span class="n">recePack</span><span class="o">.</span><span class="na">getPort</span><span class="o">());</span>
+                    <span class="n">printLog</span><span class="o">(</span><span class="s">"接收到请求，给主机回复信息"</span><span class="o">);</span>
+                    <span class="n">mSocket</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">sendPack</span><span class="o">);</span>
+                    <span class="n">printLog</span><span class="o">(</span><span class="s">"等待主机接收确认"</span><span class="o">);</span>
+                    <span class="n">mSocket</span><span class="o">.</span><span class="na">setSoTimeout</span><span class="o">(</span><span class="n">SearcherConst</span><span class="o">.</span><span class="na">RECEIVE_TIME_OUT</span><span class="o">);</span>
+                    <span class="k">try</span> <span class="o">{</span>
+                        <span class="n">mSocket</span><span class="o">.</span><span class="na">receive</span><span class="o">(</span><span class="n">recePack</span><span class="o">);</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">verifyCheckData</span><span class="o">(</span><span class="n">recePack</span><span class="o">))</span> <span class="o">{</span>
+                            <span class="n">printLog</span><span class="o">(</span><span class="s">"确认成功"</span><span class="o">);</span>
+                            <span class="n">onDeviceSearched</span><span class="o">((</span><span class="n">InetSocketAddress</span><span class="o">)</span> <span class="n">recePack</span><span class="o">.</span><span class="na">getSocketAddress</span><span class="o">());</span>
+                            <span class="n">mOpenFlag</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                            <span class="k">break</span><span class="o">;</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SocketTimeoutException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="o">}</span>
+                    <span class="n">mSocket</span><span class="o">.</span><span class="na">setSoTimeout</span><span class="o">(</span><span class="n">SearcherConst</span><span class="o">.</span><span class="na">DEVICE_RECEIVE_DEFAULT_TIME_OUT</span><span class="o">);</span> <span class="c1">// 还原连接超时</span>
+                <span class="o">}</span>
+
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="n">mSocket</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="n">printLog</span><span class="o">(</span><span class="s">"设备关闭或已被找到"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 打包响应报文
+     * 协议：$ + packType(1) + userData(n)
+     *
+     */</span>
+    <span class="kd">private</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">packData</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">1024</span><span class="o">];</span>
+        <span class="kt">int</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="sc">'$'</span><span class="o">;</span>
+        <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="n">SearcherConst</span><span class="o">.</span><span class="na">PACKET_TYPE_FIND_DEVICE_RSP_11</span><span class="o">;</span>
+
+        <span class="c1">// add userData</span>
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">userData</span> <span class="o">=</span> <span class="n">packUserData</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">userData</span><span class="o">.</span><span class="na">length</span> <span class="o">+</span> <span class="n">offset</span> <span class="o">&gt;</span> <span class="n">data</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span>
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">tmp</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">userData</span><span class="o">.</span><span class="na">length</span> <span class="o">+</span> <span class="n">offset</span><span class="o">];</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">tmp</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">offset</span><span class="o">);</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">userData</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">data</span><span class="o">,</span> <span class="n">offset</span><span class="o">,</span> <span class="n">userData</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+        <span class="n">offset</span> <span class="o">+=</span> <span class="n">userData</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">retVal</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">offset</span><span class="o">];</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">retVal</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">offset</span><span class="o">);</span>
+
+        <span class="k">return</span> <span class="n">retVal</span><span class="o">;</span>
+    <span class="o">}</span>
+
+
+    <span class="cm">/**
+     * 校验搜索数据
+     * 协议：$ + packType(1) + sendSeq(4) [+ deviceIpLen(1) + deviceIp(n&lt;=15)] [+ userData]
+     *  packType - 报文类型
+     *  sendSeq - 发送序列
+     *  deviceIpLen - 设备IP长度
+     *  deviceIp - 设备IP，仅在确认时携带
+     *  userData - 用户数据
+     */</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">verifySearchData</span><span class="o">(</span><span class="n">DatagramPacket</span> <span class="n">pack</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">pack</span><span class="o">.</span><span class="na">getLength</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="n">pack</span><span class="o">.</span><span class="na">getData</span><span class="o">();</span>
+        <span class="kt">int</span> <span class="n">offset</span> <span class="o">=</span> <span class="n">pack</span><span class="o">.</span><span class="na">getOffset</span><span class="o">();</span>
+        <span class="kt">int</span> <span class="n">sendSeq</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">!=</span> <span class="sc">'$'</span> <span class="o">||</span> <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">!=</span> <span class="n">SearcherConst</span><span class="o">.</span><span class="na">PACKET_TYPE_FIND_DEVICE_REQ_10</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="n">sendSeq</span> <span class="o">=</span> <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">xFF</span><span class="o">;</span>
+        <span class="n">sendSeq</span> <span class="o">|=</span> <span class="o">(</span><span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span> <span class="o">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">xFF00</span><span class="o">;</span>
+        <span class="n">sendSeq</span> <span class="o">|=</span> <span class="o">(</span><span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="o">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">xFF0000</span><span class="o">;</span>
+        <span class="n">sendSeq</span> <span class="o">|=</span> <span class="o">(</span><span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">&lt;&lt;</span> <span class="mi">24</span><span class="o">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">xFF000000</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">sendSeq</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="o">||</span> <span class="n">sendSeq</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">mUserDataMaxLen</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">offset</span> <span class="o">==</span> <span class="n">data</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">// has userData</span>
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">userData</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">pack</span><span class="o">.</span><span class="na">getLength</span><span class="o">()</span> <span class="o">-</span> <span class="n">offset</span><span class="o">];</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="n">offset</span><span class="o">,</span> <span class="n">userData</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">userData</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+        <span class="k">return</span> <span class="nf">parseUserData</span><span class="o">(</span><span class="n">data</span><span class="o">[</span><span class="mi">1</span><span class="o">],</span> <span class="n">userData</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 校验确认数据
+     * 协议：$ + packType(1) + sendSeq(4) [+ deviceIpLen(1) + deviceIp(n&lt;=15)] [+ userData]
+     *  packType - 报文类型
+     *  sendSeq - 发送序列
+     *  deviceIpLen - 设备IP长度
+     *  deviceIp - 设备IP，仅在确认时携带
+     *  userData - 用户数据
+     */</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">verifyCheckData</span><span class="o">(</span><span class="n">DatagramPacket</span> <span class="n">pack</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">pack</span><span class="o">.</span><span class="na">getLength</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">6</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span><span class="mi">7</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="n">pack</span><span class="o">.</span><span class="na">getData</span><span class="o">();</span>
+        <span class="kt">int</span> <span class="n">offset</span> <span class="o">=</span> <span class="n">pack</span><span class="o">.</span><span class="na">getOffset</span><span class="o">();</span>
+        <span class="kt">int</span> <span class="n">sendSeq</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">!=</span> <span class="sc">'$'</span> <span class="o">||</span> <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">!=</span> <span class="n">SearcherConst</span><span class="o">.</span><span class="na">PACKET_TYPE_FIND_DEVICE_CHK_12</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="n">sendSeq</span> <span class="o">=</span> <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">xFF</span><span class="o">;</span>
+        <span class="n">sendSeq</span> <span class="o">|=</span> <span class="o">(</span><span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span> <span class="o">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">xFF</span><span class="o">;</span>
+        <span class="n">sendSeq</span> <span class="o">|=</span> <span class="o">(</span><span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="o">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">xFF00</span><span class="o">;</span>
+        <span class="n">sendSeq</span> <span class="o">|=</span> <span class="o">(</span><span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">&lt;&lt;</span> <span class="mi">24</span><span class="o">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">xFF0000</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">sendSeq</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="o">||</span> <span class="n">sendSeq</span> <span class="o">&gt;</span> <span class="n">SearcherConst</span><span class="o">.</span><span class="na">RESPONSE_DEVICE_MAX</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">// ip</span>
+        <span class="kt">int</span> <span class="n">ipLen</span> <span class="o">=</span> <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++];</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">ipLen</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="n">String</span> <span class="n">ip</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="n">offset</span><span class="o">,</span> <span class="n">ipLen</span><span class="o">,</span> <span class="n">Charset</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">"UTF-8"</span><span class="o">));</span>
+        <span class="n">offset</span> <span class="o">+=</span> <span class="n">ipLen</span><span class="o">;</span>
+        <span class="n">printLog</span><span class="o">(</span><span class="s">"Device's ip from host="</span> <span class="o">+</span> <span class="n">ip</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">isOwnIp</span><span class="o">(</span><span class="n">ip</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">mUserDataMaxLen</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">offset</span> <span class="o">==</span> <span class="n">data</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">// has userData</span>
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">userData</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">pack</span><span class="o">.</span><span class="na">getLength</span><span class="o">()</span> <span class="o">-</span> <span class="n">offset</span><span class="o">];</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="n">offset</span><span class="o">,</span> <span class="n">userData</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">userData</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+        <span class="k">return</span> <span class="nf">parseUserData</span><span class="o">(</span><span class="n">data</span><span class="o">[</span><span class="mi">1</span><span class="o">],</span> <span class="n">userData</span><span class="o">);</span>
+
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 打包用户数据
+     * 如果调用者需要，则重写
+     * @return
+     */</span>
+    <span class="kd">protected</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">packUserData</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 当设备被发现时执行
+     */</span>
+    <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">onDeviceSearched</span><span class="o">(</span><span class="n">InetSocketAddress</span> <span class="n">socketAddr</span><span class="o">);</span>
+
+    <span class="cm">/**
+     * 获取本机在Wifi中的IP
+     * 默认都是返回true，如果需要真实验证，需调用自己重写本方法
+     * @param ip 需要判断的ip地址
+     * @return true-是本机地址
+     */</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isOwnIp</span><span class="o">(</span><span class="n">String</span> <span class="n">ip</span><span class="o">){</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 解析用户数据
+     * 默认返回true，如果调用者有自己的数据，需重写
+     * @param type 类型，搜索请求or搜索确认
+     * @param userData 用户数据
+     * @return 解析结果
+     */</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">parseUserData</span><span class="o">(</span><span class="kt">byte</span> <span class="n">type</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">userData</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 打印日志
+     * 由调用者打印，SE和Android不同
+     */</span>
+    <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">printLog</span><span class="o">(</span><span class="n">String</span> <span class="n">log</span><span class="o">);</span>
+
+<span class="o">}</span>
+
+
+
+</code></pre>
+</div>
+
+<h3 id="添加用户数据">添加用户数据</h3>
+
+<p>如果想要添加用户自定义数据,只需要重写主机和接收端相应的打包和解析方法。</p>
+
+<ul>
+  <li>接收端打包用户数据</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+		   <span class="cm">/**
+             * 响应时的打包数据格式
+             * dataType(1) + len(4) + data(n)
+             */</span>
+			 
+            <span class="nd">@Override</span>
+            <span class="kd">protected</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">packUserData</span><span class="o">()</span> <span class="o">{</span>
+                <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="s">"LED灯"</span><span class="o">;</span>
+                <span class="n">String</span> <span class="n">room</span> <span class="o">=</span> <span class="s">"客厅"</span><span class="o">;</span>
+                <span class="k">try</span> <span class="o">{</span>
+				
+				    <span class="c1">// nameBytes:{76,69,68,-25,-127,-81}</span>
+                    <span class="kt">byte</span><span class="o">[]</span> <span class="n">nameBytes</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(</span><span class="s">"UTF-8"</span><span class="o">);</span>
+					
+					<span class="c1">// nameBytes:{-27,-82,-94,-27,-114,-123}</span>
+                    <span class="kt">byte</span><span class="o">[]</span> <span class="n">roomBytes</span> <span class="o">=</span> <span class="n">room</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(</span><span class="s">"UTF-8"</span><span class="o">);</span>
+					
+					<span class="c1">// 用户数据总大小： dataType(1) + len(4) + data(6) + dataType(1) + len(4) + data(6) = 22</span>
+					<span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">5</span> <span class="o">+</span> <span class="n">nameBytes</span><span class="o">.</span><span class="na">length</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">+</span> <span class="n">roomBytes</span><span class="o">.</span><span class="na">length</span><span class="o">];</span>
+                    <span class="kt">int</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+
+					<span class="c1">// 用1位存数据类型 DEVICE_TYPE_NAME_21 = 0x21;</span>
+                    <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="n">DEVICE_TYPE_NAME_21</span><span class="o">;</span>
+					
+                    <span class="c1">// 用4位存用户数据大小</span>
+                    <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="n">nameBytes</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+                    <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">nameBytes</span><span class="o">.</span><span class="na">length</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="o">);</span>
+                    <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">nameBytes</span><span class="o">.</span><span class="na">length</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="o">);</span>
+                    <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">nameBytes</span><span class="o">.</span><span class="na">length</span> <span class="o">&gt;&gt;</span> <span class="mi">24</span><span class="o">);</span>
+					
+                    <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">nameBytes</span><span class="o">,</span> <span class="mi">0</span> <span class="o">,</span> <span class="n">data</span><span class="o">,</span> <span class="n">offset</span><span class="o">,</span> <span class="n">nameBytes</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+                    <span class="n">offset</span> <span class="o">+=</span> <span class="n">nameBytes</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+					
+					<span class="c1">// 用1位存数据类型 DEVICE_TYPE_ROOM_22 = 0x22;</span>
+                    <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="n">DEVICE_TYPE_ROOM_22</span><span class="o">;</span>
+					
+                    <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="n">roomBytes</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+                    <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">roomBytes</span><span class="o">.</span><span class="na">length</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="o">);</span>
+                    <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">roomBytes</span><span class="o">.</span><span class="na">length</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="o">);</span>
+                    <span class="n">data</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">roomBytes</span><span class="o">.</span><span class="na">length</span> <span class="o">&gt;&gt;</span> <span class="mi">24</span><span class="o">);</span>
+                    <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">roomBytes</span><span class="o">,</span> <span class="mi">0</span> <span class="o">,</span> <span class="n">data</span><span class="o">,</span> <span class="n">offset</span><span class="o">,</span> <span class="n">roomBytes</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+
+                    <span class="k">return</span> <span class="n">data</span><span class="o">;</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">UnsupportedEncodingException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                <span class="o">}</span>
+                <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">packUserData</span><span class="o">();</span>
+            <span class="o">}</span>
+
+
+</code></pre>
+</div>
+
+<ul>
+  <li>主机解析用户数据</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+			<span class="cm">/**
+             * 解析用户数据
+             * dataType(1) + len(4) + data(n)
+             * @param type 类型
+             * @param device 设备
+             * @param userData 数据
+             * @return true-解析成功
+             */</span>
+			 
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">parseUserData</span><span class="o">(</span><span class="kt">byte</span> <span class="n">type</span><span class="o">,</span> <span class="n">MyDevice</span> <span class="n">device</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">userData</span><span class="o">)</span> <span class="o">{</span>
+			            
+						<span class="c1">// 用户数据如果小于5,数据错误</span>
+						<span class="k">if</span> <span class="o">(</span><span class="n">userData</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+                        <span class="o">}</span>
+                        <span class="kt">int</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+                        
+						<span class="c1">// 解析用户数据部分</span>
+                        <span class="k">while</span> <span class="o">(</span><span class="n">offset</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">&lt;</span> <span class="n">userData</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="kt">byte</span> <span class="n">dataType</span> <span class="o">=</span> <span class="n">userData</span><span class="o">[</span><span class="n">offset</span><span class="o">++];</span>
+                            <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="o">(</span><span class="n">userData</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">xFF</span><span class="o">)</span>
+                                    <span class="o">|</span> <span class="o">((</span><span class="n">userData</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">xFF</span><span class="o">)</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="o">)</span>
+                                    <span class="o">|</span> <span class="o">((</span><span class="n">userData</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">xFF</span><span class="o">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="o">)</span>
+                                    <span class="o">|</span> <span class="o">((</span><span class="n">userData</span><span class="o">[</span><span class="n">offset</span><span class="o">++]</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">xFF</span><span class="o">)</span> <span class="o">&lt;&lt;</span> <span class="mi">24</span><span class="o">);</span>
+                            <span class="k">if</span> <span class="o">(</span><span class="n">len</span> <span class="o">+</span> <span class="n">offset</span> <span class="o">&gt;</span> <span class="n">userData</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span>
+                                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+                            <span class="o">}</span>
+							
+							<span class="k">switch</span> <span class="o">(</span><span class="n">dataType</span><span class="o">)</span> <span class="o">{</span>
+							    <span class="c1">//解析`LED灯`</span>
+                                <span class="k">case</span> <span class="nl">DEVICE_TYPE_NAME_21:</span>
+                                    <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+                                    <span class="k">try</span> <span class="o">{</span>
+                                        <span class="n">name</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">userData</span><span class="o">,</span> <span class="n">offset</span><span class="o">,</span> <span class="n">len</span><span class="o">,</span> <span class="s">"UTF-8"</span><span class="o">);</span>
+                                    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">UnsupportedEncodingException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                                        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                                    <span class="o">}</span>
+                                    <span class="k">if</span> <span class="o">(</span><span class="n">name</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                                        <span class="n">device</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+                                    <span class="o">}</span>
+                                    <span class="k">break</span><span class="o">;</span>
+								<span class="c1">//解析`客厅`	</span>
+                                <span class="k">case</span> <span class="nl">DEVICE_TYPE_ROOM_22:</span>
+                                    <span class="n">String</span> <span class="n">room</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+                                    <span class="k">try</span> <span class="o">{</span>
+                                        <span class="n">room</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">userData</span><span class="o">,</span> <span class="n">offset</span><span class="o">,</span> <span class="n">len</span><span class="o">,</span> <span class="s">"UTF-8"</span><span class="o">);</span>
+                                    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">UnsupportedEncodingException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                                        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                                    <span class="o">}</span>
+                                    <span class="k">if</span> <span class="o">(</span><span class="n">room</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                                        <span class="n">device</span><span class="o">.</span><span class="na">setRoom</span><span class="o">(</span><span class="n">room</span><span class="o">);</span>
+                                    <span class="o">}</span>
+                                    <span class="k">break</span><span class="o">;</span>
+                                <span class="k">default</span><span class="o">:</span>
+                            <span class="o">}</span>
+            <span class="o">}</span>
+
+</code></pre>
+</div>
+
+<h3 id="备注">备注</h3>
+
+<ul>
+  <li><code class="highlighter-rouge">2017/06/26</code> 路由器 需要开启<code class="highlighter-rouge">SSID</code> 广播来支持，<code class="highlighter-rouge">UDP</code> 广播。</li>
+</ul>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/15/Android-wechat-share/"> Android wechat 分享
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/10/Android-TimeoutExceptions/"> Android TimeoutExceptions及 wakelock
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/08/Android-Activity-life-time/"> Android Activity 生命周期
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/08/Android-Change-Language/">Android App 切换语言
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2017/03/26/Android-ZMQ/">ZMQ</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2017/03/30/jekyll-port/">blog 运行端口占用</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2017/03/29/Android-LAN-scan/" data-title="Android 局域网扫描" data-url="http://localhost:4000/2017/03/29/Android-LAN-scan/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

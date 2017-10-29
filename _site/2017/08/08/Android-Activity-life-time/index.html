@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> Android Activity 生命周期</title>
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2017/08/08/Android-Activity-life-time/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1> Android Activity 生命周期</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2017-08-08
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#Android" title="Tag: Android" rel="tag">Android</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#activity" id="markdown-toc-activity"><code class="highlighter-rouge">Activity</code></a></li>
+  <li><a href="#activity-操作" id="markdown-toc-activity-操作"><code class="highlighter-rouge">Activity</code> 操作</a>    <ul>
+      <li><a href="#finish" id="markdown-toc-finish">finish()</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>本篇简单学习<code class="highlighter-rouge">Android </code>Activity`生命周期的相关知识。</p>
+
+<h2 id="activity"><code class="highlighter-rouge">Activity</code></h2>
+
+<p><code class="highlighter-rouge">Android</code> 中所有的<code class="highlighter-rouge">Activity</code>都是由<code class="highlighter-rouge">Activity栈</code>来进行管理的。当切换到一个新的<code class="highlighter-rouge">Activity</code>时候，此<code class="highlighter-rouge">Activiy</code>会被压到栈顶部，之前的<code class="highlighter-rouge">Activity</code>会被压到栈底。</p>
+
+<p><code class="highlighter-rouge">Activity</code>的生命周期，可以从下方流程图看出。</p>
+
+<p><img src="http://wx3.sinaimg.cn/mw690/c584f169ly1fkrcuarupuj20f50jrjsw.jpg" alt="outPut" /></p>
+
+<p>1.1 一个<code class="highlighter-rouge">Activity</code>的完整生命周期 <code class="highlighter-rouge">onCreate -&gt; onStart -&gt; onResume -&gt; onPause -&gt; onStop -&gt; onDestory</code>，称之为 <code class="highlighter-rouge">entire lifetime</code>.</p>
+
+<p>2.2 当执行<code class="highlighter-rouge">onStart</code>回调方法的时候，<code class="highlighter-rouge">Activity</code>开始被用户所见。所以在<code class="highlighter-rouge">onCreate</code>的时候用户是看不到的，一直到<code class="highlighter-rouge">onStop</code>之前，此<code class="highlighter-rouge">Activity</code>都是可以被用户看到的。此阶段称之为 <code class="highlighter-rouge">visible lifetime</code>.</p>
+
+<p>3.3 当执行<code class="highlighter-rouge">onResume</code>回调方法的时候，<code class="highlighter-rouge">Activity</code>可以开始和用户交互，一直到<code class="highlighter-rouge">onPause</code>方法之前。此阶段称之为<code class="highlighter-rouge">foreground lifetime</code>.</p>
+
+<p>注：</p>
+
+<ul>
+  <li>
+    <p><code class="highlighter-rouge">onPause</code> , 虽然<code class="highlighter-rouge">Activity</code>还是可见的 但大多数时候意味着用户即将离开这个<code class="highlighter-rouge">Activity</code>.所以在<code class="highlighter-rouge">onPause</code>中，你可以用来 1.停止运行的浪费cpu的操作 2.提交没有保存的修改 3.释放系统资源</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">onDestroy</code> ,应该清除那些可能导致内存泄漏的地方。并且确保所有线程都被<code class="highlighter-rouge">destroyed</code>并且所有操作都被停止。</p>
+  </li>
+</ul>
+
+<h2 id="activity-操作"><code class="highlighter-rouge">Activity</code> 操作</h2>
+
+<p>1.1 从 A Activity 到 B Activity，</p>
+
+<p>打开 A Activity</p>
+
+<p><strong>A onCreate -&gt; A onStart -&gt; A onResume</strong></p>
+
+<p>2.2 点击切换Activity按钮，</p>
+
+<p><strong>A onPause -&gt; B onCreate -&gt; B onStart -&gt; B onResume -&gt; A onStop</strong></p>
+
+<p>如果点击 back 按钮，依次降执行</p>
+
+<p><strong>B onPause -&gt; A onRestart -&gt; A onStart -&gt; A onResume -&gt; B onStop -&gt; B onDestroy</strong></p>
+
+<p>B Activity从站顶弹出并销毁，此时 Activity 堆栈只有 A Activity。</p>
+
+<p>3.3 如果再次点击 back 按钮</p>
+
+<p>则执行 <strong>A onPause -&gt; A onStop -&gt; A onDestroy</strong></p>
+
+<p>4.4 如果点击的是 home 按钮</p>
+
+<p>则执行 <strong>A onPause -&gt; A onStop</strong></p>
+
+<p>注：</p>
+
+<ul>
+  <li>
+    <p>Android手机，<code class="highlighter-rouge">开发者选项</code>中有一个<code class="highlighter-rouge">不保留活动</code>的设置。从<strong>A Activity -&gt; B Activity</strong> 会执行 A onDestroy，但是 A Activity还是处在Activity栈中。</p>
+  </li>
+  <li>
+    <p>点击back 按钮 依次执行 <strong>B onPause -&gt; A onCreate -&gt; A onStart -&gt; A onResume -&gt; B onStop -&gt; B onDestroy</strong></p>
+  </li>
+</ul>
+
+<h3 id="finish">finish()</h3>
+
+<p><code class="highlighter-rouge">finish()</code>方法主要有两层含义</p>
+
+<ul>
+  <li>
+    <p>将此<code class="highlighter-rouge">Activity</code>移除<code class="highlighter-rouge">Activity</code>栈</p>
+  </li>
+  <li>
+    <p>调用此<code class="highlighter-rouge">Activity</code>的<code class="highlighter-rouge">onDestroy</code></p>
+  </li>
+</ul>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/15/Android-wechat-share/"> Android wechat 分享
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/10/Android-TimeoutExceptions/"> Android TimeoutExceptions及 wakelock
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/08/Android-Change-Language/">Android App 切换语言
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2017/08/07/500-Data-Structures-and-Algorithms-practice/">500 Data Structures and Algorithms practice problems and their solutions</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2017/08/10/Android-TimeoutExceptions/"> Android TimeoutExceptions及 wakelock</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2017/08/08/Android-Activity-life-time/" data-title=" Android Activity 生命周期" data-url="http://localhost:4000/2017/08/08/Android-Activity-life-time/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

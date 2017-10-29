@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>htc vive 安装和使用</title>
+    <meta name="description" content="本篇简单介绍htc vive的安装和使用。">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/11/01/htc-vive-build-run/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>htc vive 安装和使用</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-11-01
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#htc_vive" title="Tag: htc_vive" rel="tag">htc_vive</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#htc-vive安装" id="markdown-toc-htc-vive安装"><code class="highlighter-rouge">htc vive</code>安装</a>    <ul>
+      <li><a href="#tips" id="markdown-toc-tips">Tips</a></li>
+    </ul>
+  </li>
+  <li><a href="#使用unity3d创建第一个vr场景" id="markdown-toc-使用unity3d创建第一个vr场景">使用<code class="highlighter-rouge">unity3D</code>创建第一个<code class="highlighter-rouge">VR</code>场景</a></li>
+</ul>
+
+<p>本篇简单介绍<code class="highlighter-rouge">htc vive</code>的安装和使用。</p>
+
+<h2 id="htc-vive安装"><code class="highlighter-rouge">htc vive</code>安装</h2>
+
+<p>第一次使用<code class="highlighter-rouge">htc vive</code>你可以在官网</p>
+
+<blockquote>
+  <p>https://www.viveport.com/</p>
+</blockquote>
+
+<p>下载<code class="highlighter-rouge">viveport</code>按照提示安装<code class="highlighter-rouge">htc vive</code> 下载过程中会安装<code class="highlighter-rouge">SteamVR</code>, <code class="highlighter-rouge">SteamVR</code>是<code class="highlighter-rouge">htc vive</code>的运行插件。</p>
+
+<p>当然你如果会安装也可以直接安装<code class="highlighter-rouge">Steam</code>,在<code class="highlighter-rouge">Steam</code>中安装<code class="highlighter-rouge">SteamVR</code></p>
+
+<ul>
+  <li><a href="https://steamcdn-a.akamaihd.net/apps/steamvr/vr_setup.pdf">Setup Manual</a> HTC Vive安装说明(英文)。</li>
+</ul>
+
+<h3 id="tips">Tips</h3>
+
+<p>1.<em>据说<code class="highlighter-rouge">viveport</code>安装的<code class="highlighter-rouge">SteamVR</code>会有问题</em></p>
+
+<p>2.<em><code class="highlighter-rouge">htc vive</code>系统需求</em></p>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/c584f169jw1f9cwijy6auj20g706e74x.jpg" alt="outPut" /></p>
+
+<p>3.<em><code class="highlighter-rouge">htc vive</code>常见故障排除</em></p>
+
+<p><code class="highlighter-rouge">http://tieba.baidu.com/p/4826849370?fr=ala0&amp;pstaala=1&amp;tpl=5&amp;isgod=0</code></p>
+
+<h2 id="使用unity3d创建第一个vr场景">使用<code class="highlighter-rouge">unity3D</code>创建第一个<code class="highlighter-rouge">VR</code>场景</h2>
+
+<p>1.先在 <code class="highlighter-rouge">Window ——&gt; Asset Store</code> 下载<code class="highlighter-rouge">SteamVR Plugin</code>插件</p>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/c584f169jw1f9cwilc7ioj20m20aun0f.jpg" alt="outPut" /></p>
+
+<p>2.新建一个场景 ,<code class="highlighter-rouge">3D Object ——&gt; Terrain</code> 创建一个地面。将<code class="highlighter-rouge">SteamVR ——&gt; Prefabs</code>中的三个预设拖到场景中</p>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/c584f169jw1f9cwikn8qaj205n08wt8p.jpg" alt="outPut" /></p>
+
+<p>3.运行场景就可以看到效果。(要提前配置好<code class="highlighter-rouge">htc vive</code>)</p>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/10/28/3d-Max-basic/">3dMax 基础概念和基本操作</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/11/02/Unity-3d-hide-GameObject/">Unity 3d 隐藏GameObject</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/11/01/htc-vive-build-run/" data-title="htc vive 安装和使用" data-url="http://localhost:4000/2016/11/01/htc-vive-build-run/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

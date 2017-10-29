@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Java equals 和 ==</title>
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/07/20/java-equals-==/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>Java equals 和 ==</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-07-20
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#Java" title="Tag: Java" rel="tag">Java</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#equals-和-" id="markdown-toc-equals-和-"><code class="highlighter-rouge">equals</code> 和 <code class="highlighter-rouge">==</code></a>    <ul>
+      <li><a href="#" id="markdown-toc-"><code class="highlighter-rouge">==</code></a></li>
+      <li><a href="#equals" id="markdown-toc-equals"><code class="highlighter-rouge">equals</code></a>        <ul>
+          <li><a href="#stringclass" id="markdown-toc-stringclass">String.class</a></li>
+          <li><a href="#integerclass" id="markdown-toc-integerclass">Integer.class</a></li>
+          <li><a href="#dateclass" id="markdown-toc-dateclass">Date.class</a></li>
+        </ul>
+      </li>
+      <li><a href="#关于内存池" id="markdown-toc-关于内存池">关于内存池</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="equals-和-"><code class="highlighter-rouge">equals</code> 和 <code class="highlighter-rouge">==</code></h2>
+
+<h3><code class="highlighter-rouge">==</code></h3>
+
+<ul>
+  <li>
+    <p>基本数据类型 byte,short,char,int,long,float,double,boolean
+<code class="highlighter-rouge">==</code>比较的是它们的值</p>
+  </li>
+  <li>
+    <p>复合数据类型（类）
+<code class="highlighter-rouge">==</code>比较的是它们的在内存中的存放位置</p>
+  </li>
+</ul>
+
+<h3 id="equals"><code class="highlighter-rouge">equals</code></h3>
+
+<p>对于复合数据类型（类）使用<code class="highlighter-rouge">equals</code>来比较它们的内容是否一致</p>
+
+<p><code class="highlighter-rouge">String</code>,<code class="highlighter-rouge">Integer</code>,<code class="highlighter-rouge">Date</code>在这些类当中<code class="highlighter-rouge">equals</code>有其自身的实现。</p>
+
+<h4 id="stringclass">String.class</h4>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>        
+        <span class="c1">//先使用`==`进行比较内存地址 如果`true` 则`return`</span>
+        
+		<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">obj</span><span class="o">)</span> <span class="o">{</span>
+		        <span class="k">return</span> <span class="o">(</span><span class="k">this</span> <span class="o">==</span> <span class="n">obj</span><span class="o">);</span>
+		    <span class="o">}</span> 
+		
+		<span class="c1">//如果内存地址不相同则比较内容</span>
+		   
+		<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">anObject</span><span class="o">)</span> <span class="o">{</span>
+		        <span class="k">if</span> <span class="o">(</span><span class="k">this</span> <span class="o">==</span> <span class="n">anObject</span><span class="o">)</span> <span class="o">{</span>
+		            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+		        <span class="o">}</span>
+		        <span class="k">if</span> <span class="o">(</span><span class="n">anObject</span> <span class="k">instanceof</span> <span class="n">String</span><span class="o">)</span> <span class="o">{</span>
+		            <span class="n">String</span> <span class="n">anotherString</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span><span class="n">anObject</span><span class="o">;</span>
+		            <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+		            <span class="k">if</span> <span class="o">(</span><span class="n">n</span> <span class="o">==</span> <span class="n">anotherString</span><span class="o">.</span><span class="na">value</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span>
+		                <span class="kt">char</span> <span class="n">v1</span><span class="o">[]</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+		                <span class="kt">char</span> <span class="n">v2</span><span class="o">[]</span> <span class="o">=</span> <span class="n">anotherString</span><span class="o">.</span><span class="na">value</span><span class="o">;</span>
+		                <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		                <span class="k">while</span> <span class="o">(</span><span class="n">n</span><span class="o">--</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+		                    <span class="k">if</span> <span class="o">(</span><span class="n">v1</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">!=</span> <span class="n">v2</span><span class="o">[</span><span class="n">i</span><span class="o">])</span>
+		                        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		                    <span class="n">i</span><span class="o">++;</span>
+		                <span class="o">}</span>
+		                <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+		            <span class="o">}</span>
+		        <span class="o">}</span>
+		        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="o">}</span>
+
+</code></pre>
+</div>
+
+<h4 id="integerclass">Integer.class</h4>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+		 <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">obj</span><span class="o">)</span> <span class="o">{</span>
+		        <span class="k">if</span> <span class="o">(</span><span class="n">obj</span> <span class="k">instanceof</span> <span class="n">Integer</span><span class="o">)</span> <span class="o">{</span>
+		            <span class="k">return</span> <span class="n">value</span> <span class="o">==</span> <span class="o">((</span><span class="n">Integer</span><span class="o">)</span><span class="n">obj</span><span class="o">).</span><span class="na">intValue</span><span class="o">();</span>
+		        <span class="o">}</span>
+		        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		    <span class="o">}</span>
+
+
+
+</code></pre>
+</div>
+
+<h4 id="dateclass">Date.class</h4>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+	  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">obj</span><span class="o">)</span> <span class="o">{</span>
+	        <span class="k">return</span> <span class="n">obj</span> <span class="k">instanceof</span> <span class="n">Date</span> <span class="o">&amp;&amp;</span> <span class="n">getTime</span><span class="o">()</span> <span class="o">==</span> <span class="o">((</span><span class="n">Date</span><span class="o">)</span> <span class="n">obj</span><span class="o">).</span><span class="na">getTime</span><span class="o">();</span>
+	    <span class="o">}</span>
+
+</code></pre>
+</div>
+
+<h3 id="关于内存池">关于内存池</h3>
+
+<p>基于以上的理论基础上，我测试了一下发现。</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+	<span class="n">String</span> <span class="n">str1</span> <span class="o">=</span> <span class="s">"string"</span><span class="o">;</span>
+	<span class="n">String</span> <span class="n">str2</span> <span class="o">=</span> <span class="s">"string"</span><span class="o">;</span>
+	
+	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">date</span> <span class="o">==</span> <span class="n">date2</span><span class="o">);</span>
+ 
+    <span class="nl">output:</span> <span class="kc">true</span>  <span class="o">???</span> <span class="err">说好的比较地址呢</span>
+</code></pre>
+</div>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+	<span class="n">String</span> <span class="n">str1</span> <span class="o">=</span> <span class="s">"string"</span><span class="o">;</span>
+	<span class="n">String</span> <span class="n">str2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="s">"string"</span><span class="o">);</span>
+	
+	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">date</span> <span class="o">==</span> <span class="n">date2</span><span class="o">);</span>
+ 
+    <span class="nl">output:</span> <span class="kc">false</span>  <span class="err">正常情况</span>
+    
+    <span class="n">String</span> <span class="n">str1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="s">"string"</span><span class="o">);</span>
+	<span class="n">String</span> <span class="n">str2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="s">"string"</span><span class="o">);</span>
+	
+	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">date</span> <span class="o">==</span> <span class="n">date2</span><span class="o">);</span>
+ 
+    <span class="nl">output:</span> <span class="kc">false</span>  <span class="err">正常情况</span>
+</code></pre>
+</div>
+
+<p>查看了一下源码<code class="highlighter-rouge">intern()</code>函数给出了如下注释</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>
+     * When the intern method is invoked, if the pool already contains a
+     * string equal to this {@code String} object as determined by
+     * the {@link #equals(Object)} method, then the string from the pool is
+     * returned. Otherwise, this {@code String} object is added to the
+     * pool and a reference to this {@code String} object is returned.
+
+
+</code></pre>
+</div>
+
+<p>大体的意思是放你当没有使用<code class="highlighter-rouge">new</code>关键字创建一个字符串<code class="highlighter-rouge">String str1 = "string"</code>的时候，会先检查内存池如果已经包含该字符串
+如果存在则 返回内存池中的该字符串的引用。如果没有再创建一个新的。</p>
+
+<p>而使用关键字<code class="highlighter-rouge">new</code>则会默认创建一个新的<code class="highlighter-rouge">String</code>所以拥有不同的内存地址。</p>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/23/java-ThreadPoolExecutor/"> Java ThreadPoolExecutor
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/08/07/500-Data-Structures-and-Algorithms-practice/">500 Data Structures and Algorithms practice problems and their solutions
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/09/java-Executors/">java 并发库之 Executors
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/08/java-Netty-TCP/">java Netty tcp通讯
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/05/07/java-Semaphore/">java 并发库之 Semaphore
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="http://localhost:4000/2017/04/28/svg-to-png/">java svg转png
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/07/10/welcome-to-jekyll/">hello jekyll!</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/07/22/javaScript-dom/">JavaScript dom</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/07/20/java-equals-==/" data-title="Java equals 和 ==" data-url="http://localhost:4000/2016/07/20/java-equals-==/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>

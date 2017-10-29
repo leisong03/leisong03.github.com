@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>javaScript constructor和prototype</title>
+    <meta name="description" content="本篇介绍JavaScript对象中的constructor和prototype。">
+
+    <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico?" type="image/x-icon">
+    <link rel="stylesheet" href=" /css/fontawesome/css/font-awesome.min.css ">
+    <link rel="stylesheet" href=" /css/main.css ">
+    <link rel="canonical" href="http://localhost:4000/2016/09/20/javaScript-constructor-prototype/">
+    <link rel="alternate" type="application/rss+xml" title="Chenjy' blog" href="http://localhost:4000 /feed.xml ">
+
+
+    <script>
+    // 百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?4550978924d3d4a6fe21f516ac37f0b3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+
+</head>
+
+
+  <!--<script src="../js/main.js"></script>-->
+  <body>
+
+    <header id="top">
+    <div class="wrapper">
+        <a href="/" class="brand">Chenjy' blog</a>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/">
+                    
+                        Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/category/">
+                        
+                            Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/tag/">
+                        
+                            Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/collection/">
+                        
+                            Collections
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/demo/">
+                        
+                            Demo
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/about/">
+                        
+                            About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>javaScript constructor和prototype</h1>
+        <div class="label">
+
+            <div class="label-card">
+                2016-09-20
+            </div>
+            
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+                    
+            <div class="label-card">
+                JiuYang Chen
+                
+            </div>
+
+            <div class="label-card" style="color: #f1e05a;">
+                       /
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  
+  
+    
+        <a href="/tag/#JavaScript" title="Tag: JavaScript" rel="tag">JavaScript</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="markdown-toc">
+  <li><a href="#constructor和prototype" id="markdown-toc-constructor和prototype">constructor和prototype</a>    <ul>
+      <li><a href="#类" id="markdown-toc-类"><code class="highlighter-rouge">类</code></a></li>
+      <li><a href="#原型继承" id="markdown-toc-原型继承"><code class="highlighter-rouge">原型继承</code></a></li>
+      <li><a href="#原型链" id="markdown-toc-原型链"><code class="highlighter-rouge">原型链</code></a></li>
+    </ul>
+  </li>
+  <li><a href="#原型链-1" id="markdown-toc-原型链-1">原型链</a>    <ul>
+      <li><a href="#_proto_" id="markdown-toc-_proto_"><code class="highlighter-rouge">_proto_</code></a></li>
+      <li><a href="#prototype--constructor" id="markdown-toc-prototype--constructor"><code class="highlighter-rouge">prototype</code> &amp; <code class="highlighter-rouge">constructor</code></a></li>
+      <li><a href="#prototype-使用" id="markdown-toc-prototype-使用"><code class="highlighter-rouge">prototype</code> 使用</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>本篇介绍JavaScript对象中的constructor和prototype。</p>
+
+<h2 id="constructor和prototype">constructor和prototype</h2>
+
+<p>JS中函数定义：</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>    
+    <span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span>   
+    <span class="p">{</span>   
+       <span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="o">=</span><span class="nx">name</span><span class="p">;</span>  
+    <span class="p">};</span>   
+    
+    <span class="kd">var</span> <span class="nx">chen</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="s2">"chenjy"</span><span class="p">)</span>
+
+</code></pre>
+</div>
+
+<h3 id="类"><code class="highlighter-rouge">类</code></h3>
+
+<p>因为有关键字<code class="highlighter-rouge">new</code>可以实例对象所以函数<code class="highlighter-rouge">Person</code>可以当做是一个<code class="highlighter-rouge">类</code>。
+定义的函数都有一个<code class="highlighter-rouge">prototype</code>的属性，但是使用<code class="highlighter-rouge">new</code>来创建的对象没有。</p>
+
+<p>每个<code class="highlighter-rouge">prototype</code>的属性又指向一个<code class="highlighter-rouge">prototype</code>对象(<code class="highlighter-rouge">__ proto __</code>)，每个<code class="highlighter-rouge">prototype</code>对象(<code class="highlighter-rouge">__ proto __</code>)包含一个<code class="highlighter-rouge">constructor</code>的属性，
+而这个属性又指向一个<code class="highlighter-rouge">constructor</code>对象，该对象就是这个函数。</p>
+
+<h3 id="原型继承"><code class="highlighter-rouge">原型继承</code></h3>
+
+<p>当我们使用<code class="highlighter-rouge">new</code>实例对象<code class="highlighter-rouge">chen</code>,它指向<code class="highlighter-rouge">Person</code>的<code class="highlighter-rouge">prototype</code>对象(<code class="highlighter-rouge">__ proto __</code>)，然后<code class="highlighter-rouge">prototype</code>对象( <code class="highlighter-rouge">__ proto __</code>)中所有的属性和函数都可以调用。</p>
+
+<h3 id="原型链"><code class="highlighter-rouge">原型链</code></h3>
+
+<p>这样就可以形成一个<code class="highlighter-rouge">原型链</code></p>
+
+<ul>
+  <li>
+    <p>chen.__ proto __  === Person.prototype</p>
+  </li>
+  <li>
+    <p>person.prototype.__ proto __ === Object.prototype</p>
+  </li>
+  <li>
+    <p>Object.prototype.__ proto __ === null (由于比较特殊)</p>
+  </li>
+</ul>
+
+<p><img src="http://ww3.sinaimg.cn/mw690/c584f169jw1f8g543gko3j20v60m1dh6.jpg" alt="output" /></p>
+
+<blockquote>
+  <p><strong>Update In 2017/08/07</strong></p>
+</blockquote>
+
+<p>先盗图一张</p>
+
+<p><img src="http://wx4.sinaimg.cn/mw690/c584f169gy1fibebikbjzj20eg0gaabg.jpg" alt="output" /></p>
+
+<h2 id="原型链-1">原型链</h2>
+
+<h3 id="_proto_"><code class="highlighter-rouge">_proto_</code></h3>
+
+<p>在<code class="highlighter-rouge">JS</code>里，万物皆对象。方法<code class="highlighter-rouge">Function</code>是对象，方法的原型<code class="highlighter-rouge">Function.prototype</code>是对象。
+对象具有属性 <code class="highlighter-rouge">_proto_ </code>[隐式原型] ,一个对象的隐式原型指向构造该对象的构造函数的原型。
+保证了实例可以访问在构造函数原型中定义的属性和方法</p>
+
+<p><code class="highlighter-rouge">f1</code>、<code class="highlighter-rouge">f2</code>的<code class="highlighter-rouge">_proto_</code>指向构造该函数的构造函数<code class="highlighter-rouge">function Foo()</code>的原型<code class="highlighter-rouge">Foo.prototype</code>[显式原型]</p>
+
+<p><code class="highlighter-rouge">function Foo()</code>的<code class="highlighter-rouge">_proto_</code>执行构造该函数的构造函数<code class="highlighter-rouge">function Function()</code>的原型<code class="highlighter-rouge">Function.prototype</code></p>
+
+<p><code class="highlighter-rouge">Foo.prototype</code>的<code class="highlighter-rouge">_proto_</code>执行构造该函数的构造函数<code class="highlighter-rouge">function Object()</code>的原型<code class="highlighter-rouge">object.prototype</code></p>
+
+<ul>
+  <li>
+    <p><code class="highlighter-rouge">object.prototype</code> 的 <code class="highlighter-rouge">_proto_</code> 指向 <code class="highlighter-rouge">null</code></p>
+  </li>
+  <li>
+    <p>(object creat by Function) (Foo creat by Function)</p>
+  </li>
+</ul>
+
+<h3 id="prototype--constructor"><code class="highlighter-rouge">prototype</code> &amp; <code class="highlighter-rouge">constructor</code></h3>
+
+<p>方法这个特殊的对象，除了和其他对象一样有上述<code class="highlighter-rouge">_proto_</code>属性之外，还有自己特有的属性——原型属性<code class="highlighter-rouge">prototype</code></p>
+
+<p>指向一个对象，这个对象的用途就是包含所有实例共享的属性和方法（我们把这个对象叫做原型对象）。
+原型对象也有一个属性，叫做<code class="highlighter-rouge">constructor</code>，这个属性包含了一个指针，指回原构造函数。</p>
+
+<h3 id="prototype-使用"><code class="highlighter-rouge">prototype</code> 使用</h3>
+
+<p><code class="highlighter-rouge">prototype</code>主要用于继承。</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>
+<span class="kd">var</span> <span class="nx">Foo</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">){</span>
+
+    <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+ 
+<span class="p">}</span>
+
+<span class="nx">Foo</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getName</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+    
+	<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">;</span>
+	
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">foo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Foo</span><span class="p">(</span><span class="s2">"chenjy"</span><span class="p">);</span>
+
+<span class="nx">foo</span><span class="p">.</span><span class="nx">getName</span><span class="p">();</span> <span class="c1">// chenjy</span>
+
+</code></pre>
+</div>
+
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/2016/09/07/log4j-jar/">log4j 配置和使用</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/2016/09/27/three-js-needsUpdate-sources-code/">three.js needsUpdate 方法</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+         <script>
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	console.log(duoshuoQuery);
+</script>
+
+
+<!-- 多说评论框 start -->
+
+<div class="ds-thread" data-thread-key="http://localhost:4000/2016/09/20/javaScript-constructor-prototype/" data-title="javaScript constructor和prototype" data-url="http://localhost:4000/2016/09/20/javaScript-constructor-prototype/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name: "chenjy1225"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- 多说公共JS代码 end -->
+ 
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="/js/pageContent.js " charset="utf-8"></script>
+
+
+    <footer class="site-footer">
+
+
+    <div class="wrapper">
+        <p class="power">
+        	<i class="fa fa-github" aria-hidden="true"></i>
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+        </p>
+    </div>
+</footer>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <div class="back-to-top">
+	<a href="#top" class="scroll">
+		<i class="fa fa-arrow-up" aria-hidden="true"></i>
+	</a>
+</div>
+    <script src=" /js/main.js " charset="utf-8"></script>
+    <script src=" /js/scroll.min.js " charset="utf-8"></script>
+    <script src=" /js/cjy_info.js " charset="utf-8"></script>
+  </body>
+
+</html>
