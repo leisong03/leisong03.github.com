@@ -20,10 +20,13 @@ DRV8825是这个样子的
 
 ![8825]({{site.baseurl}}/images/8825.png)
 
+DRV8729是这个样子的
+![8729]({{site.baseurl}}/images/8729.png)
+
 这两个驱动器的管脚分布和现在dual板子不兼容
 
 ![socket_on_dual]({{site.baseurl}}/images/dual_socket.png)
 
-如果想要将公版的4988和8825插入dual中，我们需要对参考电压vref的输出进行改变，让他恒定输出3.3V
+如果想要将公版的4988和8825以及8729插入dual中，我们需要对参考电压vref的输出进行改变，让他恒定输出3.3V
 
-这个可以通过修改HEX来实现
+这个可以通过修改HEX来实现,下午需要做一下测试
