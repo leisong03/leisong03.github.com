@@ -21,7 +21,7 @@ DRV8825是这个样子的
 ![8825]({{site.baseurl}}/images/8825.png)
 
 DRV8729是这个样子的
-![8729]({{site.baseurl}}/images/8729.png)
+![8729]({{site.baseurl}}/images/LV8729.png)
 
 这两个驱动器的管脚分布和现在dual板子不兼容
 
