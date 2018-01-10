@@ -8,25 +8,19 @@ icon: heart
 * content
 {:toc}
 
-## 关于我
+## 关于锐蓝
 
-* 2015.4 开始学习前端技术
+* 2014.12成立
 
-* 2015.6 开始学习`three.js`
+* 主营业务为3D打印的ODM和OEM服务
 
-* 2015.7 开始接触VR眼镜`3Glasses`
 
-* 2016.6 毕业于江南大学 本科
-
-* 目前就职于`无锡市新图云创科技发展有限公司` 任职`前端工程师` 蟹蟹
-
-## 联系我
-
-* GitHub：[Chenjy](https://github.com/Chenjy1225)
-* email：chenjy1225@163.com
+## 联系我们
+* 主页: www.ray-land.cn
+* email：manager@ray-land.cn
 
 ## 关于本站
-
+* 本站是锐蓝的官方技术wiki
 
 ### Update Log
 
