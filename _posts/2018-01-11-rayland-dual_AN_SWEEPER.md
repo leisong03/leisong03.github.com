@@ -10,6 +10,12 @@ typora-copy-images-to: ../images
 
 * content
 {:toc}
+ 本文介绍了如何使用RAYLAND-DUAL主板的电机输出接口来控制舵机
+
+
+
+## 舵机基本参数
+
 RAYLAND-DUAL可以用来控制舵机，目前暂时只支持脉冲宽度调制的舵机。脉冲宽度调制的舵机能接受1ms<2ms脉宽的。其中1ms和2ms分别对应最左和最右位置，1.5ms对应中间位置。
 
 ![F384E714-1E01-4CA5-832F-39D6FA36AAA2]({{site.baseurl}}/images/F384E714-1E01-4CA5-832F-39D6FA36AAA2.png)
