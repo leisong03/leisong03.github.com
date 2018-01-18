@@ -32,9 +32,9 @@ author: JiuYang Chen
 | Y电机端口  | 右轮驱动    | 1EN，2FR，3PG，4BK                        |
 | Z电机端口  | 无       |                                        |
 | E0电机端口 | 左右轮SV   | 1GND，2 SV_左，3 SV_右，4GND 直连板接E0DIR和E0EN |
-| E1电机端口 | 超声      | 1GND，2TX，3RX，4GND                      |
+| E1电机端口 | 寻磁      | 1GND，2TX，3RX，4GND                      |
 | usart1 | rfid    | 1GND，2TX，3RX，4GND                      |
-| usart2 | 寻磁      | 1GND，2TX，3RX，4GND                      |
+| usart2 | 超声      | 1GND，2TX，3RX，4GND                      |
 | usb口   | 摄像头     | VLC免驱摄像头                               |
 | 音频输入   | 单mic    |                                        |
 | 音频输出   | 运放模块    |                                        |
