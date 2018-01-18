@@ -5,6 +5,7 @@ date:   2018-01-05 10:00:00 +0800
 categories: AGV 
 tags: AGV 
 author: JiuYang Chen
+typora-copy-images-to: ../_images
 ---
 
 
@@ -13,8 +14,19 @@ author: JiuYang Chen
 {:toc}
 
 
+本文简单介绍了用rayland-dual主板控制麦克纳姆车的接线方法和控制协议。
 
-麦克纳姆车 控制协议
+
+
+
+
+## 概述
+
+![CBF15C15-F3E4-407B-939B-F6D3D3DA6776](../_images/CBF15C15-F3E4-407B-939B-F6D3D3DA6776.png)
+
+麦克纳姆车是一种很奇特的小车，它搭载了一种全向轮子。由于轮子构造的独特性，这种车可以做出各种奇怪的动作，比如左右平移，斜向运动。以下是这种车能进行的10个运动方向和每个轮子的转动方向之间的关系。
+
+![26E7BB2E-C07D-4573-BEEB-0EB3515363C1](../_images/26E7BB2E-C07D-4573-BEEB-0EB3515363C1.png)
 
 ## `Mecanum`
 
