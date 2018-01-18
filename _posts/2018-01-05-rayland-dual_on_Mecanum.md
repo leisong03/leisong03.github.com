@@ -22,11 +22,11 @@ typora-copy-images-to: ../_images
 
 ## 概述
 
-![CBF15C15-F3E4-407B-939B-F6D3D3DA6776]({{site.baseurl}}/_images/CBF15C15-F3E4-407B-939B-F6D3D3DA6776.png)
+![CBF15C15-F3E4-407B-939B-F6D3D3DA6776]({{site.baseurl}}/images/CBF15C15-F3E4-407B-939B-F6D3D3DA6776.png)
 
 麦克纳姆车是一种很奇特的小车，它搭载了一种全向轮子。由于轮子构造的独特性，这种车可以做出各种奇怪的动作，比如左右平移，斜向运动。以下是这种车能进行的10个运动方向和每个轮子的转动方向之间的关系。
 
-![26E7BB2E-C07D-4573-BEEB-0EB3515363C1]({{site.baseurl}}/_images/26E7BB2E-C07D-4573-BEEB-0EB3515363C1.png)
+![26E7BB2E-C07D-4573-BEEB-0EB3515363C1]({{site.baseurl}}/images/26E7BB2E-C07D-4573-BEEB-0EB3515363C1.png)
 
 与控制AGV类似，控制马克纳姆车也有两种控制方式。一个是板载的安卓控制，另一个是用ROS系统控制，利用安卓控制的控制协议如下。
 
