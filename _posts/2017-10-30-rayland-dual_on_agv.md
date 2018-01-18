@@ -14,9 +14,6 @@ author: JiuYang Chen
 
 
 
-
-
-
 本文档介绍了用rayland-dual主板控制小车的控制协议。协议共分两种，1，用内置的安卓系统。2，用外置的ROS系统。
 
 
@@ -40,7 +37,7 @@ author: JiuYang Chen
 
 ## 安卓系统下的AGV 小车控制协议
 
-## `AGV`
+##  AGV
 
 `Android -> Stm32`
 
