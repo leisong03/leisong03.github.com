@@ -5,6 +5,7 @@ date:   2017-10-30 14:00:00 +0800
 categories: AGV 
 tags: AGV 
 author: JiuYang Chen
+typora-copy-images-to: ../images
 ---
 
 
@@ -20,24 +21,26 @@ author: JiuYang Chen
 
 
 
+![1851AC83-793D-4179-870E-669D8F8F48C7]({{site.baseurl}}/images/1851AC83-793D-4179-870E-669D8F8F48C7.png)
+
 
 
 ## AGV小车接线方法
 
 总体接线图
 
-| 板上电机端口 | AGV功能链接 | 备注                                     |
-| ------ | ------- | -------------------------------------- |
-| X电机端口  | 左轮驱动    | 1EN，2FR，3PG，4BK                        |
-| Y电机端口  | 右轮驱动    | 1EN，2FR，3PG，4BK                        |
-| Z电机端口  | 无       |                                        |
-| E0电机端口 | 左右轮SV   | 1GND，2 SV_左，3 SV_右，4GND 直连板接E0DIR和E0EN |
-| E1电机端口 | 寻磁      | 1GND，2TX，3RX，4GND                      |
-| usart1 | rfid    | 1GND，2TX，3RX，4GND                      |
-| usart2 | 超声      | 1GND，2TX，3RX，4GND                      |
-| usb口   | 摄像头     | VLC免驱摄像头                               |
-| 音频输入   | 单mic    |                                        |
-| 音频输出   | 运放模块    |                                        |
+| 板上电机端口 | AGV功能链接 | 备注                                       |
+| ------ | ------- | ---------------------------------------- |
+| X电机端口  | 左轮驱动    | 1EN(EN)，2FR(MS1)，3PG(MS2)，4BK(ST)        |
+| Y电机端口  | 右轮驱动    | 1EN(EN)，2FR(MS1)，3PG(MS2)，4BK(ST)        |
+| Z电机端口  | 无       |                                          |
+| E0电机端口 | 左右轮SV   | 1GND，2 SV_左，3 SV_右，4GND 直连板接E0DIR和E0EN   |
+| E1电机端口 | 寻磁      | 1GND，2TX，3RX，4GND。(E1DIR和usart3_RX复用，E1STEP和usart3_tx复用) |
+| usart1 | rfid    | 1GND，2TX，3RX，4GND                        |
+| usart2 | 超声      | 1GND，2TX，3RX，4GND                        |
+| usb口   | 摄像头     | VLC免驱摄像头                                 |
+| 音频输入   | 单mic    |                                          |
+| 音频输出   | 运放模块    |                                          |
 
 ## 安卓系统下的AGV 小车控制协议
 
