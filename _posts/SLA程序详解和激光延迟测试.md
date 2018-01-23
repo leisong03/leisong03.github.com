@@ -24,27 +24,17 @@ TIM6的prescalar大了1000倍，所以脉冲宽度小1000倍。
 
 ## 修改后的控制协议
 
-| 编号    | 类型      | 名称         | 备注   |
-| ----- | ------- | ---------- | ---- |
-| Byte0 | uint8_t | head       |      |
-| Byte1 | uint8_t | seq        |      |
-|       |         | ctrl       |      |
-|       |         | laserDelay |      |
-|       |         | posXY[2]   |      |
-|       |         | stepCnt[2] |      |
-|       |         | stepXY[2]  |      |
-|       |         | stepPeriod |      |
-|       |         |            |      |
-|       |         |            |      |
-|       |         |            |      |
-|       |         |            |      |
-|       |         |            |      |
-|       |         |            |      |
-|       |         |            |      |
-|       |         |            |      |
-|       |         |            |      |
-|       |         |            |      |
-|       |         |            |      |
-|       |         |            |      |
-|       |         |            |      |
+| 编号            | 类型       | 名称         | 备注             |
+| ------------- | -------- | ---------- | -------------- |
+| Byte0         | uint8_t  | head       | 0x68           |
+| Byte1         | uint8_t  | seq        | 自增序列号          |
+| Byte2         | uint8_t  | ctrl       | 控制位            |
+| Byte3~Byte6   | uint32_t | laserDelay | 最小单位是单个脉冲的千分之一 |
+| Byte7~Byte10  | uint16_t | posXY[2]   | 目标位置           |
+| Byte11~Byte14 | uint16_t | stepCnt[2] | 插点数量           |
+| Byte15~Byte18 | int16_t  | stepXY[2]  | 插点空间间距         |
+| Byte19        | uint8_t  | stepPeriod | 插点时间间距         |
+| Byte20        | uint8_t  | tail       | 0xFF           |
+| Byte21        | uint8_t  | checksum   | 校验和            |
+|               |          |            |                |
 
