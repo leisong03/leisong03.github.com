@@ -102,23 +102,24 @@ typora-copy-images-to: ../images
 
 `cmd_type,pkg_length,seq,v_x,v_y,axis_x,axis_y,ori,rfid,magn,infra,ut_f,ut_b,moto_state,mile`
 
-| Param      | Describe |     Type     |                          Range |                              Unit |
-| ---------- | :------: | :----------: | -----------------------------: | --------------------------------: |
-| cmd_type   |   指令类型   |    uint8     |                              0 |                                   |
-| pkg_length |   包长度    |    uint8     |                      `39bytes` |                                   |
-| seq        |   指令序号   |    uint8     |                                |                                   |
-| v_x        |   x轴速度   |    int16     |                     -500 ~ 500 |                     `(1/10)r/min` |
-| v_y        |   y轴速度   |    int16     |                     -500 ~ 500 |                     `(1/10)r/min` |
-| axis_x     |   x轴坐标   |    int16     |                                |                     `1 = (1/10)r` |
-| axis_y     |   y轴坐标   |    int16     |                                |                     `1 = (1/10)r` |
-| ori        |    朝向    |    int16     |                                | `1 = 1/10°` `-1 = -1/10°` (逆时针为正) |
-| rfid       | rfid序列号  |    uint32    |                                |                                   |
-| magn       |  磁条序列号   |    uint16    |              `0:missing 1:hit` |                                   |
-| infra      |    红外    |    uint8     |               `0:false 1:true` |                                   |
-| ut_f       |   前侧超声   | uint16 * `4` |                                |                              `mm` |
-| ut_b       |   后侧超声   | uint16 * `4` |                                |                              `mm` |
-| moto_state |   电机状态   |    uint8     | `0:stop 1:running` 左侧第0位 右侧第一位 |                                   |
-| mile       |   总里程    |    uint16    |                                |                              `mm` |
+| Param       | Describe |     Type     |                          Range |                              Unit |
+| ----------- | :------: | :----------: | -----------------------------: | --------------------------------: |
+| cmd_type    |   指令类型   |    uint8     |                              0 |                                   |
+| pkg_length  |   包长度    |    uint8     |                      `39bytes` |                                   |
+| seq         |   指令序号   |    uint8     |                                |                                   |
+| controlType |   控制类型   |    uint8     |        `0：板控` `1：遥控` `2：ROS控制` |                                   |
+| v_x         |   x轴速度   |    int16     |                     -500 ~ 500 |                     `(1/10)r/min` |
+| v_y         |   y轴速度   |    int16     |                     -500 ~ 500 |                     `(1/10)r/min` |
+| axis_x      |   x轴坐标   |    int16     |                                |                     `1 = (1/10)r` |
+| axis_y      |   y轴坐标   |    int16     |                                |                     `1 = (1/10)r` |
+| ori         |    朝向    |    int16     |                                | `1 = 1/10°` `-1 = -1/10°` (逆时针为正) |
+| rfid        | rfid序列号  |    uint32    |                                |                                   |
+| magn        |  磁条序列号   |    uint16    |              `0:missing 1:hit` |                                   |
+| infra       |    红外    |    uint8     |               `0:false 1:true` |                                   |
+| ut_f        |   前侧超声   | uint16 * `4` |                                |                              `mm` |
+| ut_b        |   后侧超声   | uint16 * `4` |                                |                              `mm` |
+| moto_state  |   电机状态   |    uint8     | `0:stop 1:running` 左侧第0位 右侧第一位 |                                   |
+| mile        |   总里程    |    uint16    |                                |                              `mm` |
 
 
 
