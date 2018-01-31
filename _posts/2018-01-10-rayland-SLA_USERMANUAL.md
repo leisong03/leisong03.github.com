@@ -10,8 +10,14 @@ typora-copy-images-to: ../images
 ---
 
 * content
-{:toc}
+[[{:toc}]]
+
 RAYLAND-SLA是乐轩锐蓝推出的集振镜控制和电机控制于一体的控制板。性能可以对标ScanLab的同类型板卡。
+
+
+
+
+
 
 ![1B9E6A5E-FA15-4CD4-9C86-285A7B57FAF6]({{site.baseurl}}/images/1B9E6A5E-FA15-4CD4-9C86-285A7B57FAF6.png)
 
