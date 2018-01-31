@@ -50,6 +50,7 @@ typora-copy-images-to: ../images
 | E1电机端口 | 寻磁      | 1GND，2TX，3RX，4GND。(E1DIR和usart3_RX复用，E1STEP和usart3_tx复用) |
 | usart1 | rfid    | 1GND，2TX，3RX，4GND                        |
 | usart2 | 超声      | 1GND，2TX，3RX，4GND                        |
+| usart3 | 寻磁      | 1GND，2TX，3RX，4GND                        |
 | usb口   | 摄像头     | VLC免驱摄像头                                 |
 | 音频输入   | 单mic    |                                          |
 | 音频输出   | 运放模块    |                                          |
