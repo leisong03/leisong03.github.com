@@ -15,7 +15,7 @@ typora-copy-images-to: ../images
 
 
 
-本文档介绍了用rayland-dual主板控制小车的控制协议。协议共分两种，1，用内置的安卓系统。2，用外置的ROS系统。
+本文档介绍了用rayland-dual主板控制小车的控制协议。协议共分两种，1，用内置的安卓系统。2，用外置的串口系统。
 
 
 
@@ -142,7 +142,7 @@ typora-copy-images-to: ../images
 
 
 
-## ros系统下的AGV 小车控制协议
+## 串口的AGV 小车控制协议
 
 板载的A33处理器并不能运行ROS操作系统，需要通过外接mini PC来完成。MiniPC直接和板子上的STM32进行通讯，在ros模式下，我们需要禁用板载的寻磁传感器功能，将这个口用来做miniPC和STM32的通讯。
 
@@ -168,26 +168,28 @@ MiniPC -> Stm32
 
 Stm32-> MiniPC 
 
-| Param      |  Describe   |     Type     |                          Range |                              Unit |
-| ---------- | :---------: | :----------: | -----------------------------: | --------------------------------: |
-| prefix     |     包头      |    uint8     |                           0x68 |                                   |
-| cmd_type   |    指令类型     |    uint8     |                              0 |                                   |
-| pkg_length |     包长度     |    uint8     |                      `39bytes` |                                   |
-| seq        |    指令序号     |    uint8     |                                |                                   |
-| v_x        |    x轴速度     |    int16     |                     -500 ~ 500 |                     `(1/10)r/min` |
-| v_y        |    y轴速度     |    int16     |                     -500 ~ 500 |                     `(1/10)r/min` |
-| axis_x     |    x轴坐标     |    int16     |                                |                     `1 = (1/10)r` |
-| axis_y     |    y轴坐标     |    int16     |                                |                     `1 = (1/10)r` |
-| ori        |     朝向      |    int16     |                                | `1 = 1/10°` `-1 = -1/10°` (逆时针为正) |
-| rfid       |   rfid序列号   |    uint32    |                                |                                   |
-| magn       |    磁条序列号    |    uint16    |              `0:missing 1:hit` |                                   |
-| infra      |     红外      |    uint8     |               `0:false 1:true` |                                   |
-| ut_f       |    前侧超声     | uint16 * `4` |                                |                              `mm` |
-| ut_b       |    后侧超声     | uint16 * `4` |                                |                              `mm` |
-| moto_state |    电机状态     |    uint8     | `0:stop 1:running` 左侧第0位 右侧第一位 |                                   |
-| mile       |     总里程     |    uint16    |                                |                              `mm` |
-| checksum   | 校验和（不含包头包尾） |   uint8_t    |                          0~255 |                                   |
-| subfix     |     包尾巴     |   uint8_t    |                           0xff |                                   |
+| Param      |        Describe        |     Type     |                                   Range |                                   Unit |
+| ---------- | :--------------------: | :----------: | --------------------------------------: | -------------------------------------: |
+| prefix     |          包头          |    uint8     |                                    0x68 |                                        |
+| cmd_type   |        指令类型        |    uint8     |                                       0 |                                        |
+| pkg_length |         包长度         |    uint8     |                               `39bytes` |                                        |
+| seq        |        指令序号        |    uint8     |                                         |                                        |
+| v_x        |        x轴速度         |    int16     |                              -500 ~ 500 |                          `(1/10)r/min` |
+| v_y        |        y轴速度         |    int16     |                              -500 ~ 500 |                          `(1/10)r/min` |
+| axis_x     |        x轴坐标         |    int16     |                                         |                          `1 = (1/10)r` |
+| axis_y     |        y轴坐标         |    int16     |                                         |                          `1 = (1/10)r` |
+| checksum   |                        |              |                                         |                                        |
+| subfix     |                        |              |                                    0xff |                                        |
+| ori        |          朝向          |    int16     |                                         | `1 = 1/10°` `-1 = -1/10°` (逆时针为正) |
+| rfid       |       rfid序列号       |    uint32    |                                         |                                        |
+| magn       |       磁条序列号       |    uint16    |                       `0:missing 1:hit` |                                        |
+| infra      |          红外          |    uint8     |                        `0:false 1:true` |                                        |
+| ut_f       |        前侧超声        | uint16 * `4` |                                         |                                   `mm` |
+| ut_b       |        后侧超声        | uint16 * `4` |                                         |                                   `mm` |
+| moto_state |        电机状态        |    uint8     | `0:stop 1:running` 左侧第0位 右侧第一位 |                                        |
+| mile       |         总里程         |    uint16    |                                         |                                   `mm` |
+| checksum   | 校验和（不含包头包尾） |   uint8_t    |                                   0~255 |                                        |
+| subfix     |         包尾巴         |   uint8_t    |                                    0xff |                                        |
 
 
 

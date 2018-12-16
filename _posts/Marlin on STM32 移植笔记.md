@@ -111,14 +111,34 @@ void loop() {
 
 ## 板子的连接图
 
+![image-20180915132040790](../images/image-20180915132040790.png)
+
 ### 两个USART口的互联
+
+![image-20180915132354269](/Users/lei/Documents/workshop/githubleisong03/images/image-20180915132354269.png)
 
 ### 热床的连接
 
+因为板子尺寸较小发热量较大，热床需要用外置接法，需要如下小模块
+
+![image-20180915134202791](/Users/lei/Documents/workshop/githubleisong03/images/image-20180915134202791.png)
+
+![image-20180915133540452](/Users/lei/Documents/workshop/githubleisong03/images/image-20180915133540452.png)
+
 ###风扇的连接
+
+2号针接+
+
+1号针接-
 
 ### 加热棒的连接
 
+2号针接+
+
+1号针接-
+
 ### RFID的链接方法
+
+同之前，插入三个USB口中的一个
 
 

@@ -214,6 +214,37 @@ Stm32-> MiniPC
 
 在不使用板载的A33板卡时，可以使用外置的CAN总线来对小车进行控制，因为CAN默认总线长度为8Byte，收发协议如下
 
+###can板接口
+
+stm32下一共有三组Can板接口，分别是
+
+| 编号 | 位置       | 是否接出来    |
+| ---- | ---------- | ------------- |
+| 1    | PA11和PA12 | 否            |
+| 2    | PB8和PB9   | E0_dir和E1_EN |
+| 3    | PD0和PD1   | 否            |
+
+CAN口的定义如下
+
+| 管脚 | Pin   | 备注   |
+| ---- | ----- | ------ |
+| 1    | GND   |        |
+| 2    | CAN_H |        |
+| 3    | CAN_L |        |
+| 4    | VCC   | 5V输出 |
+
+CAN和遥控需要一个外接小板子，用STM32F091RC来做
+
+![image-20180915110303897](/Users/lei/Documents/workshop/githubleisong03/images/image-20180915110303897.png)
+
+
+
+can接在下面这个接口
+
+![image-20180915111051506](/Users/lei/Documents/workshop/githubleisong03/images/image-20180915111051506.png)'
+
+can协议如下：
+
 上位机->CAN->STM32
 
 | Param     | Describe |  Type  |   Range    |          Unit |
@@ -235,6 +266,46 @@ STM32->CAN->上位机，最近100ms的里程数
 
 ## 遥控模式
 
-下面这个板子同时用
+下面这个板子同时用来做Can转接板和遥控板，我们同时用了Can口输出和串口输出，同时接了4个开关。
 
-![image-20180915104023296](../images/image-20180915104023296.png)
+![image-20180915112508842](/Users/lei/Documents/workshop/githubleisong03/images/image-20180915112508842.png)
+
+### 遥控模式接法
+
+遥控模式需要接三种接口，电位接口，遥控器接口和按键接口。
+
+#### 按键接法
+
+以按键1为例子，按键短接中间两个PIN就可以
+
+![image-20180915113537690](/Users/lei/Documents/workshop/githubleisong03/images/image-20180915113537690.png)
+
+#### 遥控器接口
+
+![image-20180915114035226](/Users/lei/Documents/workshop/githubleisong03/images/image-20180915114035226.png)
+
+#### 电位接口
+
+参照AD口的位置
+
+![image-20180915110219185](../images/image-20180915110219185.png)
+
+注意这里电位器需要接在VCC3.3上面，而不能直接接在VCC上面，否则会烧板子。
+
+![image-20180915115529522](/Users/lei/Documents/workshop/githubleisong03/images/image-20180915115529522.png)
+
+
+
+## 开发记录
+
+2018年09月15日调试如下：
+
+- [ ] AD采集
+  - [ ] AD初始化
+- [ ] 无线口发射
+- [ ] 按键口采集 
+
+
+
+
+
